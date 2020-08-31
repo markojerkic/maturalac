@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/linear"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="20dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp">
+                <TextView
+                    android:id="@+id/naslov"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto"
+                    android:text="Pripremi se,"
+                    android:textColor="#000"
+                    android:textSize="35sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/roboto"
+                    android:textColor="@color/colorSecondary"
+                    android:text="stiže Državna matura..."
+                    android:textSize="20sp"
+                    android:id="@+id/mininaslov"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/naslov" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/mininaslov"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:id="@+id/leftRightLinearLayout">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:id="@+id/left_linearLayout"
+                        android:gravity="center_horizontal"
+                        android:layout_weight="1"
+                        app:layout_constraintTop_toBottomOf="@id/mininaslov"
+                        app:layout_constraintEnd_toStartOf="@+id/right_linearLayout"
+                        app:layout_constraintStart_toStartOf="parent"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:id="@+id/right_linearLayout"
+                        android:gravity="center_horizontal"
+                        app:layout_constraintTop_toBottomOf="@id/mininaslov"
+                        app:layout_constraintStart_toEndOf="@id/left_linearLayout"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+                </LinearLayout>
+
+
+                <!--<TextView
+                    android:id="@+id/test1"
+                    android:text="Matematika"
+                    style="@style/subjectNameStyle"
+                    app:layout_constraintEnd_toStartOf="@+id/test2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/what_to_study" />
+
+                <TextView
+                    android:id="@+id/test2"
+                    style="@style/subjectNameStyle"
+                    android:text="Hrvatski jezik"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/test1"
+                    app:layout_constraintTop_toBottomOf="@id/what_to_study" />
+
+
+                <TextView
+                    android:id="@+id/test3"
+                    style="@style/subjectNameStyle"
+                    android:text="Fizika"
+                    app:layout_constraintEnd_toStartOf="@+id/test2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/test1" />
+
+                <TextView
+                    android:id="@+id/test4"
+                    style="@style/subjectNameStyle"
+                    android:gravity="center"
+                    android:text="Biologija"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/test1"
+                    app:layout_constraintTop_toBottomOf="@id/test2" />
+
+
+                <TextView
+                    android:id="@+id/test5"
+                    style="@style/subjectNameStyle"
+                    android:text="Fizika"
+                    app:layout_constraintEnd_toStartOf="@+id/test2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/test3" />
+
+                <TextView
+                    android:id="@+id/test6"
+                    style="@style/subjectNameStyle"
+                    android:gravity="center"
+                    android:text="Biologija"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/test1"
+                    app:layout_constraintTop_toBottomOf="@id/test4" />-->
+
+        </LinearLayout>
+
+</ScrollView>

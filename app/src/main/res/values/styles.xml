@@ -1,0 +1,34 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorPrimaryLight</item>
+        <!-- <item name="windowNoTitle">true</item> -->
+        <item name="actionBarStyle">@style/actionBarStyle</item>
+    </style>
+
+    <style name="actionBarStyle" parent="@style/Widget.AppCompat.ActionBar">
+        <item name="background">@android:color/transparent</item>
+       <!-- <item name="titleTextStyle">@style/titleTextStyle</item>-->
+    </style>
+
+    <style name="titleTextStyle" parent="@style/TextAppearance.Compat.Notification.Title">
+        <item name="android:textColor">#000</item>
+        <item name="android:textSize">30sp</item>
+    </style>
+
+    <style name="subjectNameStyle">
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:textColor">#000</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:layout_width">170dp</item>
+        <item name="android:layout_height">170dp</item>
+        <item name="android:background">@drawable/round_rectangle_subject_shape</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginTop">15dp</item>
+        <item name="android:padding">5dp</item>
+    </style>
+
+</resources>
