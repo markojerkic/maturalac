@@ -5,8 +5,13 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorPrimaryLight</item>
-        <!-- <item name="windowNoTitle">true</item> -->
+        <item name="windowNoTitle">true</item>
         <item name="actionBarStyle">@style/actionBarStyle</item>
+    </style>
+
+    <style name="AppTheme.ActionBarItems" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="iconTint">@color/colorSecondaryLight</item>
+        <item name="elevation">4dp</item>
     </style>
 
     <style name="actionBarStyle" parent="@style/Widget.AppCompat.ActionBar">
