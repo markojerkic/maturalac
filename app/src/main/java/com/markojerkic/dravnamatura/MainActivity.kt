@@ -1,15 +1,20 @@
 package com.markojerkic.dravnamatura
 
-import androidx.appcompat.app.AppCompatActivity
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.widget.LinearLayout
+import android.widget.ListView
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import java.io.LineNumberReader
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -18,6 +23,7 @@ class MainActivity : AppCompatActivity() {
         createMockSubs()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun createMockSubs() {
 
         val leftRightLinearContainer = findViewById<LinearLayout>(R.id.leftRightLinearLayout)
@@ -25,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         val rightLinearLayout = findViewById<LinearLayout>(R.id.right_linearLayout)
 
         val subjs = listOf("mat", "eng", "hrv", "fiz", "bio")
+        val adapter = ExamsListAdapter(listOf("2019. JESEN", "2029 LJETO", "2018 JESEN", "2018. LJETO"), layoutInflater)
 
         for ((c, s) in subjs.withIndex()) {
             val test =  layoutInflater.inflate(R.layout.subject_title, leftRightLinearContainer,
@@ -36,6 +43,18 @@ class MainActivity : AppCompatActivity() {
                 leftLinearLayout.addView(test)
             else
                 rightLinearLayout.addView(test)
+
+            test.setOnClickListener {
+                val dialog = Dialog(this)
+                dialog.setContentView(R.layout.subject_list_dialog)
+                dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+                val examsListView = dialog.findViewById<ListView>(R.id.exams_list_view)
+                examsListView.adapter = adapter
+
+
+                dialog.show()
+            }
         }
 
     }
