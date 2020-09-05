@@ -1,6 +1,7 @@
 package com.markojerkic.drzavnamatura
 
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
@@ -109,10 +110,34 @@ class MainActivity : AppCompatActivity() {
                 val examsListView = dialog.findViewById<ListView>(R.id.exams_list_view)
                 // Set the adapter
                 examsListView.adapter = ExamsListAdapter(years[subject]!!.toList(), layoutInflater)
+
+                // Create onclick listener which will open new activity qith questions from
+                // the chosen exam
+                examsListView.setOnItemClickListener {parent, view, position, id ->
+                    val chosenYear = years[subject]!!.toArray()[position]
+                    val examQuestions = getExamQuestion(chosenYear as String, subject)
+
+                    // Start new activity, pass the questions through the intent
+                    val examActivityIntent = Intent(this, ExamActivity::class.java).apply {
+                        putExtra("questions", examQuestions)
+                    }
+                    startActivity(examActivityIntent)
+                }
                 // Show the dialog
                 dialog.show()
             }
         }
+
+    }
+
+    private fun getExamQuestion(chosenYear: String, chosenSubject: String): ArrayList<HashMap<String, Any>> {
+        val examQuestion = ArrayList<HashMap<String, Any>>()
+
+        for (question in questions) {
+            if (question["year"] == chosenYear && question["subject"] == chosenSubject)
+                examQuestion.add(question)
+        }
+        return examQuestion
 
     }
 
