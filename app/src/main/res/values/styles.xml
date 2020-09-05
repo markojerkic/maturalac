@@ -36,4 +36,15 @@
         <item name="android:padding">5dp</item>
     </style>
 
+    <style name="exam_answer_view_theme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_margin">15dp</item>
+        <item name="android:padding">25dp</item>
+        <item name="android:textSize">35sp</item>
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:background">@drawable/exam_question_cards</item>
+        <item name="android:gravity">center</item>
+    </style>
+
 </resources>
