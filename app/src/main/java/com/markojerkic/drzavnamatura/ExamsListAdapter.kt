@@ -10,7 +10,7 @@ class ExamsListAdapter(private val exams: List<String>,
                        private val layoutInflater: LayoutInflater): BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, container: ViewGroup?): View {
-        var view: View? = null
+        val view: View?
         if (convertView == null) {
             view = layoutInflater.inflate(R.layout.exam_list_item, container, false)
             createItem(view, position)

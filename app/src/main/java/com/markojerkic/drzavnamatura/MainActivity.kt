@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         val db = Firebase.firestore
 
+        // TODO: Add a background view while database is being downloaded: PREUZIMANJE
         // Read questions from the database
         db.collection("pitanja").get().addOnSuccessListener { result ->
             for (r in result) {
@@ -78,17 +79,17 @@ class MainActivity : AppCompatActivity() {
         val leftLinearLayout = findViewById<LinearLayout>(R.id.left_linearLayout)
         val rightLinearLayout = findViewById<LinearLayout>(R.id.right_linearLayout)
 
-        for ((c, s) in subjects.toList().withIndex()) {
+        for ((index, subject) in subjects.toList().withIndex()) {
             // Inflate the template view of the subjects
             val subjectView =  layoutInflater.inflate(R.layout.subject_title, leftRightLinearContainer,
                 false) as TextView
             // Initialize the text title from the list of subjects
-            subjectView.text = s
+            subjectView.text = subject
             // Initialize size to 170x170
             subjectView.width = 170
             subjectView.height = 170
             // Switch between left and right layout
-            if (c % 2 == 0)
+            if (index % 2 == 0)
                 leftLinearLayout.addView(subjectView)
             else
                 rightLinearLayout.addView(subjectView)
@@ -107,7 +108,7 @@ class MainActivity : AppCompatActivity() {
                 // Initialize the list view
                 val examsListView = dialog.findViewById<ListView>(R.id.exams_list_view)
                 // Set the adapter
-                examsListView.adapter = ExamsListAdapter(years[s]!!.toList(), layoutInflater)
+                examsListView.adapter = ExamsListAdapter(years[subject]!!.toList(), layoutInflater)
                 // Show the dialog
                 dialog.show()
             }
