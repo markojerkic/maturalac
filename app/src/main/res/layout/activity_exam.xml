@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    style="@style/AppTheme.Exam"
+    android:background="#fafafa"
     tools:context=".ExamActivity">
 
     <LinearLayout
@@ -12,41 +14,91 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:elevation="4dp"
-            android:theme="@style/AppTheme.ActionBarItems"
-            app:title="Ispit"
-            tools:targetApi="lollipop"/>
+            android:layout_height="wrap_content"
+            android:padding="25dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pitanje 20 / 35"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textSize="20sp"
+                android:fontFamily="@font/roboto"
+                android:textColor="#000"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_forward"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:tint="@color/colorPrimaryDark"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_forward"
+                android:rotation="180"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:tint="@color/colorPrimaryDark" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <View
+        <!--<View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
-            android:background="@color/colorSecondaryDark" />
+            android:background="@color/colorSecondaryDark" />-->
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pitanje:"
+            android:layout_marginLeft="25dp"
+            android:fontFamily="@font/roboto"
+            />
         <TextView
             android:text="Koliko je p^2 + 3, ako je p = 2"
+            android:layout_marginTop="15dp"
+            android:id="@+id/question_text_view"
             style="@style/exam_answer_view_theme"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/question_image"
+            android:visibility="gone"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Odgovori:"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/roboto"
+            />
 
         <TextView
             style="@style/exam_answer_view_theme"
-            android:text="7"/>
-        <TextView
-        style="@style/exam_answer_view_theme"
-        android:text="7"/>
-        <TextView
-            style="@style/exam_answer_view_theme"
+            android:id="@+id/answer_a"
             android:text="7"/>
         <TextView
             style="@style/exam_answer_view_theme"
-            android:text="7"/>
+            android:id="@+id/answer_b"
+            android:text="6"/>
         <TextView
             style="@style/exam_answer_view_theme"
-            android:text="7"/>
+            android:id="@+id/answer_c"
+            android:text="5"/>
+        <TextView
+            style="@style/exam_answer_view_theme"
+            android:id="@+id/answer_d"
+            android:text="4"/>
 
 
     </LinearLayout>

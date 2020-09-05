@@ -9,6 +9,10 @@
         <item name="actionBarStyle">@style/actionBarStyle</item>
     </style>
 
+    <style name="AppTheme.Exam" parent="AppTheme">
+        <item name="windowNoTitle">false</item>
+    </style>
+
     <style name="AppTheme.ActionBarItems" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="iconTint">@color/colorSecondaryLight</item>
         <item name="elevation">4dp</item>
@@ -39,9 +43,11 @@
     <style name="exam_answer_view_theme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_margin">15dp</item>
+        <item name="android:layout_marginLeft">15dp</item>
+        <item name="android:layout_marginRight">15dp</item>
+        <item name="android:layout_marginTop">5dp</item>
         <item name="android:padding">25dp</item>
-        <item name="android:textSize">35sp</item>
+        <item name="android:textSize">25sp</item>
         <item name="android:fontFamily">@font/roboto</item>
         <item name="android:background">@drawable/exam_question_cards</item>
         <item name="android:gravity">center</item>
