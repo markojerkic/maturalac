@@ -22,6 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Pitanje 20 / 35"
+                android:id="@+id/question_counter"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -33,6 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_forward"
+                android:id="@+id/next_question"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -41,6 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_forward"
+                android:id="@+id/previous_question"
                 android:rotation="180"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -66,7 +69,8 @@
             android:text="Koliko je p^2 + 3, ako je p = 2"
             android:layout_marginTop="15dp"
             android:id="@+id/question_text_view"
-            style="@style/exam_answer_view_theme"/>
+            style="@style/exam_answer_view_theme"
+            app:engine="MathJax"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -98,6 +102,7 @@
         <TextView
             style="@style/exam_answer_view_theme"
             android:id="@+id/answer_d"
+            android:layout_marginBottom="25dp"
             android:text="4"/>
 
 
