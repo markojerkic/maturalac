@@ -2,9 +2,11 @@ package com.markojerkic.drzavnamatura
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import io.github.kexanie.library.MathView
 
 class ExamActivity : AppCompatActivity() {
 
@@ -12,7 +14,8 @@ class ExamActivity : AppCompatActivity() {
     var counter = 0
 
     // Find elements
-    private val questionsTextView by lazy { findViewById<TextView>(R.id.question_text_view) }
+    private val questionMathView by lazy { findViewById<MathView>(R.id.question_math_view) }
+    private val questionTextView by lazy { findViewById<TextView>(R.id.question_text_view) }
     private val questionImageView by lazy { findViewById<ImageView>(R.id.question_image) }
     private val ansAView by lazy { findViewById<TextView>(R.id.answer_a) }
     private val ansBView by lazy { findViewById<TextView>(R.id.answer_b) }
@@ -57,7 +60,16 @@ class ExamActivity : AppCompatActivity() {
         if (counter < questions.size)
             counter++
         // Set all components with proper values
-        questionsTextView.text = currQuestion["question"].toString()
+        // If question contains latex, display in math view, else display text view
+        if (currQuestion["question"].toString().contains("\\(")) {
+            questionMathView.text = currQuestion["question"].toString()
+            questionMathView.visibility = View.VISIBLE
+            questionTextView.visibility = View.GONE
+        } else {
+            questionTextView.text = currQuestion["question"].toString()
+            questionTextView.visibility = View.VISIBLE
+            questionMathView.visibility = View.GONE
+        }
         ansAView.text = currQuestion["ansA"].toString()
         ansBView.text = currQuestion["ansB"].toString()
         ansCView.text = currQuestion["ansC"].toString()
@@ -74,7 +86,16 @@ class ExamActivity : AppCompatActivity() {
         val currQuestion = questions[counter]
         counter--
         // Set all components with proper values
-        questionsTextView.text = currQuestion["question"].toString()
+        // If question contains latex, display in math view, else display text view
+        if (currQuestion["question"].toString().contains("\\(")) {
+            questionMathView.text = currQuestion["question"].toString()
+            questionMathView.visibility = View.VISIBLE
+            questionTextView.visibility = View.GONE
+        } else {
+            questionTextView.text = currQuestion["question"].toString()
+            questionTextView.visibility = View.VISIBLE
+            questionMathView.visibility = View.GONE
+        }
         ansAView.text = currQuestion["ansA"].toString()
         ansBView.text = currQuestion["ansB"].toString()
         ansCView.text = currQuestion["ansC"].toString()

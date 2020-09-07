@@ -53,4 +53,12 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="question_no_latex">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:gravity">center</item>
+    </style>
+
 </resources>

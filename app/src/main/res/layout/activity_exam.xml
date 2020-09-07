@@ -63,20 +63,51 @@
             android:layout_height="wrap_content"
             android:text="Pitanje:"
             android:layout_marginLeft="25dp"
+            android:layout_marginBottom="5dp"
             android:fontFamily="@font/roboto"
             />
-        <TextView
-            android:text="Koliko je p^2 + 3, ako je p = 2"
-            android:layout_marginTop="15dp"
-            android:id="@+id/question_text_view"
-            style="@style/exam_answer_view_theme"
-            app:engine="MathJax"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/question_image"
-            android:visibility="gone"/>
+            android:minHeight="70dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:padding="35dp"
+            android:background="@drawable/exam_question_cards"
+            android:layout_gravity="center">
+            <io.github.kexanie.library.MathView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/question_math_view"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                style="@style/question_no_latex"
+                android:id="@+id/question_text_view"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/question_image"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+        <!--
+
+        <item name="android:layout_marginLeft">15dp</item>
+        <item name="android:layout_marginRight">15dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:padding">25dp</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:background">@drawable/exam_question_cards</item>
+        <item name="android:gravity">center</item>
+        -->
+        <!--
+            style="@style/exam_answer_view_theme"-->
 
         <TextView
             android:layout_width="wrap_content"
