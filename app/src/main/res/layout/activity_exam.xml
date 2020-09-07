@@ -67,7 +67,7 @@
             android:fontFamily="@font/roboto"
             />
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="70dp"
@@ -76,24 +76,34 @@
             android:layout_marginTop="15dp"
             android:padding="35dp"
             android:background="@drawable/exam_question_cards"
-            android:layout_gravity="center">
+            android:layout_gravity="center"
+            android:orientation="vertical">
             <io.github.kexanie.library.MathView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/question_latex"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:id="@+id/question_math_view"/>
 
             <TextView
-                android:layout_width="match_parent"
                 style="@style/question_no_latex"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:id="@+id/question_text_view"/>
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/question_text_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:id="@+id/question_image"
                 android:visibility="gone"/>
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!--
 
@@ -118,23 +128,118 @@
             android:fontFamily="@font/roboto"
             />
 
-        <TextView
-            style="@style/exam_answer_view_theme"
-            android:id="@+id/answer_a"
-            android:text="7"/>
-        <TextView
-            style="@style/exam_answer_view_theme"
-            android:id="@+id/answer_b"
-            android:text="6"/>
-        <TextView
-            style="@style/exam_answer_view_theme"
-            android:id="@+id/answer_c"
-            android:text="5"/>
-        <TextView
-            style="@style/exam_answer_view_theme"
-            android:id="@+id/answer_d"
-            android:layout_marginBottom="25dp"
-            android:text="4"/>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:padding="25dp"
+            android:background="@drawable/exam_question_cards"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+            <io.github.kexanie.library.MathView
+                style="@style/question_latex"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/answer_a_math"/>
+
+            <TextView
+                style="@style/question_no_latex"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/answer_a_text"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:padding="25dp"
+            android:background="@drawable/exam_question_cards"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+            <io.github.kexanie.library.MathView
+                style="@style/question_latex"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/answer_b_math"/>
+
+            <TextView
+                style="@style/question_no_latex"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/answer_b_text"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:padding="25dp"
+            android:background="@drawable/exam_question_cards"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+            <io.github.kexanie.library.MathView
+                style="@style/question_latex"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/answer_c_math"/>
+
+            <TextView
+                style="@style/question_no_latex"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/answer_c_text"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:padding="25dp"
+            android:background="@drawable/exam_question_cards"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+            <io.github.kexanie.library.MathView
+                style="@style/question_latex"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/answer_d_math"/>
+
+            <TextView
+                style="@style/question_no_latex"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/answer_d_text"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </LinearLayout>
