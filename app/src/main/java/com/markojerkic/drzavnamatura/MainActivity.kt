@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
     // Map subject to the set of available years
     private val years = HashMap<String, TreeSet<String>>()
     // List of questions in the database
-    private val questions = ArrayList<HashMap<String, Any>>()
+    private val questions = ArrayList<Question>()
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,17 +47,17 @@ class MainActivity : AppCompatActivity() {
                 val data = r.data
 
                 // Add question to the list
-                questions.add(data as HashMap<String, Any>)
-                subjects.add(data["subject"].toString())
+                questions.add(Question(data as Map<String, Any>))
+                subjects.add(questions.last().subject)
 
                 // If no exams have been assigned to the subject, create new tree set
                 // If there is already a tree set, just add the value
-                if (years[data["subject"].toString()] != null)
-                    years[data["subject"]]!!.add(data["year"].toString())
+                if (years[questions.last().subject] != null)
+                    years[questions.last().subject]!!.add(questions.last().year)
                 else {
                     val tempTreeSet = TreeSet<String>()
-                    tempTreeSet.add(data["year"].toString())
-                    years[data["subject"].toString()] = tempTreeSet
+                    tempTreeSet.add(questions.last().year)
+                    years[questions.last().subject] = tempTreeSet
                 }
             }
 
@@ -130,11 +130,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun getExamQuestion(chosenYear: String, chosenSubject: String): ArrayList<HashMap<String, Any>> {
-        val examQuestion = ArrayList<HashMap<String, Any>>()
+    private fun getExamQuestion(chosenYear: String, chosenSubject: String): ArrayList<Question> {
+        val examQuestion = ArrayList<Question>()
 
         for (question in questions) {
-            if (question["year"] == chosenYear && question["subject"] == chosenSubject)
+            if (question.year == chosenYear && question.subject == chosenSubject)
                 examQuestion.add(question)
         }
         return examQuestion

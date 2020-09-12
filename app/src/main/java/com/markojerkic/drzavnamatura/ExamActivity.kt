@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.ViewSwitcher
 import androidx.appcompat.app.AppCompatActivity
 import io.github.kexanie.library.MathView
 
@@ -30,14 +31,17 @@ class ExamActivity : AppCompatActivity() {
     private val nextQuestion by lazy { findViewById<ImageView>(R.id.next_question) }
     private val previousQuestion by lazy { findViewById<ImageView>(R.id.previous_question) }
     private val questionCounterTextView by lazy { findViewById<TextView>(R.id.question_counter) }
+    // ViewSwitcher for changing between types of answer entries
+    private val viewSwitcher by lazy { findViewById<ViewSwitcher>(R.id.question_view_switcher) }
+    private var answerType = AnswerType.ABCD
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exam)
 
         // Get questions for the exam
-        val questions: ArrayList<HashMap<String, Any>> =
-            intent.extras!!["questions"] as ArrayList<HashMap<String, Any>>
+        val questions: ArrayList<Question> =
+            intent.extras!!["questions"] as ArrayList<Question>
 
         Log.d("questions", questions.toString())
 
@@ -57,7 +61,7 @@ class ExamActivity : AppCompatActivity() {
         questionCounterTextView.text = "Pitanje ${counter+1} / $total"
     }
 
-    private fun nextQuestion(questions: ArrayList<java.util.HashMap<String, Any>>) {
+    private fun nextQuestion(questions: ArrayList<Question>) {
         // If all questions have been answered, returni
         if (counter >= questions.size-1)
             return
@@ -68,7 +72,7 @@ class ExamActivity : AppCompatActivity() {
         setQuestion(currQuestion, questions.size)
     }
 
-    private fun previousQuestion(questions: ArrayList<java.util.HashMap<String, Any>>) {
+    private fun previousQuestion(questions: ArrayList<Question>) {
         // If counter is at first question, return
         if (counter <= 0)
             return
@@ -79,56 +83,70 @@ class ExamActivity : AppCompatActivity() {
         setQuestion(currQuestion, questions.size)
     }
 
-    private fun setQuestion(currQuestion: java.util.HashMap<String, Any>, total: Int) {
+    private fun setQuestion(currQuestion: Question, total: Int) {
         // If question contains latex, display in math view, else display text view
-        if (currQuestion["question"].toString().contains("\\(")) {
-            questionMathView.text = currQuestion["question"].toString()
+        if (currQuestion.question.contains("\\(")) {
+            questionMathView.text = currQuestion.question
             questionMathView.visibility = View.VISIBLE
             questionTextView.visibility = View.GONE
         } else {
-            questionTextView.text = currQuestion["question"].toString()
+            questionTextView.text = currQuestion.question
             questionTextView.visibility = View.VISIBLE
             questionMathView.visibility = View.GONE
         }
-        // Answer a
-        if (!currQuestion["ansA"].toString().contains("\\(")) {
-            ansAText.text = currQuestion["ansA"].toString()
-            ansAText.visibility = View.VISIBLE
-            ansAMath.visibility = View.GONE
+        // If question type is ABCD
+        if (currQuestion.typeOfAnswer == AnswerType.ABCD) {
+            // If current answer type is not ABCD, then switch the view back to ABCD answers
+            if (answerType != AnswerType.ABCD) {
+                viewSwitcher.showNext()
+                answerType = AnswerType.ABCD
+            }
+            // Answer a
+            if (!currQuestion.ansA.contains("\\(")) {
+                ansAText.text = currQuestion.ansA
+                ansAText.visibility = View.VISIBLE
+                ansAMath.visibility = View.GONE
+            } else {
+                ansAMath.text = currQuestion.ansA
+                ansAMath.visibility = View.VISIBLE
+                ansAText.visibility = View.GONE
+            }
+            // Answer b
+            if (!currQuestion.ansB.contains("\\(")) {
+                ansBText.text = currQuestion.ansB
+                ansBText.visibility = View.VISIBLE
+                ansBMath.visibility = View.GONE
+            } else {
+                ansBMath.text = currQuestion.ansB
+                ansBMath.visibility = View.VISIBLE
+                ansBText.visibility = View.GONE
+            }
+            // Answer c
+            if (!currQuestion.ansC.contains("\\(")) {
+                ansCText.text = currQuestion.ansC
+                ansCText.visibility = View.VISIBLE
+                ansCMath.visibility = View.GONE
+            } else {
+                ansCMath.text = currQuestion.ansC
+                ansCMath.visibility = View.VISIBLE
+                ansCText.visibility = View.GONE
+            }
+            // Answer d
+            if (!currQuestion.ansD.contains("\\(")) {
+                ansDText.text = currQuestion.ansD
+                ansDText.visibility = View.VISIBLE
+                ansDMath.visibility = View.GONE
+            } else {
+                ansDMath.text = currQuestion.ansD
+                ansDMath.visibility = View.VISIBLE
+                ansDText.visibility = View.GONE
+            }
         } else {
-            ansAMath.text = currQuestion["ansA"].toString()
-            ansAMath.visibility = View.VISIBLE
-            ansAText.visibility = View.GONE
-        }
-        // Answer b
-        if (!currQuestion["ansB"].toString().contains("\\(")) {
-            ansBText.text = currQuestion["ansB"].toString()
-            ansBText.visibility = View.VISIBLE
-            ansBMath.visibility = View.GONE
-        } else {
-            ansBMath.text = currQuestion["ansB"].toString()
-            ansBMath.visibility = View.VISIBLE
-            ansBText.visibility = View.GONE
-        }
-        // Answer c
-        if (!currQuestion["ansC"].toString().contains("\\(")) {
-            ansCText.text = currQuestion["ansC"].toString()
-            ansCText.visibility = View.VISIBLE
-            ansCMath.visibility = View.GONE
-        } else {
-            ansCMath.text = currQuestion["ansC"].toString()
-            ansCMath.visibility = View.VISIBLE
-            ansCText.visibility = View.GONE
-        }
-        // Answer d
-        if (!currQuestion["ansD"].toString().contains("\\(")) {
-            ansDText.text = currQuestion["ansD"].toString()
-            ansDText.visibility = View.VISIBLE
-            ansDMath.visibility = View.GONE
-        } else {
-            ansDMath.text = currQuestion["ansD"].toString()
-            ansDMath.visibility = View.VISIBLE
-            ansDText.visibility = View.GONE
+            // If ViewSwitcher is displaying ABCD answer, switch to type entry answer
+            if (answerType != AnswerType.TYPE) {
+                viewSwitcher.showNext()
+                answerType = AnswerType.TYPE
+            }
         }
 
         // Set counter text
