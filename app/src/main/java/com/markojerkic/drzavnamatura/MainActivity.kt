@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         FirebaseApp.initializeApp(this)
 
         val db = Firebase.firestore
+        val storageReference = Firebase.storage.reference
 
         // TODO: Add a background view while database is being downloaded: PREUZIMANJE
         // Read questions from the database
@@ -47,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 val data = r.data
 
                 // Add question to the list
-                questions.add(Question(data as Map<String, Any>))
+                questions.add(Question(data as Map<String, Any>, r.id, storageReference))
                 subjects.add(questions.last().subject)
 
                 // If no exams have been assigned to the subject, create new tree set
