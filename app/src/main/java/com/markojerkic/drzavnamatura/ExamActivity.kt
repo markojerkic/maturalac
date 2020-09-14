@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.ViewSwitcher
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import io.github.kexanie.library.MathView
 
 class ExamActivity : AppCompatActivity() {
@@ -84,6 +85,12 @@ class ExamActivity : AppCompatActivity() {
     }
 
     private fun setQuestion(currQuestion: Question, total: Int) {
+        if (currQuestion.imgArray != null && currQuestion.imgURI != null) {
+            Glide.with(this).load(currQuestion.imgURI).into(questionImageView)
+            questionImageView.visibility = View.VISIBLE
+        } else {
+            questionImageView.visibility = View.GONE
+        }
         // If question contains latex, display in math view, else display text view
         if (currQuestion.question.contains("\\(")) {
             questionMathView.text = currQuestion.question
