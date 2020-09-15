@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 val data = r.data
 
                 // Add question to the list
-                questions.add(Question(data as Map<String, Any>, r.id, storageReference))
+                questions.add(Question(data as Map<String, Any>, r.id))
                 subjects.add(questions.last().subject)
 
                 // If no exams have been assigned to the subject, create new tree set
@@ -119,16 +119,29 @@ class MainActivity : AppCompatActivity() {
                     val chosenYear = years[subject]!!.toArray()[position]
                     val examQuestions = getExamQuestion(chosenYear as String, subject)
 
-                    // Start new activity, pass the questions through the intent
-                    val examActivityIntent = Intent(this, ExamActivity::class.java).apply {
-                        putExtra("questions", examQuestions)
-                    }
-                    startActivity(examActivityIntent)
+                    // Download images if exist
+                    val questionImages = QuestionImages(examQuestions)
+                    questionImages.checkQuestions(object: QuestionImagesProcessedCallback {
+                        @Override
+                        override fun done() {
+                            startExamActivity(examQuestions, questionImages)
+                        }
+                    })
                 }
                 // Show the dialog
                 dialog.show()
             }
         }
+
+    }
+
+    private fun startExamActivity(examQuestions: ArrayList<Question>, questionImages: QuestionImages) {
+        // Start new activity, pass the questions through the intent
+        val bundle = Bundle()
+        bundle.putSerializable("questions", examQuestions)
+        bundle.putSerializable("questionImages", questionImages)
+        val examActivityIntent = Intent(this, ExamActivity::class.java)
+        startActivity(examActivityIntent, bundle)
 
     }
 

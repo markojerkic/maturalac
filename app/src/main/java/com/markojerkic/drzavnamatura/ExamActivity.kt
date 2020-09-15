@@ -44,17 +44,20 @@ class ExamActivity : AppCompatActivity() {
         val questions: ArrayList<Question> =
             intent.extras!!["questions"] as ArrayList<Question>
 
+        // Get images for the exam
+        val questionImages: QuestionImages = intent.extras!!["questionImages"] as QuestionImages
+
         Log.d("questions", questions.toString())
 
         // Add first question
-        nextQuestion(questions)
+        nextQuestion(questions, questionImages)
 
         // Initialize next and previous question on-click action
         nextQuestion.setOnClickListener {
-            nextQuestion(questions)
+            nextQuestion(questions, questionImages)
         }
         previousQuestion.setOnClickListener {
-            previousQuestion(questions)
+            previousQuestion(questions, questionImages)
         }
     }
 
@@ -62,7 +65,7 @@ class ExamActivity : AppCompatActivity() {
         questionCounterTextView.text = "Pitanje ${counter+1} / $total"
     }
 
-    private fun nextQuestion(questions: ArrayList<Question>) {
+    private fun nextQuestion(questions: ArrayList<Question>, questionImages: QuestionImages) {
         // If all questions have been answered, returni
         if (counter >= questions.size-1)
             return
@@ -70,10 +73,10 @@ class ExamActivity : AppCompatActivity() {
         // Create instance of the current questions, increase the counter
         val currQuestion = questions[counter]
         // Set all components with proper values
-        setQuestion(currQuestion, questions.size)
+        setQuestion(currQuestion, questions.size, questionImages)
     }
 
-    private fun previousQuestion(questions: ArrayList<Question>) {
+    private fun previousQuestion(questions: ArrayList<Question>, questionImages: QuestionImages) {
         // If counter is at first question, return
         if (counter <= 0)
             return
@@ -81,12 +84,12 @@ class ExamActivity : AppCompatActivity() {
         // Create instance of the current questions, increase the counter
         val currQuestion = questions[counter]
         // Set all components with proper values
-        setQuestion(currQuestion, questions.size)
+        setQuestion(currQuestion, questions.size, questionImages)
     }
 
-    private fun setQuestion(currQuestion: Question, total: Int) {
-        if (currQuestion.imgArray != null && currQuestion.imgURI != null) {
-            Glide.with(this).load(currQuestion.imgURI).into(questionImageView)
+    private fun setQuestion(currQuestion: Question, total: Int, questionImages: QuestionImages) {
+        if (questionImages.images.containsKey(currQuestion.id) && currQuestion.imgURI != null) {
+            Glide.with(this).load(questionImages.images[currQuestion.id]).into(questionImageView)
             questionImageView.visibility = View.VISIBLE
         } else {
             questionImageView.visibility = View.GONE

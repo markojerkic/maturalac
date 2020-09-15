@@ -1,10 +1,11 @@
 package com.markojerkic.drzavnamatura
 
 import android.util.Log
-import com.google.firebase.storage.StorageReference
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import java.io.Serializable
 
-class Question (private val questionMap: Map<String, Any>, val id: String, val storage: StorageReference): Serializable {
+class Question (private val questionMap: Map<String, Any>, val id: String): Serializable {
     val question = questionMap["question"].toString()
     val ansA = questionMap["ansA"].toString()
     val ansB = questionMap["ansB"].toString()
@@ -16,11 +17,12 @@ class Question (private val questionMap: Map<String, Any>, val id: String, val s
     val year = questionMap["year"].toString()
     val imgURI = checkForImage()
     var givenAns = String()
-    lateinit var imgArray: ByteArray
 
-    init {
+    fun checkImageDownload(callback: ImageDownloadCallback) {
         if(imgURI != null && imgURI.split(" ").size < 2) {
-            downloadImg()
+            downloadImg(callback)
+        } else {
+            callback.negativeCallBack()
         }
     }
 
@@ -48,11 +50,13 @@ class Question (private val questionMap: Map<String, Any>, val id: String, val s
         return null
     }
 
-    private fun downloadImg() {
+    private fun downloadImg(callback: ImageDownloadCallback) {
         val ONE_MEGABYTE: Long = 1024*1024
-        storage.child(this.imgURI!!).getBytes(ONE_MEGABYTE).addOnSuccessListener { ba ->
+        Firebase.storage.reference.child(this.imgURI!!).getBytes(ONE_MEGABYTE).addOnSuccessListener { ba ->
             Log.d("image", ba.contentToString())
-            imgArray = ba
+            callback.positiveCallBack(ba)
         }
+            .addOnCanceledListener { callback.negativeCallBack() }
+            .addOnFailureListener{callback.negativeCallBack()}
     }
 }
