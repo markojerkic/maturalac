@@ -137,11 +137,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun startExamActivity(examQuestions: ArrayList<Question>, questionImages: QuestionImages) {
         // Start new activity, pass the questions through the intent
-        val bundle = Bundle()
-        bundle.putSerializable("questions", examQuestions)
-        bundle.putSerializable("questionImages", questionImages)
-        val examActivityIntent = Intent(this, ExamActivity::class.java)
-        startActivity(examActivityIntent, bundle)
+        val examActivityIntent = Intent(this, ExamActivity::class.java).apply {
+            putExtra("questions", examQuestions)
+        }
+        startActivity(examActivityIntent)
 
     }
 
