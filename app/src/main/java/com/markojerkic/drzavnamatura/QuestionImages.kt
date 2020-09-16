@@ -16,7 +16,7 @@ class QuestionImages(private val questions: ArrayList<Question>): Serializable {
                   questionsImagesDownloaded++
                   // If number of images processed equal to number of questions sent
                   // Mark as done
-                  if (questionsImagesDownloaded == questions.size-1)
+                  if (questionsImagesDownloaded == questions.size)
                       imagesProcessedCallback.done()
               }
 
@@ -25,7 +25,7 @@ class QuestionImages(private val questions: ArrayList<Question>): Serializable {
                   questionsImagesDownloaded++
                   // If number of images processed equal to number of questions sent
                   // Mark as done<
-                  if (questionsImagesDownloaded == questions.size-1)
+                  if (questionsImagesDownloaded == questions.size)
                       imagesProcessedCallback.done()
               }
           })

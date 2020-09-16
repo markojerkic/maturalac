@@ -4,9 +4,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.ViewSwitcher
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
 import io.github.kexanie.library.MathView
 
@@ -33,7 +34,10 @@ class ExamActivity : AppCompatActivity() {
     private val previousQuestion by lazy { findViewById<ImageView>(R.id.previous_question) }
     private val questionCounterTextView by lazy { findViewById<TextView>(R.id.question_counter) }
     // ViewSwitcher for changing between types of answer entries
-    private val viewSwitcher by lazy { findViewById<ViewSwitcher>(R.id.question_view_switcher) }
+    private val answerBarConstraintLayout by lazy { findViewById<ConstraintLayout>(R.id.question_type_switcher_constraint_layout) }
+    private val abcdAnswerBar by lazy { findViewById<LinearLayout>(R.id.abcd_answer_constraint_layout) }
+    private val typeAnswerBar by lazy { findViewById<LinearLayout>(R.id.type_answer_constraint_layout) }
+    private val longAnswerBar by lazy { findViewById<LinearLayout>(R.id.long_answer_constraint_layout) }
     private var answerType = AnswerType.ABCD
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,7 +92,9 @@ class ExamActivity : AppCompatActivity() {
     }
 
     private fun setQuestion(currQuestion: Question, total: Int, imagesSingleton: ImagesSingleton) {
-        if (imagesSingleton.containsKey(currQuestion.id) && currQuestion.imgURI != null) {
+        if (imagesSingleton.containsKey(currQuestion.id)
+            && currQuestion.imgURI != null
+            && currQuestion.typeOfAnswer != AnswerType.LONG) {
             Glide.with(this).load(imagesSingleton.getByteArray(currQuestion.id)).into(questionImageView)
             questionImageView.visibility = View.VISIBLE
         } else {
@@ -108,7 +114,9 @@ class ExamActivity : AppCompatActivity() {
         if (currQuestion.typeOfAnswer == AnswerType.ABCD) {
             // If current answer type is not ABCD, then switch the view back to ABCD answers
             if (answerType != AnswerType.ABCD) {
-                viewSwitcher.showNext()
+                abcdAnswerBar.visibility = View.VISIBLE
+                typeAnswerBar.visibility = View.GONE
+                longAnswerBar.visibility = View.GONE
                 answerType = AnswerType.ABCD
             }
             // Answer a
@@ -151,11 +159,21 @@ class ExamActivity : AppCompatActivity() {
                 ansDMath.visibility = View.VISIBLE
                 ansDText.visibility = View.GONE
             }
-        } else {
-            // If ViewSwitcher is displaying ABCD answer, switch to type entry answer
+        } else if (currQuestion.typeOfAnswer == AnswerType.TYPE) {
+            // If ViewSwitcher is not displaying 'type' answer, switch to type entry answer
             if (answerType != AnswerType.TYPE) {
-                viewSwitcher.showNext()
+                typeAnswerBar.visibility = View.VISIBLE
+                abcdAnswerBar.visibility = View.GONE
+                longAnswerBar.visibility = View.GONE
                 answerType = AnswerType.TYPE
+            }
+        } else if (currQuestion.typeOfAnswer == AnswerType.LONG) {
+            // If ViewSwitcher is not displaying 'long' answer, display it
+            if (answerType != AnswerType.LONG) {
+                longAnswerBar.visibility = View.VISIBLE
+                typeAnswerBar.visibility = View.GONE
+                abcdAnswerBar.visibility = View.GONE
+                answerType = AnswerType.LONG
             }
         }
 

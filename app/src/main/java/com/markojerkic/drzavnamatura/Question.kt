@@ -12,6 +12,7 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
     val typeOfAnswer: AnswerType = findAnswerType(questionMap["typeOfAnswer"] as Long)
     val subject = questionMap["subject"].toString()
     val year = questionMap["year"].toString()
+    val questionNumber = (questionMap["questionNumber"] as Long).toInt()
     val imgURI = checkForImage()
     var givenAns = String()
 
@@ -24,9 +25,12 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
     }
 
     private fun findAnswerType(at: Long): AnswerType {
-        if (at == 0.toLong())
-            return AnswerType.ABCD
-        return AnswerType.TYPE
+        return when (at.toInt()) {
+            0 -> AnswerType.ABCD
+            1 -> AnswerType.TYPE
+            2 -> AnswerType.LONG
+            else -> AnswerType.LONG
+        }
     }
 
     private fun createImageName(): String {

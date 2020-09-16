@@ -117,14 +117,16 @@ class MainActivity : AppCompatActivity() {
                 // the chosen exam
                 examsListView.setOnItemClickListener { _, _, position, _ ->
                     val chosenYear = years[subject]!!.toArray()[position]
-                    val examQuestions = getExamQuestion(chosenYear as String, subject)
+                    val examQuestions = arrayListOf<Question>()
+                    examQuestions.addAll(getExamQuestion(chosenYear as String, subject)
+                        .sortedWith((compareBy { it -> it.questionNumber })))
 
                     // Download images if exist
                     val questionImages = QuestionImages(examQuestions)
                     questionImages.checkQuestions(object: QuestionImagesProcessedCallback {
                         @Override
                         override fun done() {
-                            startExamActivity(examQuestions, questionImages)
+                            startExamActivity(examQuestions)
                         }
                     })
                 }
@@ -135,7 +137,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun startExamActivity(examQuestions: ArrayList<Question>, questionImages: QuestionImages) {
+    private fun startExamActivity(examQuestions: ArrayList<Question>) {
         // Start new activity, pass the questions through the intent
         val examActivityIntent = Intent(this, ExamActivity::class.java).apply {
             putExtra("questions", examQuestions)

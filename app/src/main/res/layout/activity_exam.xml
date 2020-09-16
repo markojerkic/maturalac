@@ -14,6 +14,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+
+        <!-- Top bar -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -58,6 +60,7 @@
             android:layout_marginLeft="10dp"
             android:background="@color/colorSecondaryDark" />-->
 
+        <!-- Question title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,6 +70,7 @@
             android:fontFamily="@font/roboto"
             />
 
+        <!-- Question panel -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -116,20 +120,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!--
-
-        <item name="android:layout_marginLeft">15dp</item>
-        <item name="android:layout_marginRight">15dp</item>
-        <item name="android:layout_marginTop">5dp</item>
-        <item name="android:padding">25dp</item>
-        <item name="android:textSize">25sp</item>
-        <item name="android:fontFamily">@font/roboto</item>
-        <item name="android:background">@drawable/exam_question_cards</item>
-        <item name="android:gravity">center</item>
-        -->
-        <!--
-            style="@style/exam_answer_view_theme"-->
-
+        <!-- Answers title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -139,14 +130,19 @@
             android:fontFamily="@font/roboto"
             />
 
-        <ViewSwitcher
+        <!-- Answer panel -->
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/question_view_switcher">
+            android:id="@+id/question_type_switcher_constraint_layout">
+
+            <!-- ABCD answer -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/abcd_answer_linear_layout"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:id="@+id/abcd_answer_constraint_layout"
                 android:orientation="vertical">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -264,10 +260,13 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
-
+            <!-- Type answer -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:visibility="gone"
                 android:orientation="vertical"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
@@ -275,6 +274,7 @@
                 android:layout_marginTop="15dp"
                 android:background="@drawable/exam_question_cards"
                 android:padding="25dp"
+                android:id="@+id/type_answer_constraint_layout"
                 >
                 <EditText
                     android:layout_width="match_parent"
@@ -290,8 +290,32 @@
                     android:text="@string/enter_answer_explenation"/>
 
             </LinearLayout>
+            <!-- Long answer -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:visibility="gone"
+                android:orientation="vertical"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginBottom="25dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/exam_question_cards"
+                android:padding="25dp"
+                android:id="@+id/long_answer_constraint_layout"
+                >
 
-        </ViewSwitcher>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/text_style"
+                    android:text="@string/long_answer_explanation"/>
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </LinearLayout>

@@ -3,4 +3,5 @@
     <string name="what_to_study">Što danas učtiti?</string>
     <string name="insert_your_answer">Unesite vaš odgovor</string>
     <string name="enter_answer_explenation">Unesite vaše rješenje. Ako odgovor ne možemo mi provjeriti (jer je neka matematička jednadžba ili nešto sl.), onda ćemo vam prikazati točno rješenje pa ga vi usporedite sa vašim.</string>
+    <string name="long_answer_explanation">Ovo je pitanje produženog odgovora. Odgovore na takva pitanja zasad ne možemo provjeriti. Vi zapišite rješenje na papir, pa ćemo vam mi pokazati točno rješenje tijekom ocjenjivanja te sami procijenite jeste li točno odgovorili ili ne.</string>
 </resources>
