@@ -1,8 +1,5 @@
 package com.markojerkic.drzavnamatura
 
-import android.util.Log
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import java.io.Serializable
 
 class Question (private val questionMap: Map<String, Any>, val id: String): Serializable {
@@ -51,12 +48,7 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
     }
 
     private fun downloadImg(callback: ImageDownloadCallback) {
-        val ONE_MEGABYTE: Long = 1024*1024
-        Firebase.storage.reference.child(this.imgURI!!).getBytes(ONE_MEGABYTE).addOnSuccessListener { ba ->
-            Log.d("image", ba.contentToString())
-            callback.positiveCallBack(ba)
-        }
-            .addOnCanceledListener { callback.negativeCallBack() }
-            .addOnFailureListener{callback.negativeCallBack()}
+        val imgSingleton = ImagesSingleton
+        imgSingleton.downloadImg(this, callback)
     }
 }

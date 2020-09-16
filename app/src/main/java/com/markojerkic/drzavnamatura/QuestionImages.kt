@@ -12,8 +12,7 @@ class QuestionImages(private val questions: ArrayList<Question>): Serializable {
         for (question in questions) {
           question.checkImageDownload(object: ImageDownloadCallback {
               @Override
-              override fun positiveCallBack(byteArray: ByteArray) {
-                  imageSingleton.add(question.id, byteArray)
+              override fun positiveCallBack() {
                   questionsImagesDownloaded++
                   // If number of images processed equal to number of questions sent
                   // Mark as done

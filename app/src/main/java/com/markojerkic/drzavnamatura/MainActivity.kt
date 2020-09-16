@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Create onclick listener which will open new activity qith questions from
                 // the chosen exam
-                examsListView.setOnItemClickListener {parent, view, position, id ->
+                examsListView.setOnItemClickListener { _, _, position, _ ->
                     val chosenYear = years[subject]!!.toArray()[position]
                     val examQuestions = getExamQuestion(chosenYear as String, subject)
 
