@@ -3,10 +3,7 @@ package com.markojerkic.drzavnamatura
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
@@ -49,11 +46,16 @@ class ExamActivity : AppCompatActivity() {
     private val longAnswerBar by lazy { findViewById<LinearLayout>(R.id.long_answer_constraint_layout) }
     // Type answer EditText
     private val typeAnswerEditText by lazy { findViewById<EditText>(R.id.type_answer_edit_text) }
+    private val typeAnswerCorrectText by lazy { findViewById<TextView>(R.id.type_ans_correct_ans)}
     private var answerType = AnswerType.ABCD
     // Answers collection
     val answers = Answers()
     // Questions array list
     val questions = arrayListOf<Question>()
+    // Grade button
+    private val gradeButton by lazy { findViewById<Button>(R.id.grade_button) }
+    // State of exam: WORK (still doing the exam), GRADING (exam finished, looking over the resutls)
+    private var examState: ExamState = ExamState.WORKING
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,6 +89,32 @@ class ExamActivity : AppCompatActivity() {
             setTypeAnswer()
             previousQuestion(imagesSingleton)
         }
+
+        // Add onClickListener for the grade button
+        gradeButton.setOnClickListener {
+            setTypeAnswer()
+            gradeExam()
+        }
+    }
+
+    private fun gradeExam() {
+        Log.i("garde", "exam")
+        val abcdAnswers = answers.getABCDAnswers()
+        examState = ExamState.GRADING
+        // Reset counter to 1 (start again from the first question)
+        counter = 0
+        disableAnswers()
+        setQuestion(questions[counter], questions.size, ImagesSingleton)
+    }
+
+    private fun disableAnswers() {
+        ansABox.isClickable = false
+        ansBBox.isClickable = false
+        ansCBox.isClickable = false
+        ansDBox.isClickable = false
+        gradeButton.isClickable = false
+        //typeAnswerEditText.inputType = InputType.TYPE_NULL
+        typeAnswerEditText.isEnabled = false
     }
 
     private fun setTypeAnswer() {
@@ -150,6 +178,17 @@ class ExamActivity : AppCompatActivity() {
         i3.setBackgroundResource(R.drawable.exam_question_cards)
     }
 
+    private fun setCorrectABCD(correct: View, i1: View, i2: View, i3: View) {
+        correct.setBackgroundResource(R.drawable.exam_card_green)
+        i1.setBackgroundResource(R.drawable.exam_question_cards)
+        i2.setBackgroundResource(R.drawable.exam_question_cards)
+        i3.setBackgroundResource(R.drawable.exam_question_cards)
+    }
+
+    private fun setWrongABCD(wrong: View) {
+        wrong.setBackgroundResource(R.drawable.exam_card_red)
+    }
+
     private fun setCounterTextView(total: Int) {
         questionCounterTextView.text = "Pitanje ${counter+1} / $total"
     }
@@ -205,10 +244,11 @@ class ExamActivity : AppCompatActivity() {
                 answerType = AnswerType.ABCD
             }
             // Set if answer if given
-            if (answers.containsAnswer(currQuestion))
-                setABCDAnswerClickedState(answers.getAns(currQuestion) as Int)
-            else clearABCDBoxes()
-
+            if (examState == ExamState.WORKING) {
+                if (answers.containsAnswer(currQuestion))
+                    setABCDAnswerClickedState(answers.getAns(currQuestion) as Int)
+                else clearABCDBoxes()
+            }
             // Answer a
             if (!currQuestion.ansA.contains("\\(")) {
                 ansAText.text = currQuestion.ansA
@@ -249,6 +289,9 @@ class ExamActivity : AppCompatActivity() {
                 ansDMath.visibility = View.VISIBLE
                 ansDText.visibility = View.GONE
             }
+            if (examState == ExamState.GRADING) {
+                gradeABCD(currQuestion)
+            }
         } else if (currQuestion.typeOfAnswer == AnswerType.TYPE) {
             // If ViewSwitcher is not displaying 'type' answer, switch to type entry answer
             if (answerType != AnswerType.TYPE) {
@@ -259,9 +302,14 @@ class ExamActivity : AppCompatActivity() {
             }
             // Set EditText text if already given
             if (answers.containsAnswer(currQuestion))
-                typeAnswerEditText.setText(answers.getAns(currQuestion).toString())
+                typeAnswerEditText.setText(answers.getAns(currQuestion) as String)
             else
                 typeAnswerEditText.setText("")
+
+            if (examState == ExamState.GRADING) {
+                typeAnswerCorrectText.visibility = View.VISIBLE
+                typeAnswerCorrectText.text = "Točan odgovor:\n" + currQuestion.ansA
+            }
         } else if (currQuestion.typeOfAnswer == AnswerType.LONG) {
             // If ViewSwitcher is not displaying 'long' answer, display it
             if (answerType != AnswerType.LONG) {
@@ -274,5 +322,35 @@ class ExamActivity : AppCompatActivity() {
 
         // Set counter text
         setCounterTextView(total)
+    }
+
+    private fun gradeABCD(currQuestion: Question) {
+        if (answers.containsAnswer(currQuestion)) {
+            val ans = answers.getAns(currQuestion) as Int
+            checkCorrectAns(ans, currQuestion)
+        } else {
+            setCorrectABCDAns(currQuestion.correctAns.toInt())
+        }
+    }
+
+    private fun setCorrectABCDAns(correctAns: Int) {
+        when (correctAns) {
+            0 -> setCorrectABCD(ansABox, ansBBox, ansCBox, ansDBox)
+            1 -> setCorrectABCD(ansBBox, ansABox, ansCBox, ansDBox)
+            2 -> setCorrectABCD(ansCBox, ansBBox, ansABox, ansDBox)
+            3 -> setCorrectABCD(ansDBox, ansBBox, ansCBox, ansABox)
+        }
+    }
+
+    private fun checkCorrectAns(ans: Int, currQuestion: Question) {
+        setCorrectABCDAns(currQuestion.correctAns.toInt())
+        if (ans != currQuestion.correctAns.toInt()) {
+            when (ans) {
+                0 -> setWrongABCD(ansABox)
+                1 -> setWrongABCD(ansBBox)
+                2 -> setWrongABCD(ansCBox)
+                3 -> setWrongABCD(ansDBox)
+            }
+        }
     }
 }

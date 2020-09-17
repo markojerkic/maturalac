@@ -1,8 +1,8 @@
 package com.markojerkic.drzavnamatura
 
 class Answers {
-    val abcdAnswers = HashMap<String, Int>()
-    val typeAnswers = HashMap<String, String>()
+    private val abcdAnswers = HashMap<String, Int>()
+    private val typeAnswers = HashMap<String, String>()
 
     // Add abcd answer
     fun add(question: Question, ans: Int) {
@@ -28,5 +28,9 @@ class Answers {
         else if (question.typeOfAnswer == AnswerType.TYPE)
             return typeAnswers[question.id]
         return null
+    }
+
+    fun getABCDAnswers(): HashMap<String, Int> {
+        return abcdAnswers
     }
 }

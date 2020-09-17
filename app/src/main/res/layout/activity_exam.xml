@@ -12,6 +12,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="25dp"
         android:orientation="vertical">
 
 
@@ -134,7 +135,6 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="25dp"
             android:id="@+id/question_type_switcher_constraint_layout">
 
             <!-- ABCD answer -->
@@ -299,6 +299,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="25dp"
+                    android:layout_marginBottom="25dp"
+                    style="@style/text_style"
+                    android:layout_gravity="center"
+                    android:id="@+id/type_ans_correct_ans"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
                     style="@style/text_style"
                     android:text="@string/enter_answer_explenation"/>
 
@@ -329,6 +339,15 @@
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ocjeni"
+            android:layout_margin="15dp"
+            android:layout_gravity="end"
+            android:id="@+id/grade_button"
+            android:background="@drawable/exam_question_cards"/>
 
 
     </LinearLayout>
