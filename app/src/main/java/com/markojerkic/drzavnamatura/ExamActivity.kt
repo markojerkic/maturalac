@@ -3,6 +3,7 @@ package com.markojerkic.drzavnamatura
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -19,6 +20,14 @@ class ExamActivity : AppCompatActivity() {
     // Find elements
     private val questionTextView by lazy { findViewById<TextView>(R.id.question_text_view) }
     private val questionImageView by lazy { findViewById<ImageView>(R.id.question_image) }
+
+    // ABCD answer boxes
+    private val ansABox by lazy { findViewById<ConstraintLayout>(R.id.ans_a_box) }
+    private val ansBBox by lazy { findViewById<ConstraintLayout>(R.id.ans_b_box) }
+    private val ansCBox by lazy { findViewById<ConstraintLayout>(R.id.ans_c_box) }
+    private val ansDBox by lazy { findViewById<ConstraintLayout>(R.id.ans_d_box) }
+
+    //Text views
     private val ansAText by lazy { findViewById<TextView>(R.id.answer_a_text) }
     private val ansBText by lazy { findViewById<TextView>(R.id.answer_b_text) }
     private val ansCText by lazy { findViewById<TextView>(R.id.answer_c_text) }
@@ -38,15 +47,23 @@ class ExamActivity : AppCompatActivity() {
     private val abcdAnswerBar by lazy { findViewById<LinearLayout>(R.id.abcd_answer_constraint_layout) }
     private val typeAnswerBar by lazy { findViewById<LinearLayout>(R.id.type_answer_constraint_layout) }
     private val longAnswerBar by lazy { findViewById<LinearLayout>(R.id.long_answer_constraint_layout) }
+    // Type answer EditText
+    private val typeAnswerEditText by lazy { findViewById<EditText>(R.id.type_answer_edit_text) }
     private var answerType = AnswerType.ABCD
+    // Answers collection
+    val answers = Answers()
+    // Questions array list
+    val questions = arrayListOf<Question>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exam)
 
         // Get questions for the exam
-        val questions: ArrayList<Question> =
+        val tempQ: ArrayList<Question> =
             intent.extras!!["questions"] as ArrayList<Question>
+        // Set current question
+        questions.addAll(tempQ)
 
         // Get images for the exam
         val imagesSingleton = ImagesSingleton
@@ -54,14 +71,49 @@ class ExamActivity : AppCompatActivity() {
         Log.d("questions", questions.toString())
 
         // Add first question
-        nextQuestion(questions, imagesSingleton)
+        nextQuestion(imagesSingleton)
+
+        // Set abcd answer click listeners
+        setABCDOnClickListeners()
+        // Set type answer update listener
+        setTypeAnswer()
 
         // Initialize next and previous question on-click action
         nextQuestion.setOnClickListener {
-            nextQuestion(questions, imagesSingleton)
+            setTypeAnswer()
+            nextQuestion(imagesSingleton)
         }
         previousQuestion.setOnClickListener {
-            previousQuestion(questions, imagesSingleton)
+            setTypeAnswer()
+            previousQuestion(imagesSingleton)
+        }
+    }
+
+    private fun setTypeAnswer() {
+        // When previous or next question buttons are clicked,
+        // then check if current question's answer is of type 'TYPE'
+        // If yes, then add it to answers
+        if (questions[counter].typeOfAnswer == AnswerType.TYPE) {
+            answers.add(questions[counter], typeAnswerEditText.text.toString())
+        }
+    }
+
+    private fun setABCDOnClickListeners() {
+        ansABox.setOnClickListener {
+            if (questions[counter].typeOfAnswer == AnswerType.ABCD)
+                answers.add(questions[counter], 0)
+        }
+        ansBBox.setOnClickListener {
+            if (questions[counter].typeOfAnswer == AnswerType.ABCD)
+                answers.add(questions[counter], 1)
+        }
+        ansCBox.setOnClickListener {
+            if (questions[counter].typeOfAnswer == AnswerType.ABCD)
+                answers.add(questions[counter], 2)
+        }
+        ansDBox.setOnClickListener {
+            if (questions[counter].typeOfAnswer == AnswerType.ABCD)
+                answers.add(questions[counter], 3)
         }
     }
 
@@ -69,8 +121,8 @@ class ExamActivity : AppCompatActivity() {
         questionCounterTextView.text = "Pitanje ${counter+1} / $total"
     }
 
-    private fun nextQuestion(questions: ArrayList<Question>, imagesSingleton: ImagesSingleton) {
-        // If all questions have been answered, returni
+    private fun nextQuestion(imagesSingleton: ImagesSingleton) {
+        // If all questions have been answered, return
         if (counter >= questions.size-1)
             return
         counter++
@@ -80,7 +132,7 @@ class ExamActivity : AppCompatActivity() {
         setQuestion(currQuestion, questions.size, imagesSingleton)
     }
 
-    private fun previousQuestion(questions: ArrayList<Question>, imagesSingleton: ImagesSingleton) {
+    private fun previousQuestion(imagesSingleton: ImagesSingleton) {
         // If counter is at first question, return
         if (counter <= 0)
             return
@@ -167,6 +219,11 @@ class ExamActivity : AppCompatActivity() {
                 longAnswerBar.visibility = View.GONE
                 answerType = AnswerType.TYPE
             }
+            // Set EditText text if already given
+            if (answers.containsAnswer(currQuestion))
+                typeAnswerEditText.setText(answers.getAns(currQuestion).toString())
+            else
+                typeAnswerEditText.setText("")
         } else if (currQuestion.typeOfAnswer == AnswerType.LONG) {
             // If ViewSwitcher is not displaying 'long' answer, display it
             if (answerType != AnswerType.LONG) {

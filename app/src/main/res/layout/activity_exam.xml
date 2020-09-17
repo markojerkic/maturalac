@@ -145,6 +145,7 @@
                 android:id="@+id/abcd_answer_constraint_layout"
                 android:orientation="vertical">
 
+                <!-- Ans A -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -155,6 +156,7 @@
                     android:padding="25dp"
                     android:background="@drawable/exam_question_cards"
                     android:layout_gravity="center"
+                    android:id="@+id/ans_a_box"
                     android:orientation="vertical">
                     <io.github.kexanie.library.MathView
                         style="@style/question_latex"
@@ -173,6 +175,8 @@
                         android:id="@+id/answer_a_text"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Asn B -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -183,6 +187,7 @@
                     android:padding="25dp"
                     android:background="@drawable/exam_question_cards"
                     android:layout_gravity="center"
+                    android:id="@+id/ans_b_box"
                     android:orientation="vertical">
                     <io.github.kexanie.library.MathView
                         style="@style/question_latex"
@@ -201,6 +206,8 @@
                         android:id="@+id/answer_b_text"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Ans C -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -211,6 +218,7 @@
                     android:padding="25dp"
                     android:background="@drawable/exam_question_cards"
                     android:layout_gravity="center"
+                    android:id="@+id/ans_c_box"
                     android:orientation="vertical">
                     <io.github.kexanie.library.MathView
                         style="@style/question_latex"
@@ -229,6 +237,8 @@
                         android:id="@+id/answer_c_text"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Ans D -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -240,6 +250,7 @@
                     android:padding="25dp"
                     android:background="@drawable/exam_question_cards"
                     android:layout_gravity="center"
+                    android:id="@+id/ans_d_box"
                     android:orientation="vertical">
                     <io.github.kexanie.library.MathView
                         style="@style/question_latex"
@@ -280,6 +291,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:lines="2"
+                    android:id="@+id/type_answer_edit_text"
                     android:hint="@string/insert_your_answer"/>
 
                 <TextView
