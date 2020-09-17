@@ -14,14 +14,24 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
     val year = questionMap["year"].toString()
     val questionNumber = (questionMap["questionNumber"] as Long).toInt()
     val imgURI = checkForImage()
+    val ansImg = checkForAnswerImage()
     var givenAns = String()
 
     fun checkImageDownload(callback: ImageDownloadCallback) {
-        if(imgURI != null && imgURI.split(" ").size < 2) {
-            downloadImg(callback)
+        if (imgURI != null || ansImg!= null) {
+            if (imgURI != null)
+                downloadImg(callback)
+            if (ansImg != null) {
+                downloadAnsImg()
+            }
         } else {
             callback.negativeCallBack()
         }
+    }
+
+    private fun downloadAnsImg() {
+        val imgSingleton = ImagesSingleton
+        imgSingleton.downloadAnsImg(this)
     }
 
     private fun findAnswerType(at: Long): AnswerType {
@@ -47,6 +57,15 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
         // Also download the image
         if (questionMap.containsKey("imageURI")){
             return questionMap["imageURI"].toString() + ".png"
+        }
+        return null
+    }
+
+    private fun checkForAnswerImage(): String? {
+        // If question map contains answer image uri, get it and return it
+        // Also download the image
+        if (questionMap.containsKey("ansImg")){
+            return questionMap["ansImg"].toString() + ".png"
         }
         return null
     }

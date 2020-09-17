@@ -6,8 +6,6 @@ class QuestionImages(private val questions: ArrayList<Question>): Serializable {
     var questionsImagesDownloaded = 0
 
     fun checkQuestions(imagesProcessedCallback: QuestionImagesProcessedCallback) {
-        // Get instance of ImageSingleton
-        val imageSingleton = ImagesSingleton
         // As Images are downloaded add them to the map
         for (question in questions) {
           question.checkImageDownload(object: ImageDownloadCallback {
