@@ -100,21 +100,54 @@ class ExamActivity : AppCompatActivity() {
 
     private fun setABCDOnClickListeners() {
         ansABox.setOnClickListener {
-            if (questions[counter].typeOfAnswer == AnswerType.ABCD)
+            if (questions[counter].typeOfAnswer == AnswerType.ABCD) {
                 answers.add(questions[counter], 0)
+                setABCDAnswerClickedState(0)
+            }
         }
         ansBBox.setOnClickListener {
-            if (questions[counter].typeOfAnswer == AnswerType.ABCD)
+            if (questions[counter].typeOfAnswer == AnswerType.ABCD) {
                 answers.add(questions[counter], 1)
+                setABCDAnswerClickedState(1)
+            }
         }
         ansCBox.setOnClickListener {
-            if (questions[counter].typeOfAnswer == AnswerType.ABCD)
+            if (questions[counter].typeOfAnswer == AnswerType.ABCD) {
                 answers.add(questions[counter], 2)
+                setABCDAnswerClickedState(2)
+            }
         }
         ansDBox.setOnClickListener {
-            if (questions[counter].typeOfAnswer == AnswerType.ABCD)
+            if (questions[counter].typeOfAnswer == AnswerType.ABCD) {
                 answers.add(questions[counter], 3)
+                setABCDAnswerClickedState(3)
+            }
         }
+    }
+
+    // Set background color of answer box
+    private fun setABCDAnswerClickedState(ans: Int) {
+        when (ans) {
+            0 -> colorBoxes(ansABox, ansBBox, ansCBox, ansDBox)
+            1 -> colorBoxes(ansBBox, ansABox, ansCBox, ansDBox)
+            2 -> colorBoxes(ansCBox, ansABox, ansBBox, ansDBox)
+            3 -> colorBoxes(ansDBox, ansABox, ansBBox, ansCBox)
+            else -> clearABCDBoxes()
+        }
+    }
+
+    private fun clearABCDBoxes() {
+        ansABox.setBackgroundResource(R.drawable.exam_question_cards)
+        ansBBox.setBackgroundResource(R.drawable.exam_question_cards)
+        ansCBox.setBackgroundResource(R.drawable.exam_question_cards)
+        ansDBox.setBackgroundResource(R.drawable.exam_question_cards)
+    }
+
+    private fun colorBoxes (correct: View, i1: View, i2: View, i3: View) {
+        correct.setBackgroundResource(R.drawable.exam_card_clicked)
+        i1.setBackgroundResource(R.drawable.exam_question_cards)
+        i2.setBackgroundResource(R.drawable.exam_question_cards)
+        i3.setBackgroundResource(R.drawable.exam_question_cards)
     }
 
     private fun setCounterTextView(total: Int) {
@@ -171,6 +204,11 @@ class ExamActivity : AppCompatActivity() {
                 longAnswerBar.visibility = View.GONE
                 answerType = AnswerType.ABCD
             }
+            // Set if answer if given
+            if (answers.containsAnswer(currQuestion))
+                setABCDAnswerClickedState(answers.getAns(currQuestion) as Int)
+            else clearABCDBoxes()
+
             // Answer a
             if (!currQuestion.ansA.contains("\\(")) {
                 ansAText.text = currQuestion.ansA
