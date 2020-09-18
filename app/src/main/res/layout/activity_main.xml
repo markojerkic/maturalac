@@ -49,7 +49,7 @@
                     android:layout_marginTop="10dp"
                     android:fontFamily="@font/roboto"
                     android:textColor="@color/colorSecondaryLight"
-                    android:text="Marko"
+                    android:text="Korisnik"
                     android:textSize="35sp"
                     android:textStyle="bold"
                     android:id="@+id/username_textview"
@@ -61,12 +61,35 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Što li danas učiti?"
+                android:text="@string/what_to_study_title"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:fontFamily="@font/roboto"
                 android:textColor="#000"
                 android:padding="20dp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/loading_subjects_icon"
+                android:layout_marginBottom="25dp"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
+                    android:src="@drawable/shrugged"
+                    android:layout_gravity="center"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="35dp"
+                    android:paddingRight="35dp"
+                    android:layout_gravity="center"
+                    style="@style/text_style"
+                    android:text="@string/loading_subjects"/>
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

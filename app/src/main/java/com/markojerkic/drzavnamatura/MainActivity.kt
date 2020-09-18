@@ -10,10 +10,8 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.widget.LinearLayout
-import android.widget.ListView
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.FirebaseApp
@@ -32,6 +30,11 @@ class MainActivity : AppCompatActivity() {
     private val years = HashMap<String, TreeSet<String>>()
     // List of questions in the database
     private val questions = ArrayList<Question>()
+    // Icon which is shown while subjects are downloaded
+    private val downloadingIcon by lazy { findViewById<LinearLayout>(R.id.loading_subjects_icon) }
+    // Name TextView
+    private val nameTextView by lazy { findViewById<TextView>(R.id.username_textview) }
+
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,12 +69,44 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            // Create test subjects for ui
+            // Remove the downloading icon and display subjects
+            downloadingIcon.visibility = View.GONE
             inflateSubjects()
         }.addOnFailureListener {e -> Log.e("Firestore exception", e.toString())}
 
+
+        // Shared preferences for storing user name
+        val sharedPreferences = this.getSharedPreferences("myprefs", 0)
+        var name = sharedPreferences.getString("name", null)
+        if (name == null) {
+            val dialog = Dialog(this)
+            dialog.setContentView(R.layout.name_enter_dialog)
+            // Background is a rectangle with rounded edges, so we have to set the
+            // "background under the background" to be transparent, or else
+            // it shows up as white edges
+            dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            val enterEditText = dialog.findViewById<EditText>(R.id.enter_name_edit_text)
+            val enterButton = dialog.findViewById<Button>(R.id.enter_name_button)
+
+            enterButton.setOnClickListener {
+                name = enterEditText.text.toString()
+                sharedPreferences.edit().putString("name", name).apply()
+                setName(name!!)
+                dialog.dismiss()
+            }
+            dialog.show()
+
+        } else {
+            setName(name!!)
+        }
+
         // Create test subjects to test the ui
         inflateSubjects()
+    }
+
+    // Set name in the title of app
+    private fun setName(name: String) {
+        nameTextView.text = name
     }
 
 

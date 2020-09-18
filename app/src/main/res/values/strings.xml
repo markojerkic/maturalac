@@ -6,4 +6,6 @@
     <string name="long_answer_explanation">Ovo je pitanje produženog odgovora. Odgovore na takva pitanja zasad ne možemo provjeriti. Vi zapišite rješenje na papir, pa ćemo vam mi pokazati točno rješenje tijekom ocjenjivanja te sami procijenite jeste li točno odgovorili ili ne.</string>
     <string name="downloading_exam_toast">Preuzimamo ispit, pričekajte malo</string>
     <string name="no_internet_toast">Nemate internetsku mrežu</string>
+    <string name="what_to_study_title">Što ćemo danas učiti?</string>
+    <string name="loading_subjects">Strpite se, učitavamo predmete. \nAko je prošlo duže vremena, provjerite svoju internetsku vezu.</string>
 </resources>
