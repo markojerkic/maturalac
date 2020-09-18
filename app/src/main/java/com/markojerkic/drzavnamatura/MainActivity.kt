@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
@@ -216,5 +217,23 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
         return true
+    }
+
+    @Override
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.info -> {
+                val infoDialog = Dialog(this)
+                infoDialog.setContentView(R.layout.about_dialog)
+                // Background is a rectangle with rounded edges, so we have to set the
+                // "background under the background" to be transparent, or else
+                // it shows up as white edges
+                infoDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                infoDialog.show()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
     }
 }

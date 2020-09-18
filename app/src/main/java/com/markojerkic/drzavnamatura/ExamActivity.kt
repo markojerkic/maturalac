@@ -118,6 +118,7 @@ class ExamActivity : AppCompatActivity() {
         ansCBox.isClickable = false
         ansDBox.isClickable = false
         gradeButton.isClickable = false
+        gradeButton.visibility = View.GONE
         //typeAnswerEditText.inputType = InputType.TYPE_NULL
         typeAnswerEditText.isEnabled = false
         // Scroll to the top

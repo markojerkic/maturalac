@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/round_rectangle_subject_list_background"
+    android:paddingLeft="25dp"
+    android:paddingRight="25dp"
+    android:paddingTop="35dp"
+    android:paddingBottom="35dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="Info"
+        style="@style/text_style"
+        android:id="@+id/info_text"
+        android:textSize="35sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/info_text"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="@string/info_name"
+        style="@style/text_style"
+        android:id="@+id/info_name"
+        android:gravity="start"
+        android:layout_marginTop="15dp"/>
+
+    <ImageView
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/ic_mail_outline_24px"
+        app:layout_constraintTop_toBottomOf="@id/info_name"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="15dp"
+        android:id="@+id/mail_icon"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="marko.jerkic@fer.hr"
+        app:layout_constraintTop_toTopOf="@id/mail_icon"
+        app:layout_constraintStart_toEndOf="@id/mail_icon"
+        app:layout_constraintBottom_toBottomOf="@id/mail_icon"
+        android:layout_marginStart="15dp"
+        style="@style/text_style"
+        />
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_instagram"
+        app:layout_constraintTop_toBottomOf="@id/mail_icon"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="15dp"
+        android:id="@+id/instagram_icon"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="jerkicmarko"
+        app:layout_constraintTop_toTopOf="@id/instagram_icon"
+        app:layout_constraintStart_toEndOf="@id/instagram_icon"
+        app:layout_constraintBottom_toBottomOf="@id/instagram_icon"
+        android:layout_marginStart="15dp"
+        style="@style/text_style"
+        />
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
