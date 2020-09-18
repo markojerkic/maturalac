@@ -1,9 +1,11 @@
 package com.markojerkic.drzavnamatura
 
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +13,7 @@ import android.view.Menu
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.FirebaseApp
@@ -113,28 +116,42 @@ class MainActivity : AppCompatActivity() {
                 // Set the adapter
                 examsListView.adapter = ExamsListAdapter(years[subject]!!.toList(), layoutInflater)
 
-                // Create onclick listener which will open new activity qith questions from
+                // Create onclick listener which will open new activity with questions from
                 // the chosen exam
                 examsListView.setOnItemClickListener { _, _, position, _ ->
-                    val chosenYear = years[subject]!!.toArray()[position]
-                    val examQuestions = arrayListOf<Question>()
-                    examQuestions.addAll(getExamQuestion(chosenYear as String, subject)
-                        .sortedWith((compareBy { it -> it.questionNumber })))
+                    if (checkInternetConnection()) {
+                        // Show info
+                        Toast.makeText(this, getString(R.string.downloading_exam_toast), Toast.LENGTH_LONG).show()
+                        val chosenYear = years[subject]!!.toArray()[position]
+                        val examQuestions = arrayListOf<Question>()
+                        examQuestions.addAll(getExamQuestion(chosenYear as String, subject)
+                            .sortedWith((compareBy { it -> it.questionNumber }))
+                        )
 
-                    // Download images if exist
-                    val questionImages = QuestionImages(examQuestions)
-                    questionImages.checkQuestions(object: QuestionImagesProcessedCallback {
-                        @Override
-                        override fun done() {
-                            startExamActivity(examQuestions)
-                        }
-                    })
+                        // Download images if exist
+                        val questionImages = QuestionImages(examQuestions)
+                        questionImages.checkQuestions(object : QuestionImagesProcessedCallback {
+                            @Override
+                            override fun done() {
+                                startExamActivity(examQuestions)
+                            }
+                        })
+                    } else {
+                        Toast.makeText(this, getString(R.string.no_internet_toast), Toast.LENGTH_LONG).show()
+                    }
                 }
                 // Show the dialog
                 dialog.show()
             }
         }
 
+    }
+
+    // Check if there is an internet connection
+    private fun checkInternetConnection(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
     }
 
     private fun startExamActivity(examQuestions: ArrayList<Question>) {
