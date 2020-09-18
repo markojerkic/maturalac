@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="allowed_exams">
+        <item>Matematika - viša razina</item>
+        <item>Matematika - osnovna razina</item>
+    </string-array>
+
+</resources>

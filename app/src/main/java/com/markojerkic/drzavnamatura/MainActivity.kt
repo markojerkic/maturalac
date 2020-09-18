@@ -48,24 +48,27 @@ class MainActivity : AppCompatActivity() {
         val db = Firebase.firestore
         val storageReference = Firebase.storage.reference
 
-        // TODO: Add a background view while database is being downloaded: PREUZIMANJE
         // Read questions from the database
         db.collection("pitanja").get().addOnSuccessListener { result ->
+            // List of allowed subjects
+            val allowed = resources.getStringArray(R.array.allowed_exams)
             for (r in result) {
                 val data = r.data
 
-                // Add question to the list
-                questions.add(Question(data as Map<String, Any>, r.id))
-                subjects.add(questions.last().subject)
+                if (data["subject"] in allowed) {
+                    // Add question to the list
+                    questions.add(Question(data as Map<String, Any>, r.id))
+                    subjects.add(questions.last().subject)
 
-                // If no exams have been assigned to the subject, create new tree set
-                // If there is already a tree set, just add the value
-                if (years[questions.last().subject] != null)
-                    years[questions.last().subject]!!.add(questions.last().year)
-                else {
-                    val tempTreeSet = TreeSet<String>()
-                    tempTreeSet.add(questions.last().year)
-                    years[questions.last().subject] = tempTreeSet
+                    // If no exams have been assigned to the subject, create new tree set
+                    // If there is already a tree set, just add the value
+                    if (years[questions.last().subject] != null)
+                        years[questions.last().subject]!!.add(questions.last().year)
+                    else {
+                        val tempTreeSet = TreeSet<String>()
+                        tempTreeSet.add(questions.last().year)
+                        years[questions.last().subject] = tempTreeSet
+                    }
                 }
             }
 
