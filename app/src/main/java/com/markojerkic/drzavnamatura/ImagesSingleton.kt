@@ -32,6 +32,10 @@ object ImagesSingleton: Serializable {
         return images.containsKey(key)
     }
 
+    fun printAns() {
+        Log.d("ans images", answerImages.toString())
+    }
+
     fun downloadAnsImg(question: Question) {
         // Download answer image if exists
         if (!answerImages.containsKey(question.id)) {

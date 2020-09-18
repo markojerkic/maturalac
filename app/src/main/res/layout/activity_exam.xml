@@ -7,6 +7,7 @@
     android:orientation="vertical"
     style="@style/AppTheme.Exam"
     android:background="#fafafa"
+    android:id="@+id/exam_activity_scroll_view"
     tools:context=".ExamActivity">
 
     <LinearLayout
@@ -53,13 +54,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:tint="@color/colorPrimaryDark" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!--<View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            android:background="@color/colorSecondaryDark" />-->
 
         <!-- Question title -->
         <TextView
@@ -329,6 +323,12 @@
                 android:padding="25dp"
                 android:id="@+id/long_answer_constraint_layout"
                 >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/long_answer_image"
+                    />
 
                 <TextView
                     android:layout_width="wrap_content"

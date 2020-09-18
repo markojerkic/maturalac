@@ -24,6 +24,8 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
             if (ansImg != null) {
                 downloadAnsImg()
             }
+            if (ansImg != null && imgURI == null)
+                callback.negativeCallBack()
         } else {
             callback.negativeCallBack()
         }

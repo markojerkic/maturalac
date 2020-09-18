@@ -11,6 +11,9 @@ import io.github.kexanie.library.MathView
 
 class ExamActivity : AppCompatActivity() {
 
+    // Scroll view of the activity
+    private val scrollView by lazy { findViewById<ScrollView>(R.id.exam_activity_scroll_view) }
+
     // Set up counter for the questions
     private var counter = -1
 
@@ -56,6 +59,8 @@ class ExamActivity : AppCompatActivity() {
     private val gradeButton by lazy { findViewById<Button>(R.id.grade_button) }
     // State of exam: WORK (still doing the exam), GRADING (exam finished, looking over the resutls)
     private var examState: ExamState = ExamState.WORKING
+    // Long answer image
+    private val longAnswerImage by lazy { findViewById<ImageView>(R.id.long_answer_image) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,6 +120,9 @@ class ExamActivity : AppCompatActivity() {
         gradeButton.isClickable = false
         //typeAnswerEditText.inputType = InputType.TYPE_NULL
         typeAnswerEditText.isEnabled = false
+        // Scroll to the top
+        scrollView.fullScroll(ScrollView.FOCUS_UP)
+        scrollView.smoothScrollTo(0,0)
     }
 
     private fun setTypeAnswer() {
@@ -317,6 +325,16 @@ class ExamActivity : AppCompatActivity() {
                 typeAnswerBar.visibility = View.GONE
                 abcdAnswerBar.visibility = View.GONE
                 answerType = AnswerType.LONG
+            }
+            // Add answer image if exists, else make the ImageView GONE
+            imagesSingleton.printAns()
+            if (currQuestion.ansImg != null
+                && examState == ExamState.GRADING
+                && imagesSingleton.containsAnswerKey(currQuestion.id)) {
+                Glide.with(this).load(imagesSingleton.getAnswerByteArray(currQuestion.id)).into(longAnswerImage)
+                longAnswerImage.visibility = View.VISIBLE
+            } else {
+                longAnswerImage.visibility = View.GONE
             }
         }
 
