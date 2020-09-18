@@ -50,6 +50,7 @@ class ExamActivity : AppCompatActivity() {
     // Type answer EditText
     private val typeAnswerEditText by lazy { findViewById<EditText>(R.id.type_answer_edit_text) }
     private val typeAnswerCorrectText by lazy { findViewById<TextView>(R.id.type_ans_correct_ans)}
+    private val typeAnswerImage by lazy { findViewById<ImageView>(R.id.type_answer_image) }
     private var answerType = AnswerType.ABCD
     // Answers collection
     val answers = Answers()
@@ -103,8 +104,8 @@ class ExamActivity : AppCompatActivity() {
     }
 
     private fun gradeExam() {
-        Log.i("garde", "exam")
-        val abcdAnswers = answers.getABCDAnswers()
+        // Show toast announcement
+        Toast.makeText(this, getString(R.string.grading_toast), Toast.LENGTH_SHORT).show()
         examState = ExamState.GRADING
         // Reset counter to 1 (start again from the first question)
         counter = 0
@@ -317,7 +318,17 @@ class ExamActivity : AppCompatActivity() {
 
             if (examState == ExamState.GRADING) {
                 typeAnswerCorrectText.visibility = View.VISIBLE
-                typeAnswerCorrectText.text = "Točan odgovor:\n" + currQuestion.ansA
+                typeAnswerCorrectText.text = "Točan odgovor:\n\n" + currQuestion.ansA
+                typeAnswerEditText.hint = "Niste dali odgovor!"
+
+                if (currQuestion.ansImg != null
+                    && examState == ExamState.GRADING
+                    && imagesSingleton.containsAnswerKey(currQuestion.id)) {
+                    Glide.with(this).load(imagesSingleton.getAnswerByteArray(currQuestion.id)).into(typeAnswerImage)
+                    typeAnswerImage.visibility = View.VISIBLE
+                } else {
+                    typeAnswerImage.visibility = View.GONE
+                }
             }
         } else if (currQuestion.typeOfAnswer == AnswerType.LONG) {
             // If ViewSwitcher is not displaying 'long' answer, display it

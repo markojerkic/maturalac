@@ -108,7 +108,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <ImageView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@id/question_text_view"
                     android:id="@+id/question_image"
@@ -292,7 +292,7 @@
                     android:hint="@string/insert_your_answer"/>
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="25dp"
                     android:layout_marginBottom="25dp"
@@ -300,6 +300,14 @@
                     android:layout_gravity="center"
                     android:id="@+id/type_ans_correct_ans"
                     android:visibility="gone"/>
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/type_answer_image"
+                    />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -327,8 +335,9 @@
                 >
 
                 <ImageView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:id="@+id/long_answer_image"
                     />
 
