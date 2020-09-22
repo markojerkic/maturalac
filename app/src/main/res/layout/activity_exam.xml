@@ -60,10 +60,11 @@
         <com.alespero.expandablecardview.ExpandableCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
             app:expandOnClick="true"
             app:inner_view="@layout/super_question_view"
             app:animationDuration="300"
-            app:startExpanded="true"
+            app:startExpanded="false"
             app:title="Nadpitanje"
             android:id="@+id/super_question_expandable_view"/>
 
@@ -73,7 +74,6 @@
             android:layout_height="wrap_content"
             android:text="Pitanje:"
             android:layout_marginLeft="25dp"
-            android:layout_marginTop="15dp"
             android:layout_marginBottom="5dp"
             android:fontFamily="@font/roboto"
             />

@@ -1,2 +1,2 @@
 # Maturalac
-Androdid app for studying for Državna Matura
+Android app for studying for Državna Matura

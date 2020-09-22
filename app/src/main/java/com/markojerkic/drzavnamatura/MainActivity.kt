@@ -31,6 +31,11 @@ class MainActivity : AppCompatActivity() {
     private val db: FirebaseFirestore by lazy { Firebase.firestore }
     private val storageReference: StorageReference by lazy { Firebase.storage.reference }
 
+    // Progress dialog
+    private val progressDialog by lazy { Dialog(this) }
+    private val downloadProgressBar by lazy { progressDialog.findViewById<ProgressBar>(R.id.progress_bar) }
+    private val downloadProgressText by lazy { progressDialog.findViewById<TextView>(R.id.progress_text) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -75,10 +80,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkAllowedExams() {
         db.collection("dozvoljeni").get().addOnSuccessListener { result ->
-            val allowed = HashMap<String, List<String>>()
+            val allowed = HashMap<String, ArrayList<String>>()
             for (r in result) {
                 val data = r.data
-                allowed[data["subject"] as String] = data["exams"] as List<String>
+                val examList = ArrayList<String>()
+                for ((index, exam) in (data["exams"] as List<String>).withIndex()) {
+                    if (!BuildConfig.DEBUG) {
+                        if ((data["allowed"] as List<Boolean>)[index]) {
+                            examList.add(exam)
+                        }
+                    } else {
+                        examList.add(exam)
+                    }
+                }
+                allowed[data["subject"] as String] = examList
             }
 
             // Remove the downloading icon and display subjects
@@ -96,11 +111,13 @@ class MainActivity : AppCompatActivity() {
     // Subjects are displayed in a 2 x n grid
     // THe grid is created with two vertical linear layouts (left and right) which sit inside
     // a master linear layout which is horizontal
-    fun inflateSubjects(allowed: HashMap<String, List<String>>) {
+    private fun inflateSubjects(allowed: HashMap<String, ArrayList<String>>) {
          // Create objects of layouts and the container of the left and right layout
         val leftRightLinearContainer = findViewById<LinearLayout>(R.id.leftRightLinearLayout)
         val leftLinearLayout = findViewById<LinearLayout>(R.id.left_linearLayout)
         val rightLinearLayout = findViewById<LinearLayout>(R.id.right_linearLayout)
+
+
 
         for ((index, entry) in allowed.entries.withIndex()) {
             // Inflate the template view of the subjects
@@ -137,11 +154,9 @@ class MainActivity : AppCompatActivity() {
                 // the chosen exam
                 examsListView.setOnItemClickListener { _, _, position, _ ->
                     if (checkInternetConnection()) {
-                        // Show info
-                        Toast.makeText(this, getString(R.string.downloading_exam_toast), Toast.LENGTH_LONG).show()
                         val chosenYear = entry.value[position]
-                        val examQuestions = arrayListOf<Question>()
                         getExamQuestion(chosenYear, entry.key)
+
 
                     } else {
                         Toast.makeText(this, getString(R.string.no_internet_toast), Toast.LENGTH_LONG).show()
@@ -162,6 +177,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startExamActivity(examQuestions: ArrayList<Question>) {
+        // Show info
+        Toast.makeText(this, getString(R.string.opening_exam_toast), Toast.LENGTH_LONG).show()
         // Start new activity, pass the questions through the intent
         val examActivityIntent = Intent(this, ExamActivity::class.java).apply {
             putExtra("questions", examQuestions)
@@ -184,17 +201,31 @@ class MainActivity : AppCompatActivity() {
             // Download images if exist
             val qs = arrayListOf<Question>()
             qs.addAll(examQuestion.sortedWith(compareBy { it -> it.questionNumber }))
+            progressDialog.setContentView(R.layout.progress_bar_download)
+            progressDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            progressDialog.show()
             val questionImages = QuestionImages(qs)
             questionImages.checkQuestions(object : QuestionImagesProcessedCallback {
                 @Override
                 override fun done() {
+                    progressDialog.dismiss()
                     startExamActivity(qs)
+                }
+
+                @Override
+                override fun updateDownload(percent: Double) {
+                    updateProgressDialog(percent)
                 }
             })
 
         }.addOnFailureListener {e -> Log.e("Firestore exception", e.toString())}
         return examQuestion
 
+    }
+
+    private fun updateProgressDialog(percent: Double) {
+        downloadProgressBar.progress = (100 * percent).toInt()
+        downloadProgressText.text = "${(100 * percent).toInt()}%"
     }
 
     @Override
