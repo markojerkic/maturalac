@@ -4,6 +4,20 @@ import java.io.Serializable
 
 class QuestionImages(private val questions: ArrayList<Question>): Serializable {
     var questionsImagesDownloaded = 0
+    var totalImages = totalImages()
+
+    private fun totalImages(): Int {
+        var total = 0
+        for (question in questions) {
+            if (question.imgURI != null)
+                total++
+            if (question.ansImg != null)
+                total++
+            if (question.checkSuperImage())
+                total++
+        }
+        return total
+    }
 
     fun checkQuestions(imagesProcessedCallback: QuestionImagesProcessedCallback) {
         // As Images are downloaded add them to the map
@@ -14,7 +28,7 @@ class QuestionImages(private val questions: ArrayList<Question>): Serializable {
                   questionsImagesDownloaded++
                   // If number of images processed equal to number of questions sent
                   // Mark as done
-                  if (questionsImagesDownloaded == questions.size)
+                  if (questionsImagesDownloaded == totalImages)
                       imagesProcessedCallback.done()
               }
 
@@ -23,7 +37,7 @@ class QuestionImages(private val questions: ArrayList<Question>): Serializable {
                   questionsImagesDownloaded++
                   // If number of images processed equal to number of questions sent
                   // Mark as done<
-                  if (questionsImagesDownloaded == questions.size)
+                  if (questionsImagesDownloaded == totalImages)
                       imagesProcessedCallback.done()
               }
           })

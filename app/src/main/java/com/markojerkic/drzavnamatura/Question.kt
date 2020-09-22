@@ -18,25 +18,23 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
     var givenAns = String()
 
     fun checkImageDownload(callback: ImageDownloadCallback) {
-        if (imgURI != null || ansImg!= null) {
+        if (imgURI != null || ansImg!= null || checkSuperImage()) {
             if (imgURI != null)
                 downloadImg(callback)
             if (ansImg != null) {
-                downloadAnsImg()
+                downloadAnsImg(callback)
+            }
+            if (superQuestion() != null && checkSuperImage()) {
+                downloadSuperImage(callback)
             }
             if (ansImg != null && imgURI == null)
                 callback.negativeCallBack()
-        } else {
-            callback.negativeCallBack()
-        }
-        if (superQuestion() != null) {
-            downloadSuperImage()
         }
     }
 
-    private fun downloadAnsImg() {
+    private fun downloadAnsImg(callback: ImageDownloadCallback) {
         val imgSingleton = ImagesSingleton
-        imgSingleton.downloadAnsImg(this)
+        imgSingleton.downloadAnsImg(this, callback)
     }
 
     private fun findAnswerType(at: Long): AnswerType {
@@ -83,9 +81,9 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
         return null
     }
 
-    fun downloadSuperImage() {
+    private fun downloadSuperImage(callback: ImageDownloadCallback) {
         val imgSingleton = ImagesSingleton
-        imgSingleton.downloadSuperImg(superImageName())
+        imgSingleton.downloadSuperImg(superImageName(), callback)
     }
 
     private fun downloadImg(callback: ImageDownloadCallback) {
@@ -94,7 +92,9 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
     }
 
     fun superImageName(): String {
-        return "super" + superQuestion()!!.split(" ").size+ superQuestion()!!.length + superQuestion()!!.split(" ")[0]
-
+        return questionMap["superQuestionImage"]!!.toString() + ".png"
+    }
+    fun checkSuperImage(): Boolean {
+        return questionMap.containsKey("superQuestionImage")
     }
 }

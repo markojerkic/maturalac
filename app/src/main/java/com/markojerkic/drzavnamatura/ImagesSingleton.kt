@@ -37,12 +37,13 @@ object ImagesSingleton: Serializable {
         Log.d("ans images", answerImages.toString())
     }
 
-    fun downloadAnsImg(question: Question) {
+    fun downloadAnsImg(question: Question, callback: ImageDownloadCallback) {
         // Download answer image if exists
         if (!answerImages.containsKey(question.id)) {
             firebaseStorage.child(question.ansImg!!).getBytes(ONE_MEGABYTE).addOnSuccessListener { ba ->
                 answerImages[question.id] = ba
-            }
+                callback.positiveCallBack()
+            }.addOnFailureListener{callback.negativeCallBack()}.addOnCanceledListener { callback.negativeCallBack() }
         }
 
     }
@@ -61,16 +62,17 @@ object ImagesSingleton: Serializable {
                 }
                 .addOnCanceledListener { callback.negativeCallBack() }
                 .addOnFailureListener { callback.negativeCallBack() }
-        } else {
-            callback.positiveCallBack()
         }
     }
 
-    fun downloadSuperImg(superImageName: String) {
-        if (superImageName != null && superImageName != "") {
+    fun downloadSuperImg(superImageName: String, callback: ImageDownloadCallback) {
+        if (superImageName != null && superImageName != "" && !superQuestionImages.containsKey(superImageName)) {
             firebaseStorage.child(superImageName).getBytes(ONE_MEGABYTE).addOnSuccessListener { ba ->
                 superQuestionImages[superImageName] = ba
-            }
+                callback.positiveCallBack()
+            }.addOnFailureListener{callback.negativeCallBack()}.addOnCanceledListener { callback.negativeCallBack() }
+        } else if (superQuestionImages.containsKey(superImageName)) {
+            callback.negativeCallBack()
         }
     }
 

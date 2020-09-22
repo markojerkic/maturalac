@@ -244,8 +244,8 @@ class ExamActivity : AppCompatActivity() {
 
         // Check if there is a super question
         if (currQuestion.superQuestion() != null) {
-            superQuestionExpandView.visibility = View.VISIBLE
             setSuperQuestion(currQuestion, imagesSingleton)
+            superQuestionExpandView.visibility = View.VISIBLE
         } else {
             superQuestionExpandView.visibility = View.GONE
         }

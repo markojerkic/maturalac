@@ -73,6 +73,7 @@
             android:layout_height="wrap_content"
             android:text="Pitanje:"
             android:layout_marginLeft="25dp"
+            android:layout_marginTop="15dp"
             android:layout_marginBottom="5dp"
             android:fontFamily="@font/roboto"
             />
