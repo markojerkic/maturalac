@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.alespero.expandablecardview.ExpandableCardView
 import com.bumptech.glide.Glide
 import io.github.kexanie.library.MathView
 
@@ -20,6 +21,12 @@ class ExamActivity : AppCompatActivity() {
     // Find elements
     private val questionTextView by lazy { findViewById<TextView>(R.id.question_text_view) }
     private val questionImageView by lazy { findViewById<ImageView>(R.id.question_image) }
+
+    // Expandable super question view
+    private val superQuestionExpandView by lazy { findViewById<ExpandableCardView>(R.id.super_question_expandable_view) }
+    val superQuestionText by lazy{ superQuestionExpandView.findViewById<TextView>(R.id.super_question_text_view) }
+    val superQuestionMath by lazy { superQuestionExpandView.findViewById<MathView>(R.id.super_question_math_view) }
+    val superImageView by lazy { superQuestionExpandView.findViewById<ImageView>(R.id.super_question_image) }
 
     // ABCD answer boxes
     private val ansABox by lazy { findViewById<ConstraintLayout>(R.id.ans_a_box) }
@@ -234,6 +241,14 @@ class ExamActivity : AppCompatActivity() {
         } else {
             questionImageView.visibility = View.GONE
         }
+
+        // Check if there is a super question
+        if (currQuestion.superQuestion() != null) {
+            superQuestionExpandView.visibility = View.VISIBLE
+            setSuperQuestion(currQuestion, imagesSingleton)
+        } else {
+            superQuestionExpandView.visibility = View.GONE
+        }
         // If question contains latex, display in math view, else display text view
         if (currQuestion.question.contains("\\(")) {
             questionMathView.text = currQuestion.question
@@ -352,6 +367,26 @@ class ExamActivity : AppCompatActivity() {
 
         // Set counter text
         setCounterTextView(total)
+    }
+
+    private fun setSuperQuestion(currQuestion: Question, imagesSingleton: ImagesSingleton) {
+        if (!currQuestion.superQuestion()!!.contains("\\(")) {
+            superQuestionMath.visibility = View.GONE
+            superQuestionText.visibility = View.VISIBLE
+            superQuestionText.text = currQuestion.superQuestion()
+        } else {
+            superQuestionMath.visibility = View.VISIBLE
+            superQuestionText.visibility = View.GONE
+            superQuestionMath.text = currQuestion.superQuestion()
+        }
+        // Check for image
+        if (imagesSingleton.containsSuperImage(currQuestion.superImageName())) {
+            superImageView.visibility = View.VISIBLE
+            Glide.with(this).load(imagesSingleton.getSuperByteArray(currQuestion.superImageName()))
+                .into(superImageView)
+        } else {
+            superImageView.visibility = View.GONE
+        }
     }
 
     private fun gradeABCD(currQuestion: Question) {

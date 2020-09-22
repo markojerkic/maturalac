@@ -57,6 +57,16 @@
                 app:tint="@color/colorPrimaryDark" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <com.alespero.expandablecardview.ExpandableCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:expandOnClick="true"
+            app:inner_view="@layout/super_question_view"
+            app:animationDuration="300"
+            app:startExpanded="false"
+            app:title="Nadpitanje"
+            android:id="@+id/super_question_expandable_view"/>
+
         <!-- Question title -->
         <TextView
             android:layout_width="wrap_content"

@@ -29,6 +29,9 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
         } else {
             callback.negativeCallBack()
         }
+        if (superQuestion() != null) {
+            downloadSuperImage()
+        }
     }
 
     private fun downloadAnsImg() {
@@ -72,8 +75,26 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
         return null
     }
 
+    fun superQuestion(): String? {
+        if (questionMap.containsKey("superQuestion")) {
+            if (questionMap["superQuestion"] != "")
+                return questionMap["superQuestion"].toString()
+        }
+        return null
+    }
+
+    fun downloadSuperImage() {
+        val imgSingleton = ImagesSingleton
+        imgSingleton.downloadSuperImg(superImageName())
+    }
+
     private fun downloadImg(callback: ImageDownloadCallback) {
         val imgSingleton = ImagesSingleton
         imgSingleton.downloadImg(this, callback)
+    }
+
+    fun superImageName(): String {
+        return "super" + superQuestion()!!.split(" ").size+ superQuestion()!!.length + superQuestion()!!.split(" ")[0]
+
     }
 }

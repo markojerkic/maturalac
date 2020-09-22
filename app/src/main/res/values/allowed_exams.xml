@@ -3,6 +3,7 @@
     <string-array name="allowed_exams">
         <item>Matematika - viša razina</item>
         <item>Matematika - osnovna razina</item>
+        <item>Fizika</item>
     </string-array>
 
 </resources>

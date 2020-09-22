@@ -8,6 +8,7 @@ import java.io.Serializable
 object ImagesSingleton: Serializable {
     private val images: HashMap<String, ByteArray> = HashMap()
     private val answerImages: HashMap<String, ByteArray> = HashMap()
+    private val superQuestionImages: HashMap<String, ByteArray> = HashMap()
     private val firebaseStorage = Firebase.storage.reference
     // For image download, upper limit
     val ONE_MEGABYTE: Long = 1024*1024
@@ -63,5 +64,21 @@ object ImagesSingleton: Serializable {
         } else {
             callback.positiveCallBack()
         }
+    }
+
+    fun downloadSuperImg(superImageName: String) {
+        if (superImageName != null && superImageName != "") {
+            firebaseStorage.child(superImageName).getBytes(ONE_MEGABYTE).addOnSuccessListener { ba ->
+                superQuestionImages[superImageName] = ba
+            }
+        }
+    }
+
+    fun containsSuperImage(superQuestionName: String): Boolean {
+        return superQuestionImages.containsKey(superQuestionName)
+    }
+
+    fun getSuperByteArray(superQuestionName: String): ByteArray {
+        return superQuestionImages[superQuestionName]!!
     }
 }
