@@ -63,7 +63,7 @@
             app:expandOnClick="true"
             app:inner_view="@layout/super_question_view"
             app:animationDuration="300"
-            app:startExpanded="false"
+            app:startExpanded="true"
             app:title="Nadpitanje"
             android:id="@+id/super_question_expandable_view"/>
 
