@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -16,23 +17,19 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 class MainActivity : AppCompatActivity() {
 
-    // List of subjects and years in the database
-    private val subjects = TreeSet<String>()
-    // Map subject to the set of available years
-    private val years = HashMap<String, TreeSet<String>>()
-    // List of questions in the database
-    private val questions = ArrayList<Question>()
     // Icon which is shown while subjects are downloaded
     private val downloadingIcon by lazy { findViewById<LinearLayout>(R.id.loading_subjects_icon) }
     // Name TextView
     private val nameTextView by lazy { findViewById<TextView>(R.id.username_textview) }
+
+    // Database and storage reference
+    private val db: FirebaseFirestore by lazy { Firebase.firestore }
+    private val storageReference: StorageReference by lazy { Firebase.storage.reference }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,40 +39,11 @@ class MainActivity : AppCompatActivity() {
         // Initialize firebase app
         FirebaseApp.initializeApp(this)
 
-        val db = Firebase.firestore
-        val storageReference = Firebase.storage.reference
-
         // Check allowed subjects and exams
-        checkAllowedExams(db)
+        checkAllowedExams()
 
         // Read questions from the database
-        /*db.collection("pitanja").get().addOnSuccessListener { result ->
-            // List of allowed subjects
-            val allowed = resources.getStringArray(R.array.allowed_exams)
-            for (r in result) {
-                val data = r.data
-
-                if (data["subject"] in allowed) {
-                    // Add question to the list
-                    questions.add(Question(data as Map<String, Any>, r.id))
-                    subjects.add(questions.last().subject)
-
-                    // If no exams have been assigned to the subject, create new tree set
-                    // If there is already a tree set, just add the value
-                    if (years[questions.last().subject] != null)
-                        years[questions.last().subject]!!.add(questions.last().year)
-                    else {
-                        val tempTreeSet = TreeSet<String>()
-                        tempTreeSet.add(questions.last().year)
-                        years[questions.last().subject] = tempTreeSet
-                    }
-                }
-            }
-
-            // Remove the downloading icon and display subjects
-            downloadingIcon.visibility = View.GONE
-            //inflateSubjects(allowed)
-        }.addOnFailureListener {e -> Log.e("Firestore exception", e.toString())}*/
+        /**/
 
 
         // Shared preferences for storing user name
@@ -105,9 +73,9 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun checkAllowedExams(db: FirebaseFirestore) {
+    private fun checkAllowedExams() {
         db.collection("dozvoljeni").get().addOnSuccessListener { result ->
-            var allowed = HashMap<String, List<String>>()
+            val allowed = HashMap<String, List<String>>()
             for (r in result) {
                 val data = r.data
                 allowed[data["subject"] as String] = data["exams"] as List<String>
@@ -173,18 +141,8 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this, getString(R.string.downloading_exam_toast), Toast.LENGTH_LONG).show()
                         val chosenYear = entry.value[position]
                         val examQuestions = arrayListOf<Question>()
-                        examQuestions.addAll(getExamQuestion(chosenYear, entry.key)
-                            .sortedWith((compareBy { it -> it.questionNumber }))
-                        )
+                        getExamQuestion(chosenYear, entry.key)
 
-                        // Download images if exist
-                        val questionImages = QuestionImages(examQuestions)
-                        questionImages.checkQuestions(object : QuestionImagesProcessedCallback {
-                            @Override
-                            override fun done() {
-                                startExamActivity(examQuestions)
-                            }
-                        })
                     } else {
                         Toast.makeText(this, getString(R.string.no_internet_toast), Toast.LENGTH_LONG).show()
                     }
@@ -214,11 +172,27 @@ class MainActivity : AppCompatActivity() {
 
     private fun getExamQuestion(chosenYear: String, chosenSubject: String): ArrayList<Question> {
         val examQuestion = ArrayList<Question>()
+        db.collection("pitanja").whereEqualTo("subject", chosenSubject)
+            .whereEqualTo("year", chosenYear).get().addOnSuccessListener { result ->
+            //
+            for (r in result) {
+                val data = r.data
 
-        for (question in questions) {
-            if (question.year == chosenYear && question.subject == chosenSubject)
-                examQuestion.add(question)
-        }
+                // Add question to the list
+                examQuestion.add(Question(data as Map<String, Any>, r.id))
+            }
+            // Download images if exist
+            val qs = arrayListOf<Question>()
+            qs.addAll(examQuestion.sortedWith(compareBy { it -> it.questionNumber }))
+            val questionImages = QuestionImages(qs)
+            questionImages.checkQuestions(object : QuestionImagesProcessedCallback {
+                @Override
+                override fun done() {
+                    startExamActivity(qs)
+                }
+            })
+
+        }.addOnFailureListener {e -> Log.e("Firestore exception", e.toString())}
         return examQuestion
 
     }
