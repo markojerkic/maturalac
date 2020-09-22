@@ -6,16 +6,14 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.FirebaseApp
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -36,8 +34,6 @@ class MainActivity : AppCompatActivity() {
     // Name TextView
     private val nameTextView by lazy { findViewById<TextView>(R.id.username_textview) }
 
-
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -49,8 +45,11 @@ class MainActivity : AppCompatActivity() {
         val db = Firebase.firestore
         val storageReference = Firebase.storage.reference
 
+        // Check allowed subjects and exams
+        checkAllowedExams(db)
+
         // Read questions from the database
-        db.collection("pitanja").get().addOnSuccessListener { result ->
+        /*db.collection("pitanja").get().addOnSuccessListener { result ->
             // List of allowed subjects
             val allowed = resources.getStringArray(R.array.allowed_exams)
             for (r in result) {
@@ -75,8 +74,8 @@ class MainActivity : AppCompatActivity() {
 
             // Remove the downloading icon and display subjects
             downloadingIcon.visibility = View.GONE
-            inflateSubjects()
-        }.addOnFailureListener {e -> Log.e("Firestore exception", e.toString())}
+            //inflateSubjects(allowed)
+        }.addOnFailureListener {e -> Log.e("Firestore exception", e.toString())}*/
 
 
         // Shared preferences for storing user name
@@ -104,8 +103,20 @@ class MainActivity : AppCompatActivity() {
             setName(name!!)
         }
 
-        // Create test subjects to test the ui
-        inflateSubjects()
+    }
+
+    private fun checkAllowedExams(db: FirebaseFirestore) {
+        db.collection("dozvoljeni").get().addOnSuccessListener { result ->
+            var allowed = HashMap<String, List<String>>()
+            for (r in result) {
+                val data = r.data
+                allowed[data["subject"] as String] = data["exams"] as List<String>
+            }
+
+            // Remove the downloading icon and display subjects
+            downloadingIcon.visibility = View.GONE
+            inflateSubjects(allowed)
+        }
     }
 
     // Set name in the title of app
@@ -117,19 +128,18 @@ class MainActivity : AppCompatActivity() {
     // Subjects are displayed in a 2 x n grid
     // THe grid is created with two vertical linear layouts (left and right) which sit inside
     // a master linear layout which is horizontal
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    fun inflateSubjects() {
+    fun inflateSubjects(allowed: HashMap<String, List<String>>) {
          // Create objects of layouts and the container of the left and right layout
         val leftRightLinearContainer = findViewById<LinearLayout>(R.id.leftRightLinearLayout)
         val leftLinearLayout = findViewById<LinearLayout>(R.id.left_linearLayout)
         val rightLinearLayout = findViewById<LinearLayout>(R.id.right_linearLayout)
 
-        for ((index, subject) in subjects.toList().withIndex()) {
+        for ((index, entry) in allowed.entries.withIndex()) {
             // Inflate the template view of the subjects
             val subjectView =  layoutInflater.inflate(R.layout.subject_title, leftRightLinearContainer,
                 false) as TextView
             // Initialize the text title from the list of subjects
-            subjectView.text = subject
+            subjectView.text = entry.key
             // Initialize size to 170x170
             subjectView.width = 170
             subjectView.height = 170
@@ -153,7 +163,7 @@ class MainActivity : AppCompatActivity() {
                 // Initialize the list view
                 val examsListView = dialog.findViewById<ListView>(R.id.exams_list_view)
                 // Set the adapter
-                examsListView.adapter = ExamsListAdapter(years[subject]!!.toList(), layoutInflater)
+                examsListView.adapter = ExamsListAdapter(entry.value, layoutInflater)
 
                 // Create onclick listener which will open new activity with questions from
                 // the chosen exam
@@ -161,9 +171,9 @@ class MainActivity : AppCompatActivity() {
                     if (checkInternetConnection()) {
                         // Show info
                         Toast.makeText(this, getString(R.string.downloading_exam_toast), Toast.LENGTH_LONG).show()
-                        val chosenYear = years[subject]!!.toArray()[position]
+                        val chosenYear = entry.value[position]
                         val examQuestions = arrayListOf<Question>()
-                        examQuestions.addAll(getExamQuestion(chosenYear as String, subject)
+                        examQuestions.addAll(getExamQuestion(chosenYear, entry.key)
                             .sortedWith((compareBy { it -> it.questionNumber }))
                         )
 
