@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         style="@style/text_style"
         android:textColor="#FFF"
-        android:text="35%"
+        android:text="0%"
         android:id="@+id/progress_text"
         app:layout_constraintTop_toTopOf="@id/progress_bar"
         app:layout_constraintBottom_toBottomOf="@id/progress_bar"

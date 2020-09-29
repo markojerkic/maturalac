@@ -22,6 +22,9 @@ import com.google.firebase.storage.ktx.storage
 
 class MainActivity : AppCompatActivity() {
 
+    // Set if this is debug version
+    private val IS_DEBUG = false
+
     // Icon which is shown while subjects are downloaded
     private val downloadingIcon by lazy { findViewById<LinearLayout>(R.id.loading_subjects_icon) }
     // Name TextView
@@ -85,15 +88,17 @@ class MainActivity : AppCompatActivity() {
                 val data = r.data
                 val examList = ArrayList<String>()
                 for ((index, exam) in (data["exams"] as List<String>).withIndex()) {
-                    if (!BuildConfig.DEBUG) {
-                        if ((data["allowed"] as List<Boolean>)[index]) {
+                    val allowedBoolean = data["allowed"] as List<Boolean>
+                    if (!IS_DEBUG) {
+                        if (allowedBoolean[index]) {
                             examList.add(exam)
                         }
                     } else {
                         examList.add(exam)
                     }
                 }
-                allowed[data["subject"] as String] = examList
+                if (examList.size > 0)
+                    allowed[data["subject"] as String] = examList
             }
 
             // Remove the downloading icon and display subjects

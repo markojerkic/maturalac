@@ -380,10 +380,13 @@ class ExamActivity : AppCompatActivity() {
             superQuestionMath.text = currQuestion.superQuestion()
         }
         // Check for image
-        if (imagesSingleton.containsSuperImage(currQuestion.superImageName())) {
-            superImageView.visibility = View.VISIBLE
-            Glide.with(this).load(imagesSingleton.getSuperByteArray(currQuestion.superImageName()))
-                .into(superImageView)
+        if (currQuestion.superImgExists()) {
+            if (imagesSingleton.containsSuperImage(currQuestion.superImageName()!!)) {
+                superImageView.visibility = View.VISIBLE
+                Glide.with(this)
+                    .load(imagesSingleton.getSuperByteArray(currQuestion.superImageName()!!))
+                    .into(superImageView)
+            }
         } else {
             superImageView.visibility = View.GONE
         }
