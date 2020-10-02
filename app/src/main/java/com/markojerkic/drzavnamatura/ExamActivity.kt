@@ -62,7 +62,7 @@ class ExamActivity : AppCompatActivity() {
     // Answers collection
     val answers = Answers()
     // Questions array list
-    val questions = arrayListOf<Question>()
+    private lateinit var questions: ArrayList<Question>
     // Grade button
     private val gradeButton by lazy { findViewById<Button>(R.id.grade_button) }
     // State of exam: WORK (still doing the exam), GRADING (exam finished, looking over the resutls)
@@ -75,10 +75,9 @@ class ExamActivity : AppCompatActivity() {
         setContentView(R.layout.activity_exam)
 
         // Get questions for the exam
-        val tempQ: ArrayList<Question> =
-            intent.extras!!["questions"] as ArrayList<Question>
+        val examName = intent.extras!!["examName"] as String
         // Set current question
-        questions.addAll(tempQ)
+        questions = QuestionsObject.getQuestions(examName)
 
         // Get images for the exam
         val imagesSingleton = ImagesSingleton

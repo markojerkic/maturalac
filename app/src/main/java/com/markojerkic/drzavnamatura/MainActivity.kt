@@ -181,12 +181,12 @@ class MainActivity : AppCompatActivity() {
         return networkInfo != null && networkInfo.isConnected
     }
 
-    private fun startExamActivity(examQuestions: ArrayList<Question>) {
+    private fun startExamActivity(examName: String) {
         // Show info
         Toast.makeText(this, getString(R.string.opening_exam_toast), Toast.LENGTH_LONG).show()
         // Start new activity, pass the questions through the intent
         val examActivityIntent = Intent(this, ExamActivity::class.java).apply {
-            putExtra("questions", examQuestions)
+            putExtra("examName", examName)
         }
         startActivity(examActivityIntent)
 
@@ -197,31 +197,35 @@ class MainActivity : AppCompatActivity() {
         db.collection("pitanja").whereEqualTo("subject", chosenSubject)
             .whereEqualTo("year", chosenYear).get().addOnSuccessListener { result ->
             //
-            for (r in result) {
-                val data = r.data
+                for (r in result) {
+                    val data = r.data
 
-                // Add question to the list
-                examQuestion.add(Question(data as Map<String, Any>, r.id))
-            }
-            // Download images if exist
-            val qs = arrayListOf<Question>()
-            qs.addAll(examQuestion.sortedWith(compareBy { it -> it.questionNumber }))
-            progressDialog.setContentView(R.layout.progress_bar_download)
-            progressDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            progressDialog.show()
-            val questionImages = QuestionImages(qs)
-            questionImages.checkQuestions(object : QuestionImagesProcessedCallback {
-                @Override
-                override fun done() {
-                    progressDialog.dismiss()
-                    startExamActivity(qs)
+                    // Add question to the list
+                    examQuestion.add(Question(data as Map<String, Any>, r.id))
                 }
+                // Download images if exist
+                val qs = arrayListOf<Question>()
+                qs.addAll(examQuestion.sortedWith(compareBy { it -> it.questionNumber }))
+                // Add questions to QuestionsObject
+                QuestionsObject.addQuestions("${chosenSubject}${chosenYear}", qs)
 
-                @Override
-                override fun updateDownload(percent: Double) {
-                    updateProgressDialog(percent)
-                }
-            })
+                // Create download in progress dialog
+                progressDialog.setContentView(R.layout.progress_bar_download)
+                progressDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                progressDialog.show()
+                val questionImages = QuestionImages(qs)
+                questionImages.checkQuestions(object : QuestionImagesProcessedCallback {
+                    @Override
+                    override fun done() {
+                        progressDialog.dismiss()
+                        startExamActivity("${chosenSubject}${chosenYear}")
+                    }
+
+                    @Override
+                    override fun updateDownload(percent: Double) {
+                        updateProgressDialog(percent)
+                    }
+                })
 
         }.addOnFailureListener {e -> Log.e("Firestore exception", e.toString())}
         return examQuestion
