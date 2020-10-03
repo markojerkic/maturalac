@@ -3,15 +3,13 @@ package com.markojerkic.drzavnamatura
 import java.io.Serializable
 
 class Question (private val questionMap: Map<String, Any>, val id: String): Serializable {
-    val question = questionMap["question"].toString()
-    val ansA = questionMap["ansA"].toString()
-    val ansB = questionMap["ansB"].toString()
-    val ansC = questionMap["ansC"].toString()
-    val ansD = questionMap["ansD"].toString()
+    val question = questionMap["question"].toString().replace("−", "-")
+    val ansA = questionMap["ansA"].toString().replace("−", "-")
+    val ansB = questionMap["ansB"].toString().replace("−", "-")
+    val ansC = questionMap["ansC"].toString().replace("−", "-")
+    val ansD = questionMap["ansD"].toString().replace("−", "-")
     val correctAns: Long = questionMap["correctAns"] as Long
     val typeOfAnswer: AnswerType = findAnswerType(questionMap["typeOfAnswer"] as Long)
-    val subject = questionMap["subject"].toString()
-    val year = questionMap["year"].toString()
     val questionNumber = (questionMap["questionNumber"] as Long).toInt()
     val imgURI = checkForImage()
     val ansImg = checkForAnswerImage()
@@ -76,7 +74,7 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
     fun superQuestion(): String? {
         if (questionMap.containsKey("superQuestion")) {
             if (questionMap["superQuestion"] != "")
-                return questionMap["superQuestion"].toString()
+                return questionMap["superQuestion"].toString().replace("−", "-")
         }
         return null
     }

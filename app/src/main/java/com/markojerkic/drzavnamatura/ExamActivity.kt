@@ -24,9 +24,9 @@ class ExamActivity : AppCompatActivity() {
 
     // Expandable super question view
     private val superQuestionExpandView by lazy { findViewById<ExpandableCardView>(R.id.super_question_expandable_view) }
-    val superQuestionText by lazy{ superQuestionExpandView.findViewById<TextView>(R.id.super_question_text_view) }
-    val superQuestionMath by lazy { superQuestionExpandView.findViewById<MathView>(R.id.super_question_math_view) }
-    val superImageView by lazy { superQuestionExpandView.findViewById<ImageView>(R.id.super_question_image) }
+    private val superQuestionText by lazy{ superQuestionExpandView.findViewById<TextView>(R.id.super_question_text_view) }
+    private val superQuestionMath by lazy { superQuestionExpandView.findViewById<MathView>(R.id.super_question_math_view) }
+    private val superImageView by lazy { superQuestionExpandView.findViewById<ImageView>(R.id.super_question_image) }
 
     // ABCD answer boxes
     private val ansABox by lazy { findViewById<ConstraintLayout>(R.id.ans_a_box) }
@@ -106,6 +106,11 @@ class ExamActivity : AppCompatActivity() {
         gradeButton.setOnClickListener {
             setTypeAnswer()
             gradeExam()
+        }
+
+        // Super image on click
+        superImageView.setOnClickListener {
+            Log.d("onclick", "test")
         }
     }
 
@@ -250,6 +255,9 @@ class ExamActivity : AppCompatActivity() {
         }
         // If question contains latex, display in math view, else display text view
         if (currQuestion.question.contains("\\(")) {
+            if (currQuestion.question.contains("−")) {
+                currQuestion.question.replace("−", "-")
+            }
             questionMathView.text = currQuestion.question
             questionMathView.visibility = View.VISIBLE
             questionTextView.visibility = View.GONE
@@ -343,6 +351,8 @@ class ExamActivity : AppCompatActivity() {
                 } else {
                     typeAnswerImage.visibility = View.GONE
                 }
+            } else {
+                typeAnswerImage.visibility = View.GONE
             }
         } else if (currQuestion.typeOfAnswer == AnswerType.LONG) {
             // If ViewSwitcher is not displaying 'long' answer, display it
@@ -389,6 +399,8 @@ class ExamActivity : AppCompatActivity() {
         } else {
             superImageView.visibility = View.GONE
         }
+
+        //superQuestionExpandView.minimumHeight = height
     }
 
     private fun gradeABCD(currQuestion: Question) {
