@@ -23,7 +23,7 @@ import com.google.firebase.storage.ktx.storage
 class MainActivity : AppCompatActivity() {
 
     // Set if this is debug version
-    private val IS_DEBUG = false
+    private val IS_DEBUG = true
 
     // Icon which is shown while subjects are downloaded
     private val downloadingIcon by lazy { findViewById<LinearLayout>(R.id.loading_subjects_icon) }
