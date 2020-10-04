@@ -118,14 +118,22 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <ImageView
+                <com.jsibbold.zoomage.ZoomageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="300dp"
                     android:layout_marginTop="15dp"
                     app:layout_constraintTop_toBottomOf="@id/question_text_view"
                     android:id="@+id/question_image"
-                    android:visibility="gone"/>
+                    android:visibility="gone"
+                    app:zoomage_restrictBounds="false"
+                    app:zoomage_animateOnReset="true"
+                    app:zoomage_autoResetMode="UNDER"
+                    app:zoomage_autoCenter="true"
+                    app:zoomage_zoomable="true"
+                    app:zoomage_translatable="true"
+                    app:zoomage_minScale="0.6"
+                    app:zoomage_maxScale="8"/>
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -315,13 +323,21 @@
                     android:visibility="gone"/>
 
 
-                <ImageView
+                <com.jsibbold.zoomage.ZoomageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="300dp"
                     android:layout_marginTop="15dp"
                     android:layout_gravity="center"
                     android:id="@+id/type_answer_image"
+                    app:zoomage_restrictBounds="false"
+                    app:zoomage_animateOnReset="true"
+                    app:zoomage_autoResetMode="UNDER"
+                    app:zoomage_autoCenter="true"
+                    app:zoomage_zoomable="true"
+                    app:zoomage_translatable="true"
+                    app:zoomage_minScale="0.6"
+                    app:zoomage_maxScale="8"
                     />
 
                 <TextView
@@ -349,13 +365,21 @@
                 android:id="@+id/long_answer_constraint_layout"
                 >
 
-                <ImageView
+                <com.jsibbold.zoomage.ZoomageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="300dp"
                     android:layout_marginTop="15dp"
                     android:layout_gravity="center"
                     android:id="@+id/long_answer_image"
+                    app:zoomage_restrictBounds="false"
+                    app:zoomage_animateOnReset="true"
+                    app:zoomage_autoResetMode="UNDER"
+                    app:zoomage_autoCenter="true"
+                    app:zoomage_zoomable="true"
+                    app:zoomage_translatable="true"
+                    app:zoomage_minScale="0.6"
+                    app:zoomage_maxScale="8"
                     />
 
                 <TextView

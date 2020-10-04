@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.alespero.expandablecardview.ExpandableCardView
 import com.bumptech.glide.Glide
+import com.jsibbold.zoomage.ZoomageView
 import io.github.kexanie.library.MathView
 
 class ExamActivity : AppCompatActivity() {
@@ -20,13 +21,13 @@ class ExamActivity : AppCompatActivity() {
 
     // Find elements
     private val questionTextView by lazy { findViewById<TextView>(R.id.question_text_view) }
-    private val questionImageView by lazy { findViewById<ImageView>(R.id.question_image) }
+    private val questionImageView by lazy { findViewById<ZoomageView>(R.id.question_image) }
 
     // Expandable super question view
     private val superQuestionExpandView by lazy { findViewById<ExpandableCardView>(R.id.super_question_expandable_view) }
     private val superQuestionText by lazy{ superQuestionExpandView.findViewById<TextView>(R.id.super_question_text_view) }
     private val superQuestionMath by lazy { superQuestionExpandView.findViewById<MathView>(R.id.super_question_math_view) }
-    private val superImageView by lazy { superQuestionExpandView.findViewById<ImageView>(R.id.super_question_image) }
+    private val superImageView by lazy { superQuestionExpandView.findViewById<ZoomageView>(R.id.super_question_image) }
 
     // ABCD answer boxes
     private val ansABox by lazy { findViewById<ConstraintLayout>(R.id.ans_a_box) }
@@ -57,7 +58,7 @@ class ExamActivity : AppCompatActivity() {
     // Type answer EditText
     private val typeAnswerEditText by lazy { findViewById<EditText>(R.id.type_answer_edit_text) }
     private val typeAnswerCorrectText by lazy { findViewById<TextView>(R.id.type_ans_correct_ans)}
-    private val typeAnswerImage by lazy { findViewById<ImageView>(R.id.type_answer_image) }
+    private val typeAnswerImage by lazy { findViewById<ZoomageView>(R.id.type_answer_image) }
     private var answerType = AnswerType.ABCD
     // Answers collection
     val answers = Answers()
@@ -68,7 +69,7 @@ class ExamActivity : AppCompatActivity() {
     // State of exam: WORK (still doing the exam), GRADING (exam finished, looking over the resutls)
     private var examState: ExamState = ExamState.WORKING
     // Long answer image
-    private val longAnswerImage by lazy { findViewById<ImageView>(R.id.long_answer_image) }
+    private val longAnswerImage by lazy { findViewById<ZoomageView>(R.id.long_answer_image) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,10 +109,6 @@ class ExamActivity : AppCompatActivity() {
             gradeExam()
         }
 
-        // Super image on click
-        superImageView.setOnClickListener {
-            Log.d("onclick", "test")
-        }
     }
 
     private fun gradeExam() {
