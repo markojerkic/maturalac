@@ -23,12 +23,14 @@ import com.google.firebase.storage.ktx.storage
 class MainActivity : AppCompatActivity() {
 
     // Set if this is debug version
-    private val IS_DEBUG = false
+    private val IS_DEBUG = true
 
     // Icon which is shown while subjects are downloaded
     private val downloadingIcon by lazy { findViewById<LinearLayout>(R.id.loading_subjects_icon) }
     // Name TextView
     private val nameTextView by lazy { findViewById<TextView>(R.id.username_textview) }
+    // Multi click event timing
+    private var nameTextViewClickTime: Long = -1
 
     // Database and storage reference
     private val db: FirebaseFirestore by lazy { Firebase.firestore }
@@ -78,6 +80,8 @@ class MainActivity : AppCompatActivity() {
         } else {
             setName(name!!)
         }
+
+        // Set multiclick to start debug
 
     }
 
