@@ -17,8 +17,6 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.ktx.storage
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,7 +39,6 @@ class MainActivity : AppCompatActivity() {
 
     // Database and storage reference
     private val db: FirebaseFirestore by lazy { Firebase.firestore }
-    private val storageReference: StorageReference by lazy { Firebase.storage.reference }
 
     // Progress dialog
     private val progressDialog by lazy { Dialog(this) }
