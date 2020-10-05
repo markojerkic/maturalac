@@ -23,7 +23,7 @@ import com.google.firebase.storage.ktx.storage
 class MainActivity : AppCompatActivity() {
 
     // Set if this is debug version
-    private val IS_DEBUG = true
+    private var IS_DEBUG = false
 
     // Icon which is shown while subjects are downloaded
     private val downloadingIcon by lazy { findViewById<LinearLayout>(R.id.loading_subjects_icon) }
@@ -31,6 +31,13 @@ class MainActivity : AppCompatActivity() {
     private val nameTextView by lazy { findViewById<TextView>(R.id.username_textview) }
     // Multi click event timing
     private var nameTextViewClickTime: Long = -1
+    private var clickCounter = 0
+
+
+    // Create objects of layouts and the container of the left and right layout
+    private val leftRightLinearContainer by lazy { findViewById<LinearLayout>(R.id.leftRightLinearLayout) }
+    private val leftLinearLayout by lazy { findViewById<LinearLayout>(R.id.left_linearLayout) }
+    private val rightLinearLayout by lazy { findViewById<LinearLayout>(R.id.right_linearLayout) }
 
     // Database and storage reference
     private val db: FirebaseFirestore by lazy { Firebase.firestore }
@@ -82,7 +89,31 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Set multiclick to start debug
+        setOnMultiTouchDebug()
 
+    }
+
+    private fun setOnMultiTouchDebug() {
+        nameTextView.setOnClickListener {
+            if (!IS_DEBUG) {
+                clickCounter++
+                clickCounter %= 7
+
+                if (nameTextViewClickTime == -1L) {
+                    nameTextViewClickTime = System.currentTimeMillis()
+                } else if (clickCounter == 6) {
+                    if (System.currentTimeMillis() - nameTextViewClickTime <= 3000L) {
+                        IS_DEBUG = true
+                        // Empty subject list
+                        leftLinearLayout.removeAllViews()
+                        rightLinearLayout.removeAllViews()
+                        // Check for allowed exams again
+                        downloadingIcon.visibility = View.VISIBLE
+                        checkAllowedExams()
+                    }
+                }
+            }
+        }
     }
 
     private fun checkAllowedExams() {
@@ -121,12 +152,6 @@ class MainActivity : AppCompatActivity() {
     // THe grid is created with two vertical linear layouts (left and right) which sit inside
     // a master linear layout which is horizontal
     private fun inflateSubjects(allowed: HashMap<String, ArrayList<String>>) {
-         // Create objects of layouts and the container of the left and right layout
-        val leftRightLinearContainer = findViewById<LinearLayout>(R.id.leftRightLinearLayout)
-        val leftLinearLayout = findViewById<LinearLayout>(R.id.left_linearLayout)
-        val rightLinearLayout = findViewById<LinearLayout>(R.id.right_linearLayout)
-
-
 
         for ((index, entry) in allowed.entries.withIndex()) {
             // Inflate the template view of the subjects
