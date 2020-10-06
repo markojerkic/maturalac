@@ -1,5 +1,6 @@
 package com.markojerkic.drzavnamatura
 
+import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -71,6 +72,11 @@ class ExamActivity : AppCompatActivity() {
     // Long answer image
     private val longAnswerImage by lazy { findViewById<ZoomageView>(R.id.long_answer_image) }
 
+    // Open image elements
+    private val imageDialog by lazy { Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen) }
+    private val dialogImageView by lazy { imageDialog.findViewById<ZoomageView>(R.id.large_image) }
+    private val backButton by lazy { imageDialog.findViewById<ImageView>(R.id.image_back_button) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exam)
@@ -106,6 +112,26 @@ class ExamActivity : AppCompatActivity() {
             gradeExam()
         }
 
+        // Full image dialog
+        imageDialog.setContentView(R.layout.open_image_dialog)
+        questionImageView.setOnClickListener { openLargeImage(0) }
+        backButton.setOnClickListener { imageDialog.dismiss()
+            Toast.makeText(this, "test", Toast.LENGTH_SHORT).show()}
+
+        // Set on click action for all image views
+        longAnswerImage.setOnClickListener { openLargeImage(1) }
+        typeAnswerImage.setOnClickListener { openLargeImage(1) }
+        superImageView.setOnClickListener { openLargeImage(2) }
+
+    }
+
+    private fun openLargeImage(imageViewNumber: Int) {
+        when (imageViewNumber) {
+            0 -> Glide.with(this).load(ImagesSingleton.getByteArray(questions[counter].id)).into(dialogImageView)
+            1 -> Glide.with(this).load(ImagesSingleton.getAnswerByteArray(questions[counter].id)).into(dialogImageView)
+            2 -> Glide.with(this).load(ImagesSingleton.getSuperByteArray(questions[counter].superImageName()!!)).into(dialogImageView)
+        }
+        imageDialog.show()
     }
 
     private fun gradeExam() {
