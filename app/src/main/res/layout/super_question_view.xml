@@ -7,7 +7,8 @@
     android:layout_marginRight="15dp"
     android:layout_marginLeft="15dp"
     android:layout_marginTop="15dp"
-    android:padding="35dp"
+    android:paddingTop="35dp"
+    android:paddingBottom="35dp"
     android:background="@drawable/exam_question_cards"
     android:layout_gravity="center"
     android:orientation="vertical">
@@ -23,6 +24,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingLeft="35dp"
+            android:paddingRight="35dp"
             android:layout_gravity="center">
             <io.github.kexanie.library.MathView
                 style="@style/question_latex"
@@ -49,8 +52,10 @@
             android:minHeight="350dp"
             android:layout_gravity="center"
             android:layout_marginTop="15dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:id="@+id/super_question_image"
-            android:visibility="gone"
+            android:visibility="visible"
             app:zoomage_restrictBounds="false"
             app:zoomage_animateOnReset="true"
             app:zoomage_autoResetMode="UNDER"
