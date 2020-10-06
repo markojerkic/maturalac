@@ -80,13 +80,10 @@ class ExamActivity : AppCompatActivity() {
         // Set current question
         questions = QuestionsObject.getQuestions(examName)
 
-        // Get images for the exam
-        val imagesSingleton = ImagesSingleton
-
         Log.d("questions", questions.toString())
 
         // Add first question
-        nextQuestion(imagesSingleton)
+        nextQuestion()
 
         // Set abcd answer click listeners
         setABCDOnClickListeners()
@@ -96,11 +93,11 @@ class ExamActivity : AppCompatActivity() {
         // Initialize next and previous question on-click action
         nextQuestion.setOnClickListener {
             setTypeAnswer()
-            nextQuestion(imagesSingleton)
+            nextQuestion()
         }
         previousQuestion.setOnClickListener {
             setTypeAnswer()
-            previousQuestion(imagesSingleton)
+            previousQuestion()
         }
 
         // Add onClickListener for the grade button
@@ -118,7 +115,7 @@ class ExamActivity : AppCompatActivity() {
         // Reset counter to 1 (start again from the first question)
         counter = 0
         disableAnswers()
-        setQuestion(questions[counter], questions.size, ImagesSingleton)
+        setQuestion(questions[counter], questions.size)
     }
 
     private fun disableAnswers() {
@@ -211,7 +208,7 @@ class ExamActivity : AppCompatActivity() {
         questionCounterTextView.text = "Pitanje ${counter+1} / $total"
     }
 
-    private fun nextQuestion(imagesSingleton: ImagesSingleton) {
+    private fun nextQuestion() {
         // If all questions have been answered, return
         if (counter >= questions.size-1)
             return
@@ -219,10 +216,10 @@ class ExamActivity : AppCompatActivity() {
         // Create instance of the current questions, increase the counter
         val currQuestion = questions[counter]
         // Set all components with proper values
-        setQuestion(currQuestion, questions.size, imagesSingleton)
+        setQuestion(currQuestion, questions.size)
     }
 
-    private fun previousQuestion(imagesSingleton: ImagesSingleton) {
+    private fun previousQuestion() {
         // If counter is at first question, return
         if (counter <= 0)
             return
@@ -230,14 +227,13 @@ class ExamActivity : AppCompatActivity() {
         // Create instance of the current questions, increase the counter
         val currQuestion = questions[counter]
         // Set all components with proper values
-        setQuestion(currQuestion, questions.size, imagesSingleton)
+        setQuestion(currQuestion, questions.size)
     }
 
-    private fun setQuestion(currQuestion: Question, total: Int, imagesSingleton: ImagesSingleton) {
-        if (imagesSingleton.containsKey(currQuestion.id)
-            && currQuestion.imgURI != null
-            && currQuestion.typeOfAnswer != AnswerType.LONG) {
-            Glide.with(this).load(imagesSingleton.getByteArray(currQuestion.id)).into(questionImageView)
+    private fun setQuestion(currQuestion: Question, total: Int) {
+        if (ImagesSingleton.containsKey(currQuestion.id)
+            && currQuestion.imgURI != null) {
+            Glide.with(this).load(ImagesSingleton.getByteArray(currQuestion.id)).into(questionImageView)
             questionImageView.visibility = View.VISIBLE
         } else {
             questionImageView.visibility = View.GONE
@@ -245,7 +241,7 @@ class ExamActivity : AppCompatActivity() {
 
         // Check if there is a super question
         if (currQuestion.superQuestion() != null) {
-            setSuperQuestion(currQuestion, imagesSingleton)
+            setSuperQuestion(currQuestion)
             superQuestionExpandView.visibility = View.VISIBLE
         } else {
             superQuestionExpandView.visibility = View.GONE
@@ -342,8 +338,8 @@ class ExamActivity : AppCompatActivity() {
 
                 if (currQuestion.ansImg != null
                     && examState == ExamState.GRADING
-                    && imagesSingleton.containsAnswerKey(currQuestion.id)) {
-                    Glide.with(this).load(imagesSingleton.getAnswerByteArray(currQuestion.id)).into(typeAnswerImage)
+                    && ImagesSingleton.containsAnswerKey(currQuestion.id)) {
+                    Glide.with(this).load(ImagesSingleton.getAnswerByteArray(currQuestion.id)).into(typeAnswerImage)
                     typeAnswerImage.visibility = View.VISIBLE
                 } else {
                     typeAnswerImage.visibility = View.GONE
@@ -360,11 +356,11 @@ class ExamActivity : AppCompatActivity() {
                 answerType = AnswerType.LONG
             }
             // Add answer image if exists, else make the ImageView GONE
-            imagesSingleton.printAns()
+            ImagesSingleton.printAns()
             if (currQuestion.ansImg != null
                 && examState == ExamState.GRADING
-                && imagesSingleton.containsAnswerKey(currQuestion.id)) {
-                Glide.with(this).load(imagesSingleton.getAnswerByteArray(currQuestion.id)).into(longAnswerImage)
+                && ImagesSingleton.containsAnswerKey(currQuestion.id)) {
+                Glide.with(this).load(ImagesSingleton.getAnswerByteArray(currQuestion.id)).into(longAnswerImage)
                 longAnswerImage.visibility = View.VISIBLE
             } else {
                 longAnswerImage.visibility = View.GONE
@@ -375,7 +371,7 @@ class ExamActivity : AppCompatActivity() {
         setCounterTextView(total)
     }
 
-    private fun setSuperQuestion(currQuestion: Question, imagesSingleton: ImagesSingleton) {
+    private fun setSuperQuestion(currQuestion: Question) {
         if (!currQuestion.superQuestion()!!.contains("\\(")) {
             superQuestionMath.visibility = View.GONE
             superQuestionText.visibility = View.VISIBLE
@@ -387,10 +383,10 @@ class ExamActivity : AppCompatActivity() {
         }
         // Check for image
         if (currQuestion.superImgExists()) {
-            if (imagesSingleton.containsSuperImage(currQuestion.superImageName()!!)) {
+            if (ImagesSingleton.containsSuperImage(currQuestion.superImageName()!!)) {
                 superImageView.visibility = View.VISIBLE
                 Glide.with(this)
-                    .load(imagesSingleton.getSuperByteArray(currQuestion.superImageName()!!))
+                    .load(ImagesSingleton.getSuperByteArray(currQuestion.superImageName()!!))
                     .into(superImageView)
             }
         } else {

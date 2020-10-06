@@ -56,10 +56,6 @@ class MainActivity : AppCompatActivity() {
         // Check allowed subjects and exams
         checkAllowedExams()
 
-        // Read questions from the database
-        /**/
-
-
         // Shared preferences for storing user name
         val sharedPreferences = this.getSharedPreferences("myprefs", 0)
         var name = sharedPreferences.getString("name", null)
