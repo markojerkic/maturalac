@@ -21,13 +21,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="55dp"
+        android:id="@+id/full_image_action_bar"
         android:layout_alignParentTop="true">
-
+<!--
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimaryLight"
-            android:alpha="0.4"/>
+            android:background="@color/colorSecondaryDark"
+            android:alpha="0.4"/>-->
 
         <ImageView
             android:layout_width="55dp"
@@ -39,7 +40,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:tint="@color/colorPrimary" />
+            app:tint="@color/colorPrimaryLight" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

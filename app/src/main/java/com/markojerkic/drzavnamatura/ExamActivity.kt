@@ -73,9 +73,10 @@ class ExamActivity : AppCompatActivity() {
     private val longAnswerImage by lazy { findViewById<ZoomageView>(R.id.long_answer_image) }
 
     // Open image elements
-    private val imageDialog by lazy { Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen) }
+    private val imageDialog by lazy { Dialog(this, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen) }
     private val dialogImageView by lazy { imageDialog.findViewById<ZoomageView>(R.id.large_image) }
     private val backButton by lazy { imageDialog.findViewById<ImageView>(R.id.image_back_button) }
+    private val fullImageActionBar by lazy { imageDialog.findViewById<ConstraintLayout>(R.id.full_image_action_bar)}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,8 +116,8 @@ class ExamActivity : AppCompatActivity() {
         // Full image dialog
         imageDialog.setContentView(R.layout.open_image_dialog)
         questionImageView.setOnClickListener { openLargeImage(0) }
-        backButton.setOnClickListener { imageDialog.dismiss()
-            Toast.makeText(this, "test", Toast.LENGTH_SHORT).show()}
+        backButton.setOnClickListener { imageDialog.dismiss() }
+
 
         // Set on click action for all image views
         longAnswerImage.setOnClickListener { openLargeImage(1) }
@@ -131,6 +132,7 @@ class ExamActivity : AppCompatActivity() {
             1 -> Glide.with(this).load(ImagesSingleton.getAnswerByteArray(questions[counter].id)).into(dialogImageView)
             2 -> Glide.with(this).load(ImagesSingleton.getSuperByteArray(questions[counter].superImageName()!!)).into(dialogImageView)
         }
+
         imageDialog.show()
     }
 

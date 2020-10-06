@@ -11,8 +11,8 @@ android {
         applicationId "com.markojerkic.drzavnamatura"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 6
-        versionName "1.6.10.20"
+        versionCode 7
+        versionName "1.7.10.20"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

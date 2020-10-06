@@ -370,6 +370,7 @@
                     android:layout_height="wrap_content"
                     android:minHeight="300dp"
                     android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
                     android:layout_gravity="center"
                     android:id="@+id/long_answer_image"
                     app:zoomage_restrictBounds="false"

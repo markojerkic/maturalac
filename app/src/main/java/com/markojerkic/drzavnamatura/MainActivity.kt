@@ -17,6 +17,8 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
@@ -111,7 +113,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkAllowedExams() {
         db.collection("dozvoljeni").get().addOnSuccessListener { result ->
-            val allowed = HashMap<String, ArrayList<String>>()
+            val allowed = TreeMap<String, ArrayList<String>>()
             for (r in result) {
                 val data = r.data
                 val examList = ArrayList<String>()
@@ -144,7 +146,7 @@ class MainActivity : AppCompatActivity() {
     // Subjects are displayed in a 2 x n grid
     // THe grid is created with two vertical linear layouts (left and right) which sit inside
     // a master linear layout which is horizontal
-    private fun inflateSubjects(allowed: HashMap<String, ArrayList<String>>) {
+    private fun inflateSubjects(allowed: TreeMap<String, ArrayList<String>>) {
 
         for ((index, entry) in allowed.entries.withIndex()) {
             // Inflate the template view of the subjects
