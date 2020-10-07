@@ -14,6 +14,9 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.FirebaseApp
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -46,6 +49,9 @@ class MainActivity : AppCompatActivity() {
     private val progressDialog by lazy { Dialog(this) }
     private val downloadProgressBar by lazy { progressDialog.findViewById<ProgressBar>(R.id.progress_bar) }
     private val downloadProgressText by lazy { progressDialog.findViewById<TextView>(R.id.progress_text) }
+    
+    // Firebase analitics
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +60,7 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize firebase app
         FirebaseApp.initializeApp(this)
+        firebaseAnalytics = Firebase.analytics
 
         // Check allowed subjects and exams
         checkAllowedExams()
@@ -251,7 +258,12 @@ class MainActivity : AppCompatActivity() {
                     }
                 })
 
-        }.addOnFailureListener {e -> Log.e("Firestore exception", e.toString())}
+                firebaseAnalytics.logEvent("exam_opened") {
+                    param("exam_name", "${chosenSubject}${chosenYear}")
+                    param("subject_opened", chosenSubject)
+                }
+
+            }.addOnFailureListener {e -> Log.e("Firestore exception", e.toString())}
         return examQuestion
 
     }

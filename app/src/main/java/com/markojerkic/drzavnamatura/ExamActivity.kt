@@ -76,7 +76,6 @@ class ExamActivity : AppCompatActivity() {
     private val imageDialog by lazy { Dialog(this, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen) }
     private val dialogImageView by lazy { imageDialog.findViewById<ZoomageView>(R.id.large_image) }
     private val backButton by lazy { imageDialog.findViewById<ImageView>(R.id.image_back_button) }
-    private val fullImageActionBar by lazy { imageDialog.findViewById<ConstraintLayout>(R.id.full_image_action_bar)}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
