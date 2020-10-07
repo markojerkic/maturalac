@@ -32,16 +32,6 @@ class QuestionImages(private val questions: ArrayList<Question>): Serializable {
                   if (questionsImagesDownloaded == totalImages)
                       imagesProcessedCallback.done()
               }
-
-              @Override
-              override fun negativeCallBack() {
-                  questionsImagesDownloaded++
-                  imagesProcessedCallback.updateDownload(questionsImagesDownloaded.toDouble()/totalImages.toDouble())
-                  // If number of images processed equal to number of questions sent
-                  // Mark as done<
-                  if (questionsImagesDownloaded == totalImages)
-                      imagesProcessedCallback.done()
-              }
           })
         }
     }

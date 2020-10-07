@@ -17,16 +17,22 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
 
     fun checkImageDownload(callback: ImageDownloadCallback) {
         if (imgURI != null || ansImg!= null || checkSuperImage()) {
-            if (imgURI != null)
+            if (ImagesSingleton.containsKey(id))
+                callback.positiveCallBack()
+            else if (imgURI != null)
                 downloadImg(callback)
-            if (ansImg != null) {
-                downloadAnsImg(callback)
-            }
+
+            if (ImagesSingleton.containsAnswerKey(id))
+                callback.positiveCallBack()
+            else if (ansImg != null) downloadAnsImg(callback)
+
             if (superQuestion() != null && checkSuperImage()) {
-                downloadSuperImage(callback)
+                if (ImagesSingleton.containsSuperImage(superImageName()!!))
+                    callback.positiveCallBack()
+                else downloadSuperImage(callback)
             }
             if (ansImg != null && imgURI == null)
-                callback.negativeCallBack()
+                callback.positiveCallBack()
         }
     }
 
@@ -42,15 +48,6 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
             2 -> AnswerType.LONG
             else -> AnswerType.LONG
         }
-    }
-
-    private fun createImageName(): String {
-        val stringBuilder = StringBuilder()
-        stringBuilder.append(this.question.split(" ").size as String)
-        stringBuilder.append(this.question.split(""[0]))
-        stringBuilder.append(this.question)
-        stringBuilder.append(this.correctAns)
-        return stringBuilder.toString()
     }
 
     private fun checkForImage(): String? {

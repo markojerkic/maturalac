@@ -43,7 +43,7 @@ object ImagesSingleton: Serializable {
             firebaseStorage.child(question.ansImg!!).getBytes(ONE_MEGABYTE).addOnSuccessListener { ba ->
                 answerImages[question.id] = ba
                 callback.positiveCallBack()
-            }.addOnFailureListener{callback.negativeCallBack()}.addOnCanceledListener { callback.negativeCallBack() }
+            }.addOnFailureListener{callback.positiveCallBack()}.addOnCanceledListener { callback.positiveCallBack() }
         }
 
     }
@@ -60,8 +60,8 @@ object ImagesSingleton: Serializable {
                     images[question.id] = ba
                     callback.positiveCallBack()
                 }
-                .addOnCanceledListener { callback.negativeCallBack() }
-                .addOnFailureListener { callback.negativeCallBack() }
+                .addOnCanceledListener { callback.positiveCallBack() }
+                .addOnFailureListener { callback.positiveCallBack() }
         }
     }
 
@@ -70,9 +70,9 @@ object ImagesSingleton: Serializable {
             firebaseStorage.child(superImageName).getBytes(ONE_MEGABYTE).addOnSuccessListener { ba ->
                 superQuestionImages[superImageName] = ba
                 callback.positiveCallBack()
-            }.addOnFailureListener{callback.negativeCallBack()}.addOnCanceledListener { callback.negativeCallBack() }
+            }.addOnFailureListener{callback.positiveCallBack()}.addOnCanceledListener { callback.positiveCallBack() }
         } else if (superQuestionImages.containsKey(superImageName)) {
-            callback.negativeCallBack()
+            callback.positiveCallBack()
         }
     }
 
