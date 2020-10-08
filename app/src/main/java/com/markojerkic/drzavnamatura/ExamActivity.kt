@@ -402,6 +402,8 @@ class ExamActivity : AppCompatActivity() {
                 }
             } else {
                 typeAnswerImage.visibility = View.GONE
+                typeAnswerMath.visibility = View.GONE
+                typeAnswerCorrectText.visibility = View.GONE
             }
         } else if (currQuestion.typeOfAnswer == AnswerType.LONG) {
             // If ViewSwitcher is not displaying 'long' answer, display it
