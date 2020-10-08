@@ -36,6 +36,7 @@
             android:src="@drawable/ic_forward"
             android:padding="10dp"
             android:rotation="180"
+            android:alpha="0.5"
             android:id="@+id/image_back_button"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

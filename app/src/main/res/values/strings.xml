@@ -10,4 +10,6 @@
     <string name="loading_subjects">Strpite se, učitavamo predmete. \nAko je prošlo duže vremena, provjerite svoju internetsku vezu.</string>
     <string name="info_name">Autor:\nMarko Jerkić\n\nZa informacije, prijave grešaka i ostalo, možete se javiti na:</string>
     <string name="grading_toast">Prikazivamo vam točne odgovore</string>
+    <string name="grade_full">Ocjeni cijeli ispit</string>
+    <string name="grade_one">Ocjeni pitanje</string>
 </resources>

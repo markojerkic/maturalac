@@ -22,13 +22,13 @@ class ExamActivity : AppCompatActivity() {
 
     // Find elements
     private val questionTextView by lazy { findViewById<TextView>(R.id.question_text_view) }
-    private val questionImageView by lazy { findViewById<ZoomageView>(R.id.question_image) }
+    private val questionImageView by lazy { findViewById<ImageView>(R.id.question_image) }
 
     // Expandable super question view
     private val superQuestionExpandView by lazy { findViewById<ExpandableCardView>(R.id.super_question_expandable_view) }
     private val superQuestionText by lazy{ superQuestionExpandView.findViewById<TextView>(R.id.super_question_text_view) }
     private val superQuestionMath by lazy { superQuestionExpandView.findViewById<MathView>(R.id.super_question_math_view) }
-    private val superImageView by lazy { superQuestionExpandView.findViewById<ZoomageView>(R.id.super_question_image) }
+    private val superImageView by lazy { superQuestionExpandView.findViewById<ImageView>(R.id.super_question_image) }
 
     // ABCD answer boxes
     private val ansABox by lazy { findViewById<ConstraintLayout>(R.id.ans_a_box) }
@@ -59,18 +59,20 @@ class ExamActivity : AppCompatActivity() {
     // Type answer EditText
     private val typeAnswerEditText by lazy { findViewById<EditText>(R.id.type_answer_edit_text) }
     private val typeAnswerCorrectText by lazy { findViewById<TextView>(R.id.type_ans_correct_ans)}
-    private val typeAnswerImage by lazy { findViewById<ZoomageView>(R.id.type_answer_image) }
+    private val typeAnswerImage by lazy { findViewById<ImageView>(R.id.type_answer_image) }
+    private val typeAnswerMath by lazy { findViewById<MathView>(R.id.type_ans_mathview) }
     private var answerType = AnswerType.ABCD
     // Answers collection
     val answers = Answers()
     // Questions array list
     private lateinit var questions: ArrayList<Question>
     // Grade button
-    private val gradeButton by lazy { findViewById<Button>(R.id.grade_button) }
+    private val gradeFullButton by lazy { findViewById<Button>(R.id.grade_button) }
+    private val gradeQuestion by lazy { findViewById<Button>(R.id.grade_one) }
     // State of exam: WORK (still doing the exam), GRADING (exam finished, looking over the resutls)
     private var examState: ExamState = ExamState.WORKING
     // Long answer image
-    private val longAnswerImage by lazy { findViewById<ZoomageView>(R.id.long_answer_image) }
+    private val longAnswerImage by lazy { findViewById<ImageView>(R.id.long_answer_image) }
 
     // Open image elements
     private val imageDialog by lazy { Dialog(this, android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen) }
@@ -98,18 +100,30 @@ class ExamActivity : AppCompatActivity() {
 
         // Initialize next and previous question on-click action
         nextQuestion.setOnClickListener {
+            if (examState == ExamState.GRADE_ONE) {
+                examState = ExamState.WORKING
+                clearABCDBoxes()
+            }
             setTypeAnswer()
             nextQuestion()
         }
         previousQuestion.setOnClickListener {
+            if (examState == ExamState.GRADE_ONE) {
+                examState = ExamState.WORKING
+                clearABCDBoxes()
+            }
             setTypeAnswer()
             previousQuestion()
         }
 
         // Add onClickListener for the grade button
-        gradeButton.setOnClickListener {
+        gradeFullButton.setOnClickListener {
             setTypeAnswer()
             gradeExam()
+        }
+        gradeQuestion.setOnClickListener {
+            setTypeAnswer()
+            gradeOneQuestion()
         }
 
         // Full image dialog
@@ -122,6 +136,12 @@ class ExamActivity : AppCompatActivity() {
         longAnswerImage.setOnClickListener { openLargeImage(1) }
         typeAnswerImage.setOnClickListener { openLargeImage(1) }
         superImageView.setOnClickListener { openLargeImage(2) }
+
+    }
+
+    private fun gradeOneQuestion() {
+        examState = ExamState.GRADE_ONE
+        setQuestion(questions[counter], questions.size)
 
     }
 
@@ -150,8 +170,10 @@ class ExamActivity : AppCompatActivity() {
         ansBBox.isClickable = false
         ansCBox.isClickable = false
         ansDBox.isClickable = false
-        gradeButton.isClickable = false
-        gradeButton.visibility = View.GONE
+        gradeFullButton.isClickable = false
+        gradeFullButton.visibility = View.GONE
+        gradeQuestion.isClickable = false
+        gradeQuestion.visibility = View.GONE
         //typeAnswerEditText.inputType = InputType.TYPE_NULL
         typeAnswerEditText.isEnabled = false
         // Scroll to the top
@@ -341,7 +363,7 @@ class ExamActivity : AppCompatActivity() {
                 ansDMath.visibility = View.VISIBLE
                 ansDText.visibility = View.GONE
             }
-            if (examState == ExamState.GRADING) {
+            if (examState == ExamState.GRADING || examState == ExamState.GRADE_ONE) {
                 gradeABCD(currQuestion)
             }
         } else if (currQuestion.typeOfAnswer == AnswerType.TYPE) {
@@ -358,13 +380,20 @@ class ExamActivity : AppCompatActivity() {
             else
                 typeAnswerEditText.setText("")
 
-            if (examState == ExamState.GRADING) {
-                typeAnswerCorrectText.visibility = View.VISIBLE
-                typeAnswerCorrectText.text = "Točan odgovor:\n\n" + currQuestion.ansA
+            if (examState == ExamState.GRADING || examState == ExamState.GRADE_ONE) {
+                if (currQuestion.ansA.contains("\\(")) {
+                    typeAnswerMath.visibility = View.VISIBLE
+                    typeAnswerCorrectText.visibility = View.GONE
+                    typeAnswerMath.text = "Točan odgovor:\n\n" + currQuestion.ansA
+                } else {
+                    typeAnswerCorrectText.visibility = View.VISIBLE
+                    typeAnswerMath.visibility = View.GONE
+                    typeAnswerCorrectText.text = "Točan odgovor:\n\n" + currQuestion.ansA
+                }
                 typeAnswerEditText.hint = "Niste dali odgovor!"
 
                 if (currQuestion.ansImg != null
-                    && examState == ExamState.GRADING
+                    && (examState == ExamState.GRADING || examState == ExamState.GRADE_ONE)
                     && ImagesSingleton.containsAnswerKey(currQuestion.id)) {
                     Glide.with(this).load(ImagesSingleton.getAnswerByteArray(currQuestion.id)).into(typeAnswerImage)
                     typeAnswerImage.visibility = View.VISIBLE
@@ -385,7 +414,7 @@ class ExamActivity : AppCompatActivity() {
             // Add answer image if exists, else make the ImageView GONE
             ImagesSingleton.printAns()
             if (currQuestion.ansImg != null
-                && examState == ExamState.GRADING
+                && (examState == ExamState.GRADING || examState == ExamState.GRADE_ONE)
                 && ImagesSingleton.containsAnswerKey(currQuestion.id)) {
                 Glide.with(this).load(ImagesSingleton.getAnswerByteArray(currQuestion.id)).into(longAnswerImage)
                 longAnswerImage.visibility = View.VISIBLE
