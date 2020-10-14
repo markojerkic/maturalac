@@ -3,20 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:minHeight="70dp"
     android:layout_marginRight="15dp"
     android:layout_marginLeft="15dp"
     android:layout_marginTop="15dp"
     android:paddingTop="35dp"
     android:paddingBottom="35dp"
     android:background="@drawable/exam_question_cards"
-    android:layout_gravity="center"
-    android:orientation="vertical">
+    android:layout_gravity="center">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="500dp"
         android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,8 +45,6 @@
         <com.jsibbold.zoomage.ZoomageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minWidth="350dp"
-            android:minHeight="350dp"
             android:layout_gravity="center"
             android:layout_marginTop="15dp"
             android:layout_marginLeft="5dp"

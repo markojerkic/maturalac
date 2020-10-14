@@ -7,10 +7,10 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.alespero.expandablecardview.ExpandableCardView
 import com.bumptech.glide.Glide
 import com.jsibbold.zoomage.ZoomageView
 import io.github.kexanie.library.MathView
+import net.cachapa.expandablelayout.ExpandableLayout
 
 class ExamActivity : AppCompatActivity() {
 
@@ -25,10 +25,12 @@ class ExamActivity : AppCompatActivity() {
     private val questionImageView by lazy { findViewById<ImageView>(R.id.question_image) }
 
     // Expandable super question view
-    private val superQuestionExpandView by lazy { findViewById<ExpandableCardView>(R.id.super_question_expandable_view) }
-    private val superQuestionText by lazy{ superQuestionExpandView.findViewById<TextView>(R.id.super_question_text_view) }
-    private val superQuestionMath by lazy { superQuestionExpandView.findViewById<MathView>(R.id.super_question_math_view) }
-    private val superImageView by lazy { superQuestionExpandView.findViewById<ImageView>(R.id.super_question_image) }
+    private val expandLinearWraper by lazy { findViewById<LinearLayout>(R.id.exand_liner_wraper) }
+    private val clickToExpand by lazy { findViewById<ConstraintLayout>(R.id.click_to_expand) }
+    private val superQuestionExpandableLayout by lazy { findViewById<ExpandableLayout>(R.id.expandable_super_question) }
+    private val superQuestionText by lazy{ findViewById<TextView>(R.id.super_question_text_view) }
+    private val superQuestionMath by lazy { findViewById<MathView>(R.id.super_question_math_view) }
+    private val superImageView by lazy { findViewById<ImageView>(R.id.super_question_image) }
 
     // ABCD answer boxes
     private val ansABox by lazy { findViewById<ConstraintLayout>(R.id.ans_a_box) }
@@ -136,6 +138,11 @@ class ExamActivity : AppCompatActivity() {
         longAnswerImage.setOnClickListener { openLargeImage(1) }
         typeAnswerImage.setOnClickListener { openLargeImage(1) }
         superImageView.setOnClickListener { openLargeImage(2) }
+
+        clickToExpand.setOnClickListener {
+            if (superQuestionExpandableLayout.isExpanded) superQuestionExpandableLayout.collapse()
+            else superQuestionExpandableLayout.expand()
+        }
 
     }
 
@@ -291,9 +298,9 @@ class ExamActivity : AppCompatActivity() {
         // Check if there is a super question
         if (currQuestion.superQuestion() != null) {
             setSuperQuestion(currQuestion)
-            superQuestionExpandView.visibility = View.VISIBLE
+            expandLinearWraper.visibility = View.VISIBLE
         } else {
-            superQuestionExpandView.visibility = View.GONE
+            expandLinearWraper.visibility = View.GONE
         }
         // If question contains latex, display in math view, else display text view
         if (currQuestion.question.contains("\\(")) {
