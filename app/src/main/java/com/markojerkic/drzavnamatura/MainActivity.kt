@@ -49,6 +49,11 @@ class MainActivity : AppCompatActivity() {
     private val progressDialog by lazy { Dialog(this) }
     private val downloadProgressBar by lazy { progressDialog.findViewById<ProgressBar>(R.id.progress_bar) }
     private val downloadProgressText by lazy { progressDialog.findViewById<TextView>(R.id.progress_text) }
+
+    // Exam list expand view trackers
+    private lateinit var lastExpandedLayout: ExpandableLayout
+    private lateinit var lastExpandedEntry: String
+    private lateinit var lastClickedSubject: TextView
     
     // Firebase analitics
     private lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -173,47 +178,99 @@ class MainActivity : AppCompatActivity() {
             val leftSubject = subjectRow.findViewById<TextView>(R.id.left_subject)
             val rightSubject = subjectRow.findViewById<TextView>(R.id.right_subject)
             val expandingExams = subjectRow.findViewById<ExpandableLayout>(R.id.exam_list_expandable)
-            val examListView = subjectRow.findViewById<ListView>(R.id.exam_list_listview)
+            val examListLinearLayout = subjectRow.findViewById<LinearLayout>(R.id.exam_list_linearlayout)
 
             // Initialize the text title from the list of subjects
             if (firstEntry) {
                 leftSubject.text = entry.key
                 firstEntry = false
+                leftSubject.setOnClickListener {
+                    setClickedBackground(leftSubject, entry.key)
+                    setSubjectOnClick(entry, examListLinearLayout, expandingExams)
+                }
             } else {
                 rightSubject.text = entry.key
                 firstEntry = true
+                rightSubject.setOnClickListener {
+                    setClickedBackground(rightSubject, entry.key)
+                    setSubjectOnClick(entry, examListLinearLayout, expandingExams)
+                }
             }
             // Switch between left and right layout
             if (index == allowed.entries.size-1 && index % 2 == 0)
                 rightSubject.visibility = View.GONE
             // Set on click action for the view
-            leftSubject.setOnClickListener {setSubjectOnClick(entry, examListView, expandingExams) }
-            rightSubject.setOnClickListener { setSubjectOnClick(entry, examListView, expandingExams) }
         }
 
     }
 
-    private fun setSubjectOnClick(entry: MutableMap.MutableEntry<String, ArrayList<String>>,
-                                  examListView: ListView, expandingExams: ExpandableLayout) {
-        // Set the adapter
-        examListView.adapter = ExamsListAdapter(entry.value, layoutInflater)
-
-        // Create onclick listener which will open new activity with questions from
-        // the chosen exam
-        examListView.setOnItemClickListener { _, _, position, _ ->
-            if (checkInternetConnection()) {
-                val chosenYear = entry.value[position]
-                getExamQuestion(chosenYear, entry.key)
-
-
+    private fun setClickedBackground(clicked: TextView?, subject: String) {
+        if (this::lastExpandedEntry.isInitialized) {
+            if (lastExpandedEntry != subject) {
+                if (this::lastClickedSubject.isInitialized)
+                    lastClickedSubject.setBackgroundResource(R.drawable.round_rectangle_subject_shape)
+                clicked!!.setBackgroundResource(R.drawable.round_rectangle_subject_list_background)
+                lastClickedSubject = clicked
             } else {
-                Toast.makeText(this, getString(R.string.no_internet_toast), Toast.LENGTH_LONG).show()
+                clicked!!.setBackgroundResource(R.drawable.round_rectangle_subject_shape)
             }
+        } else {
+            clicked!!.setBackgroundResource(R.drawable.round_rectangle_subject_list_background)
+            lastClickedSubject = clicked
         }
+    }
+
+    private fun setSubjectOnClick(
+        entry: MutableMap.MutableEntry<String, ArrayList<String>>,
+        examListView: LinearLayout, expandingExams: ExpandableLayout) {
+        // Set the adapter
+        examListView.removeAllViews()
+        inflateExams(examListView, entry)
 
         // Expand the list
-        if (expandingExams.isExpanded) expandingExams.collapse()
-        else expandingExams.expand()
+        if (!this::lastExpandedEntry.isInitialized) {
+            lastExpandedEntry = entry.key
+            lastExpandedLayout = expandingExams
+            expandingExams.expand()
+        } else {
+            when {
+                lastExpandedEntry == entry.key -> {
+                    expandingExams.collapse()
+                    lastExpandedEntry = ""
+                }
+                lastExpandedLayout.hashCode() == expandingExams.hashCode() -> {
+                    Log.d("Adapter", "Adapter changed")
+                    if (!expandingExams.isExpanded) expandingExams.expand()
+                    lastExpandedEntry = entry.key
+                }
+                else -> {
+                    lastExpandedLayout.collapse()
+                    expandingExams.expand()
+                    lastExpandedLayout = expandingExams
+                    lastExpandedEntry = entry.key
+                }
+            }
+        }
+    }
+
+    private fun inflateExams(examListLinearLayout: LinearLayout, entry: MutableMap.MutableEntry<String, ArrayList<String>>) {
+        for (exam in entry.value) {
+            val examLayout = layoutInflater.inflate(R.layout.exam_list_item, examListLinearLayout, false)
+            val examTitle = examLayout.findViewById<TextView>(R.id.exam_name_textview)
+            examTitle.text = exam
+            examListLinearLayout.addView(examLayout)
+
+            // Create onclick listener which will open new activity with questions from
+            // the chosen exam
+            examLayout.setOnClickListener {
+                if (checkInternetConnection()) {
+                    getExamQuestion(exam, entry.key)
+                } else {
+                    Toast.makeText(this, getString(R.string.no_internet_toast), Toast.LENGTH_LONG).show()
+                }
+
+            }
+        }
     }
 
     // Check if there is an internet connection

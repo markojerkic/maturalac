@@ -30,10 +30,11 @@
         android:padding="15dp"
         android:id="@+id/exam_list_expandable">
 
-        <ListView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/exam_list_listview"/>
+            android:orientation="vertical"
+            android:id="@+id/exam_list_linearlayout"/>
 
     </net.cachapa.expandablelayout.ExpandableLayout>
 
