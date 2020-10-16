@@ -13,6 +13,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
@@ -20,6 +21,7 @@ import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import net.cachapa.expandablelayout.ExpandableLayout
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -38,9 +40,7 @@ class MainActivity : AppCompatActivity() {
 
 
     // Create objects of layouts and the container of the left and right layout
-    private val leftRightLinearContainer by lazy { findViewById<LinearLayout>(R.id.leftRightLinearLayout) }
-    private val leftLinearLayout by lazy { findViewById<LinearLayout>(R.id.left_linearLayout) }
-    private val rightLinearLayout by lazy { findViewById<LinearLayout>(R.id.right_linearLayout) }
+    private val subjectRowsLinearContainer by lazy { findViewById<LinearLayout>(R.id.subject_rows_linear_layout) }
 
     // Database and storage reference
     private val db: FirebaseFirestore by lazy { Firebase.firestore }
@@ -107,8 +107,7 @@ class MainActivity : AppCompatActivity() {
                     if (System.currentTimeMillis() - nameTextViewClickTime <= 3000L) {
                         IS_DEBUG = true
                         // Empty subject list
-                        leftLinearLayout.removeAllViews()
-                        rightLinearLayout.removeAllViews()
+                        // TODO: debugiranje
                         // Check for allowed exams again
                         downloadingIcon.visibility = View.VISIBLE
                         checkAllowedExams()
@@ -155,54 +154,66 @@ class MainActivity : AppCompatActivity() {
     // a master linear layout which is horizontal
     private fun inflateSubjects(allowed: TreeMap<String, ArrayList<String>>) {
 
+        lateinit var subjectRow: ConstraintLayout
+        var firstEntry = true
+
         for ((index, entry) in allowed.entries.withIndex()) {
             // Inflate the template view of the subjects
-            val subjectView =  layoutInflater.inflate(R.layout.subject_title, leftRightLinearContainer,
-                false) as TextView
+
+            if (firstEntry) {
+                subjectRow = layoutInflater.inflate(
+                    R.layout.subjects_row,
+                    subjectRowsLinearContainer,
+                    false
+                ) as ConstraintLayout
+                subjectRowsLinearContainer.addView(subjectRow)
+            }
+
+            // Find left and right subject
+            val leftSubject = subjectRow.findViewById<TextView>(R.id.left_subject)
+            val rightSubject = subjectRow.findViewById<TextView>(R.id.right_subject)
+            val expandingExams = subjectRow.findViewById<ExpandableLayout>(R.id.exam_list_expandable)
+            val examListView = subjectRow.findViewById<ListView>(R.id.exam_list_listview)
+
             // Initialize the text title from the list of subjects
-            subjectView.text = entry.key
-            // Initialize size to 170x170
-            subjectView.width = 170
-            subjectView.height = 170
+            if (firstEntry) {
+                leftSubject.text = entry.key
+                firstEntry = false
+            } else {
+                rightSubject.text = entry.key
+                firstEntry = true
+            }
             // Switch between left and right layout
-            if (index % 2 == 0)
-                leftLinearLayout.addView(subjectView)
-            else
-                rightLinearLayout.addView(subjectView)
-
+            if (index == allowed.entries.size-1 && index % 2 == 0)
+                rightSubject.visibility = View.GONE
             // Set on click action for the view
-            subjectView.setOnClickListener {
-                // Dialog pops up when a subject is clicked which shows which exams are available
-                // for that subject
-                val dialog = Dialog(this)
-                dialog.setContentView(R.layout.subject_list_dialog)
-                // Background is a rectangle with rounded edges, so we have to set the
-                // "background under the background" to be transparent, or else
-                // it shows up as white edges
-                dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            leftSubject.setOnClickListener {setSubjectOnClick(entry, examListView, expandingExams) }
+            rightSubject.setOnClickListener { setSubjectOnClick(entry, examListView, expandingExams) }
+        }
 
-                // Initialize the list view
-                val examsListView = dialog.findViewById<ListView>(R.id.exams_list_view)
-                // Set the adapter
-                examsListView.adapter = ExamsListAdapter(entry.value, layoutInflater)
+    }
 
-                // Create onclick listener which will open new activity with questions from
-                // the chosen exam
-                examsListView.setOnItemClickListener { _, _, position, _ ->
-                    if (checkInternetConnection()) {
-                        val chosenYear = entry.value[position]
-                        getExamQuestion(chosenYear, entry.key)
+    private fun setSubjectOnClick(entry: MutableMap.MutableEntry<String, ArrayList<String>>,
+                                  examListView: ListView, expandingExams: ExpandableLayout) {
+        // Set the adapter
+        examListView.adapter = ExamsListAdapter(entry.value, layoutInflater)
+
+        // Create onclick listener which will open new activity with questions from
+        // the chosen exam
+        examListView.setOnItemClickListener { _, _, position, _ ->
+            if (checkInternetConnection()) {
+                val chosenYear = entry.value[position]
+                getExamQuestion(chosenYear, entry.key)
 
 
-                    } else {
-                        Toast.makeText(this, getString(R.string.no_internet_toast), Toast.LENGTH_LONG).show()
-                    }
-                }
-                // Show the dialog
-                dialog.show()
+            } else {
+                Toast.makeText(this, getString(R.string.no_internet_toast), Toast.LENGTH_LONG).show()
             }
         }
 
+        // Expand the list
+        if (expandingExams.isExpanded) expandingExams.collapse()
+        else expandingExams.expand()
     }
 
     // Check if there is an internet connection
@@ -227,7 +238,6 @@ class MainActivity : AppCompatActivity() {
         val examQuestion = ArrayList<Question>()
         db.collection("pitanja").whereEqualTo("subject", chosenSubject)
             .whereEqualTo("year", chosenYear).get().addOnSuccessListener { result ->
-            //
                 for (r in result) {
                     val data = r.data
 
