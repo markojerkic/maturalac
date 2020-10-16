@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
@@ -54,6 +55,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var lastExpandedLayout: ExpandableLayout
     private lateinit var lastExpandedEntry: String
     private lateinit var lastClickedSubject: TextView
+    private lateinit var lastMargin: ImageView
     
     // Firebase analitics
     private lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -112,7 +114,7 @@ class MainActivity : AppCompatActivity() {
                     if (System.currentTimeMillis() - nameTextViewClickTime <= 3000L) {
                         IS_DEBUG = true
                         // Empty subject list
-                        // TODO: debugiranje
+                        subjectRowsLinearContainer.removeAllViews()
                         // Check for allowed exams again
                         downloadingIcon.visibility = View.VISIBLE
                         checkAllowedExams()
@@ -176,7 +178,9 @@ class MainActivity : AppCompatActivity() {
 
             // Find left and right subject
             val leftSubject = subjectRow.findViewById<TextView>(R.id.left_subject)
+            val leftMargin = subjectRow.findViewById<ImageView>(R.id.left_margin)
             val rightSubject = subjectRow.findViewById<TextView>(R.id.right_subject)
+            val rightMargin = subjectRow.findViewById<ImageView>(R.id.right_margin)
             val expandingExams = subjectRow.findViewById<ExpandableLayout>(R.id.exam_list_expandable)
             val examListLinearLayout = subjectRow.findViewById<LinearLayout>(R.id.exam_list_linearlayout)
 
@@ -185,38 +189,49 @@ class MainActivity : AppCompatActivity() {
                 leftSubject.text = entry.key
                 firstEntry = false
                 leftSubject.setOnClickListener {
-                    setClickedBackground(leftSubject, entry.key)
+                    setClickedBackground(leftSubject, leftMargin, entry.key)
                     setSubjectOnClick(entry, examListLinearLayout, expandingExams)
                 }
             } else {
                 rightSubject.text = entry.key
                 firstEntry = true
                 rightSubject.setOnClickListener {
-                    setClickedBackground(rightSubject, entry.key)
+                    setClickedBackground(rightSubject, rightMargin, entry.key)
                     setSubjectOnClick(entry, examListLinearLayout, expandingExams)
                 }
             }
             // Switch between left and right layout
             if (index == allowed.entries.size-1 && index % 2 == 0)
-                rightSubject.visibility = View.GONE
+                rightSubject.visibility = View.INVISIBLE
             // Set on click action for the view
         }
 
     }
 
-    private fun setClickedBackground(clicked: TextView?, subject: String) {
+    private fun setClickedBackground(clicked: TextView?, margin: ImageView?, subject: String) {
         if (this::lastExpandedEntry.isInitialized) {
             if (lastExpandedEntry != subject) {
-                if (this::lastClickedSubject.isInitialized)
+                if (this::lastClickedSubject.isInitialized) {
                     lastClickedSubject.setBackgroundResource(R.drawable.round_rectangle_subject_shape)
-                clicked!!.setBackgroundResource(R.drawable.round_rectangle_subject_list_background)
+                    lastClickedSubject.setTextColor(ContextCompat.getColor(this, R.color.black))
+                    lastMargin.visibility = View.INVISIBLE
+                }
+                clicked!!.setBackgroundResource(R.drawable.clicked_subject_shape)
+                clicked.setTextColor(ContextCompat.getColor(this, R.color.white))
+                margin!!.visibility = View.VISIBLE
                 lastClickedSubject = clicked
+                lastMargin = margin
             } else {
                 clicked!!.setBackgroundResource(R.drawable.round_rectangle_subject_shape)
+                lastClickedSubject.setTextColor(ContextCompat.getColor(this, R.color.black))
+                margin!!.visibility = View.INVISIBLE
             }
         } else {
-            clicked!!.setBackgroundResource(R.drawable.round_rectangle_subject_list_background)
+            clicked!!.setBackgroundResource(R.drawable.clicked_subject_shape)
+            clicked.setTextColor(ContextCompat.getColor(this, R.color.white))
+            margin!!.visibility = View.VISIBLE
             lastClickedSubject = clicked
+            lastMargin = margin
         }
     }
 
