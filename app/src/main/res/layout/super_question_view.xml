@@ -58,7 +58,15 @@
             app:zoomage_zoomable="true"
             app:zoomage_translatable="true"
             app:zoomage_minScale="0.6"
-            app:zoomage_maxScale="8"/>
+            app:zoomage_maxScale="8" />
+
+        <include
+            android:id="@+id/media_player"
+            layout="@layout/audio_player_laoyout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

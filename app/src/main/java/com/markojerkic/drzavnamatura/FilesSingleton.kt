@@ -1,5 +1,6 @@
 package com.markojerkic.drzavnamatura
 
+import android.net.Uri
 import android.util.Log
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -9,13 +10,18 @@ object FilesSingleton: Serializable {
     private val images: HashMap<String, ByteArray> = HashMap()
     private val answerImages: HashMap<String, ByteArray> = HashMap()
     private val superQuestionImages: HashMap<String, ByteArray> = HashMap()
-    private val audioFiles: HashMap<String, ByteArray> = HashMap()
+    private val audioFiles: HashMap<String, Uri> = HashMap()
     private val firebaseStorage = Firebase.storage.reference
+
     // For image download, upper limit
-    val ONE_MEGABYTE: Long = 1024*1024
+    val ONE_MEGABYTE: Long = 1024 * 1024
 
     fun add(id: String, byteArray: ByteArray) {
         images[id] = byteArray
+    }
+
+    fun getAudioUri(id: String): Uri {
+        return audioFiles[id]!!
     }
 
     fun getAnswerByteArray(id: String): ByteArray {
@@ -91,11 +97,15 @@ object FilesSingleton: Serializable {
 
     fun downloadAudio(question: Question, callback: FileDownloadCallback) {
         if (!containsAnswerKey(question.id)) {
-            firebaseStorage.child(question.audioFileName()!!).getBytes(ONE_MEGABYTE * 5).addOnSuccessListener {ba ->
-                Log.d("audio", ba.toString())
-                audioFiles[question.id] = ba
+            var uri: Uri? = null
+            firebaseStorage.child(question.audioFileName()!!).downloadUrl.continueWith { task ->
+                if (task.isSuccessful)
+                    audioFiles[question.id] = task.result!!
                 callback.positiveCallBack()
-            }.addOnFailureListener { callback.positiveCallBack() }.addOnCanceledListener { callback.positiveCallBack() }
+            }
+                .addOnFailureListener { callback.positiveCallBack() }
+                .addOnCanceledListener { callback.positiveCallBack() }
         } else callback.positiveCallBack()
     }
 }
+
