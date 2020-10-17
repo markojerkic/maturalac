@@ -359,23 +359,23 @@ class ExamActivity : AppCompatActivity() {
                                     start()
                                     mediaSeekbar.max = duration / 1000
                                     mediaReleased = false
+                                    mediaSeekbar.setOnSeekBarChangeListener(object :
+                                        SeekBar.OnSeekBarChangeListener {
+                                        override fun onProgressChanged(
+                                            p0: SeekBar?,
+                                            progress: Int,
+                                            fromUser: Boolean
+                                        ) {
+                                            if (fromUser)
+                                                seekTo(progress * 1000)
+                                        }
+
+                                        override fun onStartTrackingTouch(p0: SeekBar?) {}
+
+                                        override fun onStopTrackingTouch(p0: SeekBar?) {}
+
+                                    })
                                 }
-                                mediaSeekbar.setOnSeekBarChangeListener(object :
-                                    SeekBar.OnSeekBarChangeListener {
-                                    override fun onProgressChanged(
-                                        p0: SeekBar?,
-                                        progress: Int,
-                                        fromUser: Boolean
-                                    ) {
-                                        if (fromUser)
-                                            seekTo(progress * 1000)
-                                    }
-
-                                    override fun onStartTrackingTouch(p0: SeekBar?) {}
-
-                                    override fun onStopTrackingTouch(p0: SeekBar?) {}
-
-                                })
                             }
                             if (this@ExamActivity::seekbarRunnable.isInitialized)
                                 this.runOnUiThread(seekbarRunnable)
