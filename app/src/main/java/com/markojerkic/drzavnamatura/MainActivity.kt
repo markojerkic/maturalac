@@ -33,11 +33,16 @@ class MainActivity : AppCompatActivity() {
 
     // Icon which is shown while subjects are downloaded
     private val downloadingIcon by lazy { findViewById<LinearLayout>(R.id.loading_subjects_icon) }
+
     // Name TextView
     private val nameTextView by lazy { findViewById<TextView>(R.id.username_textview) }
+
     // Multi click event timing
     private var nameTextViewClickTime: Long = -1
     private var clickCounter = 0
+
+    // Scroll view
+    private val scrollView by lazy { findViewById<ScrollView>(R.id.main_activity_scroll) }
 
 
     // Create objects of layouts and the container of the left and right layout
@@ -247,6 +252,7 @@ class MainActivity : AppCompatActivity() {
             lastExpandedEntry = entry.key
             lastExpandedLayout = expandingExams
             expandingExams.expand()
+            scrollToExams(expandingExams)
         } else {
             when {
                 lastExpandedEntry == entry.key -> {
@@ -256,6 +262,7 @@ class MainActivity : AppCompatActivity() {
                 lastExpandedLayout.hashCode() == expandingExams.hashCode() -> {
                     Log.d("Adapter", "Adapter changed")
                     if (!expandingExams.isExpanded) expandingExams.expand()
+                    scrollToExams(expandingExams)
                     lastExpandedEntry = entry.key
                 }
                 else -> {
@@ -263,14 +270,33 @@ class MainActivity : AppCompatActivity() {
                     expandingExams.expand()
                     lastExpandedLayout = expandingExams
                     lastExpandedEntry = entry.key
+                    scrollToExams(expandingExams)
                 }
             }
         }
     }
 
-    private fun inflateExams(examListLinearLayout: LinearLayout, entry: MutableMap.MutableEntry<String, ArrayList<String>>) {
+    private fun scrollToExams(expandingExams: ExpandableLayout) {
+        // TODO
+        /*
+        expandingExams.setOnExpansionUpdateListener { expansionFraction, state ->
+            if (state == 3)
+                scrollView.post {
+                    scrollView.smoothScrollTo(0, expandingExams.y.toInt())
+                }
+        }
+
+         */
+
+    }
+
+    private fun inflateExams(
+        examListLinearLayout: LinearLayout,
+        entry: MutableMap.MutableEntry<String, ArrayList<String>>
+    ) {
         for (exam in entry.value) {
-            val examLayout = layoutInflater.inflate(R.layout.exam_list_item, examListLinearLayout, false)
+            val examLayout =
+                layoutInflater.inflate(R.layout.exam_list_item, examListLinearLayout, false)
             val examTitle = examLayout.findViewById<TextView>(R.id.exam_name_textview)
             examTitle.text = exam
             examListLinearLayout.addView(examLayout)
@@ -326,8 +352,8 @@ class MainActivity : AppCompatActivity() {
                 progressDialog.setContentView(R.layout.progress_bar_download)
                 progressDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 progressDialog.show()
-                val questionfiles = QuestionFiles(qs)
-                questionfiles.checkQuestions(object : QuestionFilesProcessedCallback {
+                val questionFiles = QuestionFiles(qs)
+                questionFiles.checkQuestions(object : QuestionFilesProcessedCallback {
                     @Override
                     override fun done() {
                         progressDialog.dismiss()
