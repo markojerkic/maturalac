@@ -5,14 +5,23 @@
     android:layout_height="wrap_content"
     android:padding="15dp">
 
-    <ImageView
-        android:id="@+id/play_pause_icon"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:src="@drawable/ic_play_arrow"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/play_pause_icon"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_play_arrow"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+        <ProgressBar
+            android:id="@+id/audio_progressbar"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
 
     <SeekBar
         android:id="@+id/media_seekbar"
