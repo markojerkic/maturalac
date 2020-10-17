@@ -1,6 +1,6 @@
 package com.markojerkic.drzavnamatura
 
 
-interface ImageDownloadCallback {
+interface FileDownloadCallback {
     fun positiveCallBack()
 }

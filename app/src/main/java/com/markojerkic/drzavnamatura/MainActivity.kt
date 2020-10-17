@@ -326,8 +326,8 @@ class MainActivity : AppCompatActivity() {
                 progressDialog.setContentView(R.layout.progress_bar_download)
                 progressDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 progressDialog.show()
-                val questionImages = QuestionFiles(qs)
-                questionImages.checkQuestions(object : QuestionImagesProcessedCallback {
+                val questionfiles = QuestionFiles(qs)
+                questionfiles.checkQuestions(object : QuestionFilesProcessedCallback {
                     @Override
                     override fun done() {
                         progressDialog.dismiss()

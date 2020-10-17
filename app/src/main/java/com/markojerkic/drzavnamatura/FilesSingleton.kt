@@ -5,10 +5,11 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.Serializable
 
-object ImagesSingleton: Serializable {
+object FilesSingleton: Serializable {
     private val images: HashMap<String, ByteArray> = HashMap()
     private val answerImages: HashMap<String, ByteArray> = HashMap()
     private val superQuestionImages: HashMap<String, ByteArray> = HashMap()
+    private val audioFiles: HashMap<String, ByteArray> = HashMap()
     private val firebaseStorage = Firebase.storage.reference
     // For image download, upper limit
     val ONE_MEGABYTE: Long = 1024*1024
@@ -33,11 +34,15 @@ object ImagesSingleton: Serializable {
         return images.containsKey(key)
     }
 
+    fun containsAudio(key: String): Boolean {
+        return audioFiles.containsKey(key)
+    }
+
     fun printAns() {
         Log.d("ans images", answerImages.toString())
     }
 
-    fun downloadAnsImg(question: Question, callback: ImageDownloadCallback) {
+    fun downloadAnsImg(question: Question, callback: FileDownloadCallback) {
         // Download answer image if exists
         if (!answerImages.containsKey(question.id)) {
             firebaseStorage.child(question.ansImg!!).getBytes(ONE_MEGABYTE).addOnSuccessListener { ba ->
@@ -48,7 +53,7 @@ object ImagesSingleton: Serializable {
 
     }
 
-    fun downloadImg(question: Question, callback: ImageDownloadCallback) {
+    fun downloadImg(question: Question, callback: FileDownloadCallback) {
         // If image is already stored in memory, don't download it
         // Just call the positive callback
         if (!images.containsKey(question.id)) {
@@ -65,7 +70,7 @@ object ImagesSingleton: Serializable {
         }
     }
 
-    fun downloadSuperImg(superImageName: String, callback: ImageDownloadCallback) {
+    fun downloadSuperImg(superImageName: String, callback: FileDownloadCallback) {
         if (superImageName != null && superImageName != "" && !superQuestionImages.containsKey(superImageName)) {
             firebaseStorage.child(superImageName).getBytes(ONE_MEGABYTE).addOnSuccessListener { ba ->
                 superQuestionImages[superImageName] = ba
@@ -82,5 +87,15 @@ object ImagesSingleton: Serializable {
 
     fun getSuperByteArray(superQuestionName: String): ByteArray {
         return superQuestionImages[superQuestionName]!!
+    }
+
+    fun downloadAudio(question: Question, callback: FileDownloadCallback) {
+        if (!containsAnswerKey(question.id)) {
+            firebaseStorage.child(question.audioFileName()!!).getBytes(ONE_MEGABYTE * 5).addOnSuccessListener {ba ->
+                Log.d("audio", ba.toString())
+                audioFiles[question.id] = ba
+                callback.positiveCallBack()
+            }.addOnFailureListener { callback.positiveCallBack() }.addOnCanceledListener { callback.positiveCallBack() }
+        } else callback.positiveCallBack()
     }
 }

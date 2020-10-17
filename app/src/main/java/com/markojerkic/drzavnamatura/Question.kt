@@ -15,29 +15,38 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
     val ansImg = checkForAnswerImage()
     var givenAns = String()
 
-    fun checkImageDownload(callback: ImageDownloadCallback) {
-        if (imgURI != null || ansImg!= null || checkSuperImage()) {
-            if (ImagesSingleton.containsKey(id))
+    fun checkFileDownload(callback: FileDownloadCallback) {
+        if (imgURI != null || ansImg!= null || checkSuperImage() || audioFileName() != null) {
+            if (FilesSingleton.containsKey(id))
                 callback.positiveCallBack()
             else if (imgURI != null)
                 downloadImg(callback)
 
-            if (ImagesSingleton.containsAnswerKey(id))
+            if (FilesSingleton.containsAnswerKey(id))
                 callback.positiveCallBack()
             else if (ansImg != null) downloadAnsImg(callback)
 
             if (superQuestion() != null && checkSuperImage()) {
-                if (ImagesSingleton.containsSuperImage(superImageName()!!))
+                if (FilesSingleton.containsSuperImage(superImageName()!!))
                     callback.positiveCallBack()
                 else downloadSuperImage(callback)
             }
+
+            if (FilesSingleton.containsAnswerKey(id))
+                callback.positiveCallBack()
+            else if (audioFileName() != null) downloadAudio(callback)
+
             if (ansImg != null && imgURI == null)
                 callback.positiveCallBack()
         }
     }
 
-    private fun downloadAnsImg(callback: ImageDownloadCallback) {
-        val imgSingleton = ImagesSingleton
+    private fun downloadAudio(callback: FileDownloadCallback) {
+        FilesSingleton.downloadAudio(this, callback)
+    }
+
+    private fun downloadAnsImg(callback: FileDownloadCallback) {
+        val imgSingleton = FilesSingleton
         imgSingleton.downloadAnsImg(this, callback)
     }
 
@@ -76,13 +85,13 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
         return null
     }
 
-    private fun downloadSuperImage(callback: ImageDownloadCallback) {
-        val imgSingleton = ImagesSingleton
+    private fun downloadSuperImage(callback: FileDownloadCallback) {
+        val imgSingleton = FilesSingleton
         imgSingleton.downloadSuperImg(superImageName()!!, callback)
     }
 
-    private fun downloadImg(callback: ImageDownloadCallback) {
-        val imgSingleton = ImagesSingleton
+    private fun downloadImg(callback: FileDownloadCallback) {
+        val imgSingleton = FilesSingleton
         imgSingleton.downloadImg(this, callback)
     }
 
@@ -100,4 +109,9 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
     }
 
     // Check if audio file exists
+    fun audioFileName(): String? {
+        if (questionMap.containsKey("audioName"))
+            return questionMap["audioName"].toString() + ".mp3"
+        return null
+    }
 }

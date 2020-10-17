@@ -154,9 +154,9 @@ class ExamActivity : AppCompatActivity() {
 
     private fun openLargeImage(imageViewNumber: Int) {
         when (imageViewNumber) {
-            0 -> Glide.with(this).load(ImagesSingleton.getByteArray(questions[counter].id)).into(dialogImageView)
-            1 -> Glide.with(this).load(ImagesSingleton.getAnswerByteArray(questions[counter].id)).into(dialogImageView)
-            2 -> Glide.with(this).load(ImagesSingleton.getSuperByteArray(questions[counter].superImageName()!!)).into(dialogImageView)
+            0 -> Glide.with(this).load(FilesSingleton.getByteArray(questions[counter].id)).into(dialogImageView)
+            1 -> Glide.with(this).load(FilesSingleton.getAnswerByteArray(questions[counter].id)).into(dialogImageView)
+            2 -> Glide.with(this).load(FilesSingleton.getSuperByteArray(questions[counter].superImageName()!!)).into(dialogImageView)
         }
 
         imageDialog.show()
@@ -287,9 +287,9 @@ class ExamActivity : AppCompatActivity() {
     }
 
     private fun setQuestion(currQuestion: Question, total: Int) {
-        if (ImagesSingleton.containsKey(currQuestion.id)
+        if (FilesSingleton.containsKey(currQuestion.id)
             && currQuestion.imgURI != null) {
-            Glide.with(this).load(ImagesSingleton.getByteArray(currQuestion.id)).into(questionImageView)
+            Glide.with(this).load(FilesSingleton.getByteArray(currQuestion.id)).into(questionImageView)
             questionImageView.visibility = View.VISIBLE
         } else {
             questionImageView.visibility = View.GONE
@@ -401,8 +401,8 @@ class ExamActivity : AppCompatActivity() {
 
                 if (currQuestion.ansImg != null
                     && (examState == ExamState.GRADING || examState == ExamState.GRADE_ONE)
-                    && ImagesSingleton.containsAnswerKey(currQuestion.id)) {
-                    Glide.with(this).load(ImagesSingleton.getAnswerByteArray(currQuestion.id)).into(typeAnswerImage)
+                    && FilesSingleton.containsAnswerKey(currQuestion.id)) {
+                    Glide.with(this).load(FilesSingleton.getAnswerByteArray(currQuestion.id)).into(typeAnswerImage)
                     typeAnswerImage.visibility = View.VISIBLE
                 } else {
                     typeAnswerImage.visibility = View.GONE
@@ -421,11 +421,11 @@ class ExamActivity : AppCompatActivity() {
                 answerType = AnswerType.LONG
             }
             // Add answer image if exists, else make the ImageView GONE
-            ImagesSingleton.printAns()
+            FilesSingleton.printAns()
             if (currQuestion.ansImg != null
                 && (examState == ExamState.GRADING || examState == ExamState.GRADE_ONE)
-                && ImagesSingleton.containsAnswerKey(currQuestion.id)) {
-                Glide.with(this).load(ImagesSingleton.getAnswerByteArray(currQuestion.id)).into(longAnswerImage)
+                && FilesSingleton.containsAnswerKey(currQuestion.id)) {
+                Glide.with(this).load(FilesSingleton.getAnswerByteArray(currQuestion.id)).into(longAnswerImage)
                 longAnswerImage.visibility = View.VISIBLE
             } else {
                 longAnswerImage.visibility = View.GONE
@@ -448,10 +448,10 @@ class ExamActivity : AppCompatActivity() {
         }
         // Check for image
         if (currQuestion.superImgExists()) {
-            if (ImagesSingleton.containsSuperImage(currQuestion.superImageName()!!)) {
+            if (FilesSingleton.containsSuperImage(currQuestion.superImageName()!!)) {
                 superImageView.visibility = View.VISIBLE
                 Glide.with(this)
-                    .load(ImagesSingleton.getSuperByteArray(currQuestion.superImageName()!!))
+                    .load(FilesSingleton.getSuperByteArray(currQuestion.superImageName()!!))
                     .into(superImageView)
             }
         } else {

@@ -15,24 +15,24 @@ class QuestionFiles(private val questions: ArrayList<Question>): Serializable {
                 total++
             if (question.checkSuperImage())
                 total++
-            /*if (question.audioName != null)
-                total++*/
+            if (question.audioFileName() != null)
+                total++
         }
         return total
     }
 
-    fun checkQuestions(imagesProcessedCallback: QuestionImagesProcessedCallback) {
+    fun checkQuestions(filesProcessedCallback: QuestionFilesProcessedCallback) {
         // As Images are downloaded add them to the map
         for (question in questions) {
-          question.checkImageDownload(object: ImageDownloadCallback {
+          question.checkFileDownload(object: FileDownloadCallback {
               @Override
               override fun positiveCallBack() {
                   filesDownloaded++
-                  imagesProcessedCallback.updateDownload(filesDownloaded.toDouble()/totalFiles.toDouble())
+                  filesProcessedCallback.updateDownload(filesDownloaded.toDouble()/totalFiles.toDouble())
                   // If number of images processed equal to number of questions sent
                   // Mark as done
                   if (filesDownloaded == totalFiles)
-                      imagesProcessedCallback.done()
+                      filesProcessedCallback.done()
               }
           })
         }
