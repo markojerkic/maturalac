@@ -12,6 +12,8 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import com.jsibbold.zoomage.ZoomageView
 import io.github.kexanie.library.MathView
 import net.cachapa.expandablelayout.ExpandableLayout
@@ -103,9 +105,15 @@ class ExamActivity : AppCompatActivity() {
     private val handler by lazy { Handler(Looper.getMainLooper()) }
     private var currentlyPlaying = ""
 
+    private val mAdView by lazy { findViewById<AdView>(R.id.adView) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exam)
+
+        val adRequest = AdRequest.Builder().build()
+        this.mAdView.loadAd(adRequest)
+
 
         // Get questions for the exam
         val examName = intent.extras!!["examName"] as String

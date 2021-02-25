@@ -15,6 +15,9 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
@@ -25,6 +28,7 @@ import com.google.firebase.ktx.Firebase
 import net.cachapa.expandablelayout.ExpandableLayout
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -65,10 +69,20 @@ class MainActivity : AppCompatActivity() {
     // Firebase analitics
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
+    // Ad view
+    private val adView by lazy { findViewById<AdView>(R.id.ad_view_main_activity_footer) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
+
+        // Ad mob
+        MobileAds.initialize(this) {}
+
+        val adRequest = AdRequest.Builder().build()
+        this.adView.loadAd(adRequest)
+
 
         // Initialize firebase app
         FirebaseApp.initializeApp(this)
@@ -242,7 +256,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setSubjectOnClick(
         entry: MutableMap.MutableEntry<String, ArrayList<String>>,
-        examListView: LinearLayout, expandingExams: ExpandableLayout) {
+        examListView: LinearLayout, expandingExams: ExpandableLayout
+    ) {
         // Set the adapter
         examListView.removeAllViews()
         inflateExams(examListView, entry)
@@ -371,7 +386,7 @@ class MainActivity : AppCompatActivity() {
                     param("subject_opened", chosenSubject)
                 }
 
-            }.addOnFailureListener {e -> Log.e("Firestore exception", e.toString())}
+            }.addOnFailureListener { e -> Log.e("Firestore exception", e.toString())}
         return examQuestion
 
     }

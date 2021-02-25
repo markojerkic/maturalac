@@ -9,8 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ExamActivity"
-            android:screenOrientation="portrait"></activity>
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-6739484391129044~8800191817"/>
+
+        <activity
+            android:name=".ExamActivity"
+            android:screenOrientation="portrait" />
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
