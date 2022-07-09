@@ -15,7 +15,7 @@ const Subject: React.FC<{subject: string; exams: string[]}> = ({subject, exams})
 }
 
 const Home: NextPage = () => {
-  const {data, isLoading, error} = trpc.useQuery(["exams.get-subject-exams-tree"]);
+  const {data, isLoading} = trpc.useQuery(["exams.get-subject-exams-tree"]);
 
   if (!data || isLoading) {
     return <div>Loading...</div>;
