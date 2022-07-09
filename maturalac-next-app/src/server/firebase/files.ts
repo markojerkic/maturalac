@@ -1,4 +1,4 @@
-import { storage } from "./firebase"
+import { storage } from "."
 
 const getFileDownloadLink = async (filename: string, isImage: boolean = true) => {
   return (await storage.file(`${filename}.${isImage? 'png': 'mp3'}`)).getSignedUrl({

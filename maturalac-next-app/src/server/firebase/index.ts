@@ -2,6 +2,7 @@ import { apps } from 'firebase-admin';
 import { initializeApp, cert, ServiceAccount, App } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
+import { getAnalytics } from 'firebase/analytics';
 import env from '../../utils/env';
 
 const firebaseConfig = {
@@ -27,5 +28,6 @@ if (!apps.length) {
 
 const firestore = getFirestore();
 const storage = getStorage().bucket();
+const analytics = getAnalytics();
 
-export {firestore, storage};
+export {firestore, storage, analytics};

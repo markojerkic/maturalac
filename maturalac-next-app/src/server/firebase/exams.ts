@@ -1,5 +1,5 @@
 import { z } from "zod"
-import {firestore} from "./firebase"
+import {firestore} from "."
 
 const subjectValidator = z.object({
   id: z.string(),

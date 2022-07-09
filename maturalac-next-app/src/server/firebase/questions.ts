@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { getFileDownloadLink } from "./files";
-import {firestore} from "./firebase";
+import {firestore} from ".";
 
 const questionValidator = z.object({
   question: z.string(),
