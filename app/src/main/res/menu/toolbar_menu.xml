@@ -8,10 +8,11 @@
         android:iconTint="@color/colorSecondaryLight"
         android:icon="@drawable/ic_insert_comment"/>
         -->
-    <item android:id="@+id/info"
-        android:title="info"
-        app:showAsAction="always"
+    <item
+        android:id="@+id/info"
+        android:icon="@drawable/ic_info"
         android:iconTint="@color/colorSecondaryLight"
-        android:icon="@drawable/ic_info"/>
+        android:title="info"
+        app:showAsAction="always" />
 
 </menu>

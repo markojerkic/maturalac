@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="15dp"
     android:foreground="?android:attr/selectableItemBackground"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:padding="15dp">
 
     <TextView
+        android:id="@+id/exam_name_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2019/20. JESEN"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/exam_title_icon"
         android:layout_marginStart="10dp"
         android:layout_marginLeft="10dp"
-        android:id="@+id/exam_name_textview"
         android:fontFamily="@font/roboto"
+        android:text="2019/20. JESEN"
+        android:textColor="#FFF"
         android:textSize="20sp"
-        android:textColor="#FFF" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/exam_title_icon"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
+        android:id="@+id/exam_title_icon"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:src="@drawable/ic_keyboard_arrow_right_24px"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:id="@+id/exam_title_icon"
+        app:layout_constraintTop_toTopOf="parent"
         app:tint="#FFF" />
 
 

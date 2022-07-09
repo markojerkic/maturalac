@@ -15,8 +15,6 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -27,7 +25,6 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import net.cachapa.expandablelayout.ExpandableLayout
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity() {
@@ -65,12 +62,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var lastExpandedEntry: String
     private lateinit var lastClickedSubject: TextView
     private lateinit var lastMargin: ImageView
-    
+
     // Firebase analitics
     private lateinit var firebaseAnalytics: FirebaseAnalytics
-
-    // Ad view
-    private val adView by lazy { findViewById<AdView>(R.id.ad_view_main_activity_footer) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,9 +73,6 @@ class MainActivity : AppCompatActivity() {
 
         // Ad mob
         MobileAds.initialize(this) {}
-
-        val adRequest = AdRequest.Builder().build()
-        this.adView.loadAd(adRequest)
 
 
         // Initialize firebase app
@@ -200,8 +191,10 @@ class MainActivity : AppCompatActivity() {
             val leftMargin = subjectRow.findViewById<ImageView>(R.id.left_margin)
             val rightSubject = subjectRow.findViewById<TextView>(R.id.right_subject)
             val rightMargin = subjectRow.findViewById<ImageView>(R.id.right_margin)
-            val expandingExams = subjectRow.findViewById<ExpandableLayout>(R.id.exam_list_expandable)
-            val examListLinearLayout = subjectRow.findViewById<LinearLayout>(R.id.exam_list_linearlayout)
+            val expandingExams =
+                subjectRow.findViewById<ExpandableLayout>(R.id.exam_list_expandable)
+            val examListLinearLayout =
+                subjectRow.findViewById<LinearLayout>(R.id.exam_list_linearlayout)
 
             // Initialize the text title from the list of subjects
             if (firstEntry) {
@@ -220,7 +213,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             // Switch between left and right layout
-            if (index == allowed.entries.size-1 && index % 2 == 0)
+            if (index == allowed.entries.size - 1 && index % 2 == 0)
                 rightSubject.visibility = View.INVISIBLE
             // Set on click action for the view
         }
@@ -322,7 +315,8 @@ class MainActivity : AppCompatActivity() {
                 if (checkInternetConnection()) {
                     getExamQuestion(exam, entry.key)
                 } else {
-                    Toast.makeText(this, getString(R.string.no_internet_toast), Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getString(R.string.no_internet_toast), Toast.LENGTH_LONG)
+                        .show()
                 }
 
             }
@@ -331,7 +325,8 @@ class MainActivity : AppCompatActivity() {
 
     // Check if there is an internet connection
     private fun checkInternetConnection(): Boolean {
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.activeNetworkInfo
         return networkInfo != null && networkInfo.isConnected
     }
@@ -386,7 +381,7 @@ class MainActivity : AppCompatActivity() {
                     param("subject_opened", chosenSubject)
                 }
 
-            }.addOnFailureListener { e -> Log.e("Firestore exception", e.toString())}
+            }.addOnFailureListener { e -> Log.e("Firestore exception", e.toString()) }
         return examQuestion
 
     }

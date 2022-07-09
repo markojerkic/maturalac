@@ -6,7 +6,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.Serializable
 
-object FilesSingleton: Serializable {
+object FilesSingleton : Serializable {
     private val images: HashMap<String, ByteArray> = HashMap()
     private val answerImages: HashMap<String, ByteArray> = HashMap()
     private val superQuestionImages: HashMap<String, ByteArray> = HashMap()
@@ -51,10 +51,12 @@ object FilesSingleton: Serializable {
     fun downloadAnsImg(question: Question, callback: FileDownloadCallback) {
         // Download answer image if exists
         if (!answerImages.containsKey(question.id)) {
-            firebaseStorage.child(question.ansImg!!).getBytes(ONE_MEGABYTE).addOnSuccessListener { ba ->
-                answerImages[question.id] = ba
-                callback.positiveCallBack()
-            }.addOnFailureListener{callback.positiveCallBack()}.addOnCanceledListener { callback.positiveCallBack() }
+            firebaseStorage.child(question.ansImg!!).getBytes(ONE_MEGABYTE)
+                .addOnSuccessListener { ba ->
+                    answerImages[question.id] = ba
+                    callback.positiveCallBack()
+                }.addOnFailureListener { callback.positiveCallBack() }
+                .addOnCanceledListener { callback.positiveCallBack() }
         }
 
     }
@@ -77,11 +79,16 @@ object FilesSingleton: Serializable {
     }
 
     fun downloadSuperImg(superImageName: String, callback: FileDownloadCallback) {
-        if (superImageName != null && superImageName != "" && !superQuestionImages.containsKey(superImageName)) {
-            firebaseStorage.child(superImageName).getBytes(ONE_MEGABYTE).addOnSuccessListener { ba ->
-                superQuestionImages[superImageName] = ba
-                callback.positiveCallBack()
-            }.addOnFailureListener{callback.positiveCallBack()}.addOnCanceledListener { callback.positiveCallBack() }
+        if (superImageName != null && superImageName != "" && !superQuestionImages.containsKey(
+                superImageName
+            )
+        ) {
+            firebaseStorage.child(superImageName).getBytes(ONE_MEGABYTE)
+                .addOnSuccessListener { ba ->
+                    superQuestionImages[superImageName] = ba
+                    callback.positiveCallBack()
+                }.addOnFailureListener { callback.positiveCallBack() }
+                .addOnCanceledListener { callback.positiveCallBack() }
         } else if (superQuestionImages.containsKey(superImageName)) {
             callback.positiveCallBack()
         }

@@ -10,14 +10,15 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-6739484391129044~8800191817"/>
+            android:value="ca-app-pub-6739484391129044~8800191817" />
 
         <activity
             android:name=".ExamActivity"
             android:screenOrientation="fullSensor" />
-        <activity android:name=".MainActivity"
-            android:screenOrientation="fullSensor"
-            android:exported="true">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

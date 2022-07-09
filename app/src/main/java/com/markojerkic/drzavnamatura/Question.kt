@@ -2,7 +2,7 @@ package com.markojerkic.drzavnamatura
 
 import java.io.Serializable
 
-class Question (private val questionMap: Map<String, Any>, val id: String): Serializable {
+class Question(private val questionMap: Map<String, Any>, val id: String) : Serializable {
     val question = questionMap["question"].toString()
     val ansA = questionMap["ansA"].toString()
     val ansB = questionMap["ansB"].toString()
@@ -16,7 +16,7 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
     var givenAns = String()
 
     fun checkFileDownload(callback: FileDownloadCallback) {
-        if (imgURI != null || ansImg!= null || checkSuperImage() || audioFileName() != null) {
+        if (imgURI != null || ansImg != null || checkSuperImage() || audioFileName() != null) {
             if (FilesSingleton.containsKey(id))
                 callback.positiveCallBack()
             else if (imgURI != null)
@@ -62,7 +62,7 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
     private fun checkForImage(): String? {
         // If question map contains image uri, get it and return it
         // Also download the image
-        if (questionMap.containsKey("imageURI")){
+        if (questionMap.containsKey("imageURI")) {
             return questionMap["imageURI"].toString() + ".png"
         }
         return null
@@ -71,7 +71,7 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
     private fun checkForAnswerImage(): String? {
         // If question map contains answer image uri, get it and return it
         // Also download the image
-        if (questionMap.containsKey("ansImg")){
+        if (questionMap.containsKey("ansImg")) {
             return questionMap["ansImg"].toString() + ".png"
         }
         return null
@@ -104,6 +104,7 @@ class Question (private val questionMap: Map<String, Any>, val id: String): Seri
             return questionMap["superQuestionImage"]!!.toString() + ".png"
         return null
     }
+
     fun checkSuperImage(): Boolean {
         return questionMap.containsKey("superQuestionImage")
     }

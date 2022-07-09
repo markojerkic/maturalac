@@ -20,7 +20,7 @@
 
     <style name="actionBarStyle" parent="@style/Widget.AppCompat.ActionBar">
         <item name="background">@android:color/transparent</item>
-       <!-- <item name="titleTextStyle">@style/titleTextStyle</item>-->
+        <!-- <item name="titleTextStyle">@style/titleTextStyle</item>-->
     </style>
 
     <style name="titleTextStyle" parent="@style/TextAppearance.Compat.Notification.Title">

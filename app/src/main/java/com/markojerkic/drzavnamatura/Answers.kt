@@ -13,7 +13,7 @@ class Answers {
     // Add typed answer
     fun add(question: Question, ans: String) {
         if (question.typeOfAnswer == AnswerType.TYPE)
-           typeAnswers[question.id] = ans
+            typeAnswers[question.id] = ans
     }
 
     // Check if answer is already given

@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
 import com.jsibbold.zoomage.ZoomageView
 import io.github.kexanie.library.MathView
 import net.cachapa.expandablelayout.ExpandableLayout
@@ -34,7 +33,7 @@ class ExamActivity : AppCompatActivity() {
     private val expandLinearWraper by lazy { findViewById<LinearLayout>(R.id.exand_liner_wraper) }
     private val clickToExpand by lazy { findViewById<ConstraintLayout>(R.id.click_to_expand) }
     private val superQuestionExpandableLayout by lazy { findViewById<ExpandableLayout>(R.id.expandable_super_question) }
-    private val superQuestionText by lazy{ findViewById<TextView>(R.id.super_question_text_view) }
+    private val superQuestionText by lazy { findViewById<TextView>(R.id.super_question_text_view) }
     private val superQuestionMath by lazy { findViewById<MathView>(R.id.super_question_math_view) }
     private val superImageView by lazy { findViewById<ImageView>(R.id.super_question_image) }
 
@@ -49,31 +48,38 @@ class ExamActivity : AppCompatActivity() {
     private val ansBText by lazy { findViewById<TextView>(R.id.answer_b_text) }
     private val ansCText by lazy { findViewById<TextView>(R.id.answer_c_text) }
     private val ansDText by lazy { findViewById<TextView>(R.id.answer_d_text) }
+
     // Math views
     private val questionMathView by lazy { findViewById<MathView>(R.id.question_math_view) }
     private val ansAMath by lazy { findViewById<MathView>(R.id.answer_a_math) }
     private val ansBMath by lazy { findViewById<MathView>(R.id.answer_b_math) }
     private val ansCMath by lazy { findViewById<MathView>(R.id.answer_c_math) }
     private val ansDMath by lazy { findViewById<MathView>(R.id.answer_d_math) }
+
     // Find elements for switching questions
     private val nextQuestion by lazy { findViewById<ImageView>(R.id.next_question) }
     private val previousQuestion by lazy { findViewById<ImageView>(R.id.previous_question) }
     private val questionCounterTextView by lazy { findViewById<TextView>(R.id.question_counter) }
+
     // ViewSwitcher for changing between types of answer entries
     private val answerBarConstraintLayout by lazy { findViewById<ConstraintLayout>(R.id.question_type_switcher_constraint_layout) }
     private val abcdAnswerBar by lazy { findViewById<LinearLayout>(R.id.abcd_answer_constraint_layout) }
     private val typeAnswerBar by lazy { findViewById<LinearLayout>(R.id.type_answer_constraint_layout) }
     private val longAnswerBar by lazy { findViewById<LinearLayout>(R.id.long_answer_constraint_layout) }
+
     // Type answer EditText
     private val typeAnswerEditText by lazy { findViewById<EditText>(R.id.type_answer_edit_text) }
-    private val typeAnswerCorrectText by lazy { findViewById<TextView>(R.id.type_ans_correct_ans)}
+    private val typeAnswerCorrectText by lazy { findViewById<TextView>(R.id.type_ans_correct_ans) }
     private val typeAnswerImage by lazy { findViewById<ImageView>(R.id.type_answer_image) }
     private val typeAnswerMath by lazy { findViewById<MathView>(R.id.type_ans_mathview) }
     private var answerType = AnswerType.ABCD
+
     // Answers collection
     val answers = Answers()
+
     // Questions array list
     private lateinit var questions: ArrayList<Question>
+
     // Grade button
     private val gradeFullButton by lazy { findViewById<Button>(R.id.grade_button) }
     private val gradeQuestion by lazy { findViewById<Button>(R.id.grade_one) }
@@ -105,14 +111,11 @@ class ExamActivity : AppCompatActivity() {
     private val handler by lazy { Handler(Looper.getMainLooper()) }
     private var currentlyPlaying = ""
 
-    private val mAdView by lazy { findViewById<AdView>(R.id.adView) }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exam)
 
         val adRequest = AdRequest.Builder().build()
-        this.mAdView.loadAd(adRequest)
 
 
         // Get questions for the exam
@@ -184,9 +187,13 @@ class ExamActivity : AppCompatActivity() {
 
     private fun openLargeImage(imageViewNumber: Int) {
         when (imageViewNumber) {
-            0 -> Glide.with(this).load(FilesSingleton.getByteArray(questions[counter].id)).into(dialogImageView)
-            1 -> Glide.with(this).load(FilesSingleton.getAnswerByteArray(questions[counter].id)).into(dialogImageView)
-            2 -> Glide.with(this).load(FilesSingleton.getSuperByteArray(questions[counter].superImageName()!!)).into(dialogImageView)
+            0 -> Glide.with(this).load(FilesSingleton.getByteArray(questions[counter].id))
+                .into(dialogImageView)
+            1 -> Glide.with(this).load(FilesSingleton.getAnswerByteArray(questions[counter].id))
+                .into(dialogImageView)
+            2 -> Glide.with(this)
+                .load(FilesSingleton.getSuperByteArray(questions[counter].superImageName()!!))
+                .into(dialogImageView)
         }
 
         imageDialog.show()
@@ -215,7 +222,7 @@ class ExamActivity : AppCompatActivity() {
         typeAnswerEditText.isEnabled = false
         // Scroll to the top
         scrollView.fullScroll(ScrollView.FOCUS_UP)
-        scrollView.smoothScrollTo(0,0)
+        scrollView.smoothScrollTo(0, 0)
     }
 
     private fun setTypeAnswer() {
@@ -272,7 +279,7 @@ class ExamActivity : AppCompatActivity() {
         ansDBox.setBackgroundResource(R.drawable.exam_question_cards)
     }
 
-    private fun colorBoxes (correct: View, i1: View, i2: View, i3: View) {
+    private fun colorBoxes(correct: View, i1: View, i2: View, i3: View) {
         correct.setBackgroundResource(R.drawable.exam_card_clicked)
         i1.setBackgroundResource(R.drawable.exam_question_cards)
         i2.setBackgroundResource(R.drawable.exam_question_cards)
@@ -291,12 +298,12 @@ class ExamActivity : AppCompatActivity() {
     }
 
     private fun setCounterTextView(total: Int) {
-        questionCounterTextView.text = "Pitanje ${counter+1} / $total"
+        questionCounterTextView.text = "Pitanje ${counter + 1} / $total"
     }
 
     private fun nextQuestion() {
         // If all questions have been answered, return
-        if (counter >= questions.size-1)
+        if (counter >= questions.size - 1)
             return
         counter++
         // Create instance of the current questions, increase the counter
@@ -319,7 +326,8 @@ class ExamActivity : AppCompatActivity() {
     private fun setQuestion(currQuestion: Question, total: Int) {
         if (currQuestion.audioFileName() == null ||
             (currentlyPlaying != ""
-            && currentlyPlaying != FilesSingleton.getAudioUri(currQuestion.id).toString())) {
+                    && currentlyPlaying != FilesSingleton.getAudioUri(currQuestion.id).toString())
+        ) {
             // Release media player
             if (this::mediaPlayer.isInitialized)
                 mediaPlayer.release()
@@ -334,7 +342,8 @@ class ExamActivity : AppCompatActivity() {
 
 
         if (FilesSingleton.containsKey(currQuestion.id)
-            && currQuestion.imgURI != null) {
+            && currQuestion.imgURI != null
+        ) {
             Glide.with(this).load(FilesSingleton.getByteArray(currQuestion.id))
                 .into(questionImageView)
             questionImageView.visibility = View.VISIBLE
@@ -529,8 +538,10 @@ class ExamActivity : AppCompatActivity() {
 
                 if (currQuestion.ansImg != null
                     && (examState == ExamState.GRADING || examState == ExamState.GRADE_ONE)
-                    && FilesSingleton.containsAnswerKey(currQuestion.id)) {
-                    Glide.with(this).load(FilesSingleton.getAnswerByteArray(currQuestion.id)).into(typeAnswerImage)
+                    && FilesSingleton.containsAnswerKey(currQuestion.id)
+                ) {
+                    Glide.with(this).load(FilesSingleton.getAnswerByteArray(currQuestion.id))
+                        .into(typeAnswerImage)
                     typeAnswerImage.visibility = View.VISIBLE
                 } else {
                     typeAnswerImage.visibility = View.GONE
@@ -552,8 +563,10 @@ class ExamActivity : AppCompatActivity() {
             FilesSingleton.printAns()
             if (currQuestion.ansImg != null
                 && (examState == ExamState.GRADING || examState == ExamState.GRADE_ONE)
-                && FilesSingleton.containsAnswerKey(currQuestion.id)) {
-                Glide.with(this).load(FilesSingleton.getAnswerByteArray(currQuestion.id)).into(longAnswerImage)
+                && FilesSingleton.containsAnswerKey(currQuestion.id)
+            ) {
+                Glide.with(this).load(FilesSingleton.getAnswerByteArray(currQuestion.id))
+                    .into(longAnswerImage)
                 longAnswerImage.visibility = View.VISIBLE
             } else {
                 longAnswerImage.visibility = View.GONE

@@ -2,7 +2,7 @@ package com.markojerkic.drzavnamatura
 
 import java.io.Serializable
 
-class QuestionFiles(private val questions: ArrayList<Question>): Serializable {
+class QuestionFiles(private val questions: ArrayList<Question>) : Serializable {
     var filesDownloaded = 0
     var totalFiles = totalFiles()
 
@@ -24,17 +24,17 @@ class QuestionFiles(private val questions: ArrayList<Question>): Serializable {
     fun checkQuestions(filesProcessedCallback: QuestionFilesProcessedCallback) {
         // As Images are downloaded add them to the map
         for (question in questions) {
-          question.checkFileDownload(object: FileDownloadCallback {
-              @Override
-              override fun positiveCallBack() {
-                  filesDownloaded++
-                  filesProcessedCallback.updateDownload(filesDownloaded.toDouble()/totalFiles.toDouble())
-                  // If number of images processed equal to number of questions sent
-                  // Mark as done
-                  if (filesDownloaded == totalFiles)
-                      filesProcessedCallback.done()
-              }
-          })
+            question.checkFileDownload(object : FileDownloadCallback {
+                @Override
+                override fun positiveCallBack() {
+                    filesDownloaded++
+                    filesProcessedCallback.updateDownload(filesDownloaded.toDouble() / totalFiles.toDouble())
+                    // If number of images processed equal to number of questions sent
+                    // Mark as done
+                    if (filesDownloaded == totalFiles)
+                        filesProcessedCallback.done()
+                }
+            })
         }
     }
 }

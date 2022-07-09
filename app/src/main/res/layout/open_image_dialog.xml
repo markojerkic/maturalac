@@ -1,46 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <com.jsibbold.zoomage.ZoomageView
+        android:id="@+id/large_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        app:zoomage_restrictBounds="false"
         app:zoomage_animateOnReset="true"
-        app:zoomage_autoResetMode="UNDER"
         app:zoomage_autoCenter="true"
-        app:zoomage_zoomable="true"
-        app:zoomage_translatable="true"
-        app:zoomage_minScale="0.6"
+        app:zoomage_autoResetMode="UNDER"
         app:zoomage_maxScale="8"
-        android:id="@+id/large_image"/>
+        app:zoomage_minScale="0.6"
+        app:zoomage_restrictBounds="false"
+        app:zoomage_translatable="true"
+        app:zoomage_zoomable="true" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/full_image_action_bar"
         android:layout_width="match_parent"
         android:layout_height="55dp"
-        android:id="@+id/full_image_action_bar"
         android:layout_alignParentTop="true">
-<!--
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorSecondaryDark"
-            android:alpha="0.4"/>-->
+        <!--
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorSecondaryDark"
+                    android:alpha="0.4"/>-->
 
         <ImageView
+            android:id="@+id/image_back_button"
             android:layout_width="55dp"
             android:layout_height="55dp"
-            android:src="@drawable/ic_forward"
+            android:alpha="0.5"
             android:padding="10dp"
             android:rotation="180"
-            android:alpha="0.5"
-            android:id="@+id/image_back_button"
+            android:src="@drawable/ic_forward"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:tint="@color/colorPrimaryLight" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
