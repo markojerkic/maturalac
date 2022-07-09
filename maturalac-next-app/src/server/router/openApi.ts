@@ -1,11 +1,12 @@
 import { generateOpenApiDocument } from "trpc-openapi";
 import { appRouter } from ".";
+import { getBaseUrl } from "../../utils/trpc";
 
 const openApiDocument = generateOpenApiDocument(appRouter, {
   title: 'tRPC OpenAPI',
   version: '1.0.0',
   tags: ['auth', 'users', 'posts'],
-  baseUrl: 'http://localhost:3000/api'
+  baseUrl: `${getBaseUrl()}/api`,
 });
 
 export default openApiDocument;
