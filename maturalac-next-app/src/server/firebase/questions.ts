@@ -1,5 +1,6 @@
 import { z } from "zod";
-import firestore from "./firestore";
+import { getFileDownloadLink } from "./files";
+import {firestore} from "./firebase";
 
 const questionValidator = z.object({
   question: z.string(),
@@ -18,20 +19,25 @@ const questionValidator = z.object({
   imageURI: z.string().optional(),
 });
 
-const getAllQuestions = async () => {
-  const questionsSnapshot = (await firestore.collection('pitanja').get()).docs.map(doc => doc.data());
-  const allKeys = Array.from(new Set(
-    ...questionsSnapshot.map((q) => Object.keys(q))
-  ));
-  return allKeys;
-};
+type Question = z.infer<typeof questionValidator>;
+
+const addDownloadUrls = (question: Question) => {
+  return {
+    ...question,
+    audioDownloadUrl: question.audioName? getFileDownloadLink(question.audioName): null,
+    imageDownloadUrl: question.imageURI? getFileDownloadLink(question.imageURI): null,
+    superQuestionImageDownloadUrl: question.superQuestionImage? getFileDownloadLink(question.superQuestionImage): null,
+  }
+}
 
 const getQuestionsBySubjectAndExam = async (subject: string, exam: string) => {
   const qs = (await firestore.collection('pitanja').where('subject', '==', subject)
     .where('year', '==', exam).get()).docs.map(doc => doc.data());
-  const questions = questionValidator.array().parse(qs);
+  const questions = questionValidator.array().parse(qs).map(addDownloadUrls);
+
+  questions.filter((q) => q.imageDownloadUrl).forEach(console.log);
 
   return questions;
 }
 
-export { getAllQuestions, getQuestionsBySubjectAndExam };
+export { getQuestionsBySubjectAndExam };
