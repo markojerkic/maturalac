@@ -1,4 +1,4 @@
-import { z } from "zod";
+const z = require('zod');
 
 const envValidator = z.object({
   FIRESTORE_URL: z.string(),

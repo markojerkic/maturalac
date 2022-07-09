@@ -1,5 +1,7 @@
 import { apps } from 'firebase-admin';
-import { initializeApp, cert, ServiceAccount, App } from 'firebase-admin/app';
+import {
+  initializeApp, cert, ServiceAccount, App,
+} from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
 import { getAnalytics } from 'firebase/analytics';
@@ -16,18 +18,19 @@ const firebaseConfig = {
   token_uri: env.token_uri,
   auth_provider_x509_cert_url: env.auth_provider_x509_cert_url,
   client_x509_cert_url: env.client_x509_cert_url,
-}
+};
 
 if (!apps.length) {
   initializeApp({
     credential: cert(firebaseConfig as ServiceAccount),
     databaseURL: env.FIRESTORE_URL,
-    storageBucket: env.STORAGE_BUCKET
+    storageBucket: env.STORAGE_BUCKET,
   });
 }
 
 const firestore = getFirestore();
 const storage = getStorage().bucket();
-const analytics = getAnalytics();
+// TODO: Add analytics
+// const analytics = getAnalytics();
 
-export {firestore, storage, analytics};
+export { firestore, storage };

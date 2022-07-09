@@ -1,6 +1,6 @@
-import { z } from "zod";
-import { getFileDownloadLink } from "./files";
-import {firestore} from ".";
+import { z } from 'zod';
+import { getFileDownloadLink } from './files';
+import { firestore } from '.';
 
 const questionValidator = z.object({
   question: z.string(),
@@ -31,24 +31,25 @@ const addDownloadUrls = async (question: Question) => {
   const [imageDownloadUrl,
     superQuestionImageDownloadUrl,
     audioDownloadUrl] = await Promise.all([
-      question.imageURI? getFileDownloadLink(question.imageURI): Promise.resolve(undefined),
-      question.superQuestionImage? getFileDownloadLink(question.superQuestionImage): Promise.resolve(undefined),
-      question.audioName? getFileDownloadLink(question.audioName, false): Promise.resolve(undefined),
+    question.imageURI ? getFileDownloadLink(question.imageURI) : Promise.resolve(undefined),
+    question.superQuestionImage ? getFileDownloadLink(question.superQuestionImage) : Promise.resolve(undefined),
+    question.audioName ? getFileDownloadLink(question.audioName, false) : Promise.resolve(undefined),
   ]);
   return {
     ...question,
     audioDownloadUrl,
     imageDownloadUrl,
     superQuestionImageDownloadUrl,
-  }
-}
+  };
+};
 
 const getQuestionsBySubjectAndExam = async (subject: string, exam: string) => {
   const qs = (await firestore.collection('pitanja').where('subject', '==', subject)
-    .where('year', '==', exam).orderBy('questionNumber').get()).docs.map(doc => doc.data());
+    .where('year', '==', exam).orderBy('questionNumber')
+    .get()).docs.map((doc) => doc.data());
   const questions = await Promise.all(questionValidator.array().parse(qs).map(addDownloadUrls));
 
   return questions;
-}
+};
 
 export { getQuestionsBySubjectAndExam, formatedQuestionValidator };
