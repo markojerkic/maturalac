@@ -8,6 +8,8 @@ const subjectValidator = z.object({
   exams: z.string().array(),
 });
 
+const formatedSubjectValidator = subjectValidator.omit({ allowed: true });
+
 type Subject = z.infer<typeof subjectValidator>;
 
 const hasPublicExam = (subject: Subject) => {
@@ -31,4 +33,4 @@ const getPublicExamsTree = async () => {
   return subjectExamsMap;
 }
 
-export default getPublicExamsTree;
+export { getPublicExamsTree, formatedSubjectValidator };

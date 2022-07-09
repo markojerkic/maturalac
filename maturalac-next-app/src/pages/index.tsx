@@ -8,7 +8,7 @@ const Subject: React.FC<{subject: string; exams: string[]}> = ({subject, exams})
     <div className="border-solid border flex flex-col justify-center border-white rounded-md my-2 p-2">
       <div className="text-lg text-center mb-2">{subject}</div>
       <div className="flex flex-col justify-center mx-auto">{exams.map((exam) => (
-        <span key={`${subject}-${exam}`}>|-&gt;<a href={`/questions?subject=${subject}&exam=${exam}`}>{exam}</a></span>
+        <span key={`${subject}-${exam}`}>|-&gt;<a href={`/api/questions?subject=${subject}&exam=${exam}`}>{exam}</a></span>
       ))}</div>
     </div>
   );

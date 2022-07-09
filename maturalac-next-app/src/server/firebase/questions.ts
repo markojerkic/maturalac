@@ -19,15 +19,21 @@ const questionValidator = z.object({
   imageURI: z.string().optional(),
 });
 
+const formatedQuestionValidator = questionValidator.extend({
+  audioDownloadUrl: z.string().url().optional(),
+  imageDownloadUrl: z.string().url().optional(),
+  superQuestionImageDownloadUrl: z.string().url().optional(),
+});
+
 type Question = z.infer<typeof questionValidator>;
 
 const addDownloadUrls = async (question: Question) => {
   const [imageDownloadUrl,
     superQuestionImageDownloadUrl,
     audioDownloadUrl] = await Promise.all([
-      question.imageURI? getFileDownloadLink(question.imageURI): Promise.resolve(null),
-      question.superQuestionImage? getFileDownloadLink(question.superQuestionImage): Promise.resolve(null),
-      question.audioName? getFileDownloadLink(question.audioName, false): Promise.resolve(null),
+      question.imageURI? getFileDownloadLink(question.imageURI): Promise.resolve(undefined),
+      question.superQuestionImage? getFileDownloadLink(question.superQuestionImage): Promise.resolve(undefined),
+      question.audioName? getFileDownloadLink(question.audioName, false): Promise.resolve(undefined),
   ]);
   return {
     ...question,
@@ -45,4 +51,4 @@ const getQuestionsBySubjectAndExam = async (subject: string, exam: string) => {
   return questions;
 }
 
-export { getQuestionsBySubjectAndExam };
+export { getQuestionsBySubjectAndExam, formatedQuestionValidator };

@@ -2,10 +2,10 @@
 import { createRouter } from "./context";
 import superjson from "superjson";
 
-import { exampleRouter } from "./example";
-import { authRouter } from "./auth";
-import { questionsRouter } from "./questions";
-import { examsRouter } from "./exams";
+import { exampleRouter } from "./subrouters/example";
+import { authRouter } from "./subrouters/auth";
+import { questionsRouter } from "./subrouters/questions";
+import { examsRouter } from "./subrouters/exams";
 
 export const appRouter = createRouter()
   .transformer(superjson)

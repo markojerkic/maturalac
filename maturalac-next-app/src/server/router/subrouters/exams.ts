@@ -1,6 +1,6 @@
 import { z } from "zod";
-import getPublicExamsTree from "../firebase/exams";
-import { createRouter } from "./context";
+import { getPublicExamsTree, formatedSubjectValidator } from "../../firebase/exams";
+import { createRouter } from "../context";
 
 export const examsRouter = createRouter()
   .query("get-subject-exams-tree", {
@@ -9,15 +9,11 @@ export const examsRouter = createRouter()
       { 
         enabled: true, 
         method: 'GET', 
-        path: '/exams-trpc' 
+        path: '/exams' 
       } 
     },
     input: z.void(),
-    output: z.object({
-      id: z.string(),
-      subject: z.string(),
-      exams: z.string().array()
-    }).array(),
+    output: formatedSubjectValidator.array(),
     async resolve() {
       return await getPublicExamsTree();
     },
