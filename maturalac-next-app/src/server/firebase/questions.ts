@@ -21,21 +21,26 @@ const questionValidator = z.object({
 
 type Question = z.infer<typeof questionValidator>;
 
-const addDownloadUrls = (question: Question) => {
+const addDownloadUrls = async (question: Question) => {
+  const [imageDownloadUrl,
+    superQuestionImageDownloadUrl,
+    audioDownloadUrl] = await Promise.all([
+      question.imageURI? getFileDownloadLink(question.imageURI): Promise.resolve(null),
+      question.superQuestionImage? getFileDownloadLink(question.superQuestionImage): Promise.resolve(null),
+      question.audioName? getFileDownloadLink(question.audioName, false): Promise.resolve(null),
+  ]);
   return {
     ...question,
-    audioDownloadUrl: question.audioName? getFileDownloadLink(question.audioName): null,
-    imageDownloadUrl: question.imageURI? getFileDownloadLink(question.imageURI): null,
-    superQuestionImageDownloadUrl: question.superQuestionImage? getFileDownloadLink(question.superQuestionImage): null,
+    audioDownloadUrl,
+    imageDownloadUrl,
+    superQuestionImageDownloadUrl,
   }
 }
 
 const getQuestionsBySubjectAndExam = async (subject: string, exam: string) => {
   const qs = (await firestore.collection('pitanja').where('subject', '==', subject)
     .where('year', '==', exam).get()).docs.map(doc => doc.data());
-  const questions = questionValidator.array().parse(qs).map(addDownloadUrls);
-
-  questions.filter((q) => q.imageDownloadUrl).forEach(console.log);
+  const questions = await Promise.all(questionValidator.array().parse(qs).map(addDownloadUrls));
 
   return questions;
 }
