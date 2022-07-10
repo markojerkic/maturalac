@@ -15,7 +15,6 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
@@ -23,6 +22,9 @@ import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.markojerkic.drzavnamatura.util.ApiServiceHolder
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import net.cachapa.expandablelayout.ExpandableLayout
 import java.util.*
 
@@ -71,9 +73,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        // Ad mob
-        MobileAds.initialize(this) {}
-
+        val subsc = ApiServiceHolder.getPublicExamsTree()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe (
+                { Log.d("retorfit", it.toString()) },
+                { Log.e("retrofit-error", it.toString()) },
+                { Toast.makeText(this, "Završio retrofit", Toast.LENGTH_LONG)
+                    .show() }
+        )
 
         // Initialize firebase app
         FirebaseApp.initializeApp(this)

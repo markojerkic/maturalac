@@ -12,7 +12,6 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
-import com.google.android.gms.ads.AdRequest
 import com.jsibbold.zoomage.ZoomageView
 import io.github.kexanie.library.MathView
 import net.cachapa.expandablelayout.ExpandableLayout
@@ -114,9 +113,6 @@ class ExamActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exam)
-
-        val adRequest = AdRequest.Builder().build()
-
 
         // Get questions for the exam
         val examName = intent.extras!!["examName"] as String
