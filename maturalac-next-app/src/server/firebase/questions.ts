@@ -3,6 +3,7 @@ import { getFileDownloadLink } from './files';
 import { firestore } from '.';
 
 const questionValidator = z.object({
+  id: z.string(),
   question: z.string(),
   superQuestion: z.string().optional(),
   ansA: z.string(),
@@ -51,7 +52,7 @@ const addDownloadUrls = async (question: Question) => {
 const getQuestionsBySubjectAndExam = async (subject: string, exam: string) => {
   const qs = (await firestore.collection('pitanja').where('subject', '==', subject)
     .where('year', '==', exam).orderBy('questionNumber')
-    .get()).docs.map((doc) => doc.data());
+    .get()).docs.map((doc) => ({...doc.data(), id: doc.id}));
   const questions = await Promise.all(questionValidator.array().parse(qs).map(addDownloadUrls));
 
   return questions;
