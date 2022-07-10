@@ -1,4 +1,4 @@
-import { z } from 'zod';
+    import { z } from 'zod';
 import { getFileDownloadLink } from './files';
 import { firestore } from '.';
 
@@ -17,11 +17,13 @@ const questionValidator = z.object({
   audioName: z.string().optional(),
   superQuestionImage: z.string().optional(),
   imageURI: z.string().optional(),
+  ansImg: z.string().optional(),
 });
 
 const formatedQuestionValidator = questionValidator.extend({
   audioDownloadUrl: z.string().url().optional(),
   imageDownloadUrl: z.string().url().optional(),
+  answerImageDownloadUrl: z.string().url().optional(),
   superQuestionImageDownloadUrl: z.string().url().optional(),
 });
 
@@ -29,15 +31,18 @@ type Question = z.infer<typeof questionValidator>;
 
 const addDownloadUrls = async (question: Question) => {
   const [imageDownloadUrl,
+    answerImageDownloadUrl,
     superQuestionImageDownloadUrl,
     audioDownloadUrl] = await Promise.all([
     question.imageURI ? getFileDownloadLink(question.imageURI) : Promise.resolve(undefined),
+    question.ansImg ? getFileDownloadLink(question.ansImg) : Promise.resolve(undefined),
     question.superQuestionImage ? getFileDownloadLink(question.superQuestionImage) : Promise.resolve(undefined),
     question.audioName ? getFileDownloadLink(question.audioName, false) : Promise.resolve(undefined),
   ]);
   return {
     ...question,
     audioDownloadUrl,
+    answerImageDownloadUrl,
     imageDownloadUrl,
     superQuestionImageDownloadUrl,
   };

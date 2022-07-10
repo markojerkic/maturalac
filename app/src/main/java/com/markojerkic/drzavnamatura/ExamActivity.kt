@@ -212,7 +212,7 @@ class ExamActivity : AppCompatActivity() {
             1 -> Glide.with(this).load(questions[counter].superQuestionImageDownloadUrl)
                 .into(dialogImageView)
             2 -> Glide.with(this)
-                .load(questions[counter].superQuestionImageDownloadUrl)
+                .load(questions[counter].answerImageDownloadUrl)
                 .into(dialogImageView)
         }
 
@@ -552,16 +552,15 @@ class ExamActivity : AppCompatActivity() {
                 }
                 typeAnswerEditText.hint = "Niste dali odgovor!"
 
-//                if (currQuestion.ansImg != null
-//                    && (examState == ExamState.GRADING || examState == ExamState.GRADE_ONE)
-//                    && FilesSingleton.containsAnswerKey(currQuestion.id)
-//                ) {
-//                    Glide.with(this).load(FilesSingleton.getAnswerByteArray(currQuestion.id))
-//                        .into(typeAnswerImage)
-//                    typeAnswerImage.visibility = View.VISIBLE
-//                } else {
-//                    typeAnswerImage.visibility = View.GONE
-//                }
+                if (!currQuestion.answerImageDownloadUrl.isNullOrEmpty()
+                    && (examState == ExamState.GRADING || examState == ExamState.GRADE_ONE)
+                ) {
+                    Glide.with(this).load(currQuestion.answerImageDownloadUrl)
+                        .into(typeAnswerImage)
+                    typeAnswerImage.visibility = View.VISIBLE
+                } else {
+                    typeAnswerImage.visibility = View.GONE
+                }
             } else {
                 typeAnswerImage.visibility = View.GONE
                 typeAnswerMath.visibility = View.GONE
