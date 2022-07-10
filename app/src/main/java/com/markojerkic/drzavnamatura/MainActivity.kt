@@ -22,11 +22,11 @@ import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.markojerkic.drzavnamatura.model.Subject
 import com.markojerkic.drzavnamatura.util.ApiServiceHolder
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
 import net.cachapa.expandablelayout.ExpandableLayout
-import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -73,22 +73,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        val subsc = ApiServiceHolder.getPublicExamsTree()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeOn(Schedulers.io())
-            .subscribe (
-                { Log.d("retorfit", it.toString()) },
-                { Log.e("retrofit-error", it.toString()) },
-                { Toast.makeText(this, "Završio retrofit", Toast.LENGTH_LONG)
-                    .show() }
-        )
-
         // Initialize firebase app
         FirebaseApp.initializeApp(this)
         firebaseAnalytics = Firebase.analytics
 
         // Check allowed subjects and exams
-        checkAllowedExams()
+        //checkAllowedExams()
+
+        fetchPublicExams()
 
         // Shared preferences for storing user name
         val sharedPreferences = this.getSharedPreferences("myprefs", 0)
@@ -120,6 +112,29 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun fetchPublicExams() {
+        val subc = ApiServiceHolder.getPublicExamsTree()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe (
+                {
+                    if (it.ok && it.data != null) {
+                        downloadingIcon.visibility = View.GONE
+                        inflateSubjects(it.data!!)
+                    } else {
+//                        publicExams.postValue(null)
+                    }
+                },
+                {
+//                    publicExams.postValue(null)
+                    it.localizedMessage?.let { it1 -> Log.e("exams-tree", it1) }
+                },
+                {
+//                    isLoading.postValue(false)
+                }
+            )
+    }
+
     private fun setOnMultiTouchDebug() {
         nameTextView.setOnClickListener {
             if (!IS_DEBUG) {
@@ -135,36 +150,11 @@ class MainActivity : AppCompatActivity() {
                         subjectRowsLinearContainer.removeAllViews()
                         // Check for allowed exams again
                         downloadingIcon.visibility = View.VISIBLE
-                        checkAllowedExams()
+                        // TODO šta je ovo
+//                        checkAllowedExams()
                     }
                 }
             }
-        }
-    }
-
-    private fun checkAllowedExams() {
-        db.collection("dozvoljeni").get().addOnSuccessListener { result ->
-            val allowed = TreeMap<String, ArrayList<String>>()
-            for (r in result) {
-                val data = r.data
-                val examList = ArrayList<String>()
-                for ((index, exam) in (data["exams"] as List<String>).withIndex()) {
-                    val allowedBoolean = data["allowed"] as List<Boolean>
-                    if (!IS_DEBUG) {
-                        if (allowedBoolean[index]) {
-                            examList.add(exam)
-                        }
-                    } else {
-                        examList.add(exam)
-                    }
-                }
-                if (examList.size > 0)
-                    allowed[data["subject"] as String] = examList
-            }
-
-            // Remove the downloading icon and display subjects
-            downloadingIcon.visibility = View.GONE
-            inflateSubjects(allowed)
         }
     }
 
@@ -177,14 +167,13 @@ class MainActivity : AppCompatActivity() {
     // Subjects are displayed in a 2 x n grid
     // THe grid is created with two vertical linear layouts (left and right) which sit inside
     // a master linear layout which is horizontal
-    private fun inflateSubjects(allowed: TreeMap<String, ArrayList<String>>) {
+    private fun inflateSubjects(allowed: List<Subject>) {
 
         lateinit var subjectRow: ConstraintLayout
         var firstEntry = true
 
-        for ((index, entry) in allowed.entries.withIndex()) {
+        for ((index, entry) in allowed.withIndex()) {
             // Inflate the template view of the subjects
-
             if (firstEntry) {
                 subjectRow = layoutInflater.inflate(
                     R.layout.subjects_row,
@@ -206,22 +195,22 @@ class MainActivity : AppCompatActivity() {
 
             // Initialize the text title from the list of subjects
             if (firstEntry) {
-                leftSubject.text = entry.key
+                leftSubject.text = entry.subject
                 firstEntry = false
                 leftSubject.setOnClickListener {
-                    setClickedBackground(leftSubject, leftMargin, entry.key)
+                    setClickedBackground(leftSubject, leftMargin, entry.subject)
                     setSubjectOnClick(entry, examListLinearLayout, expandingExams)
                 }
             } else {
-                rightSubject.text = entry.key
+                rightSubject.text = entry.subject
                 firstEntry = true
                 rightSubject.setOnClickListener {
-                    setClickedBackground(rightSubject, rightMargin, entry.key)
+                    setClickedBackground(rightSubject, rightMargin, entry.subject)
                     setSubjectOnClick(entry, examListLinearLayout, expandingExams)
                 }
             }
             // Switch between left and right layout
-            if (index == allowed.entries.size - 1 && index % 2 == 0)
+            if (index == allowed.size - 1 && index % 2 == 0)
                 rightSubject.visibility = View.INVISIBLE
             // Set on click action for the view
         }
@@ -256,7 +245,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setSubjectOnClick(
-        entry: MutableMap.MutableEntry<String, ArrayList<String>>,
+        entry: Subject,
         examListView: LinearLayout, expandingExams: ExpandableLayout
     ) {
         // Set the adapter
@@ -265,13 +254,13 @@ class MainActivity : AppCompatActivity() {
 
         // Expand the list
         if (!this::lastExpandedEntry.isInitialized) {
-            lastExpandedEntry = entry.key
+            lastExpandedEntry = entry.subject
             lastExpandedLayout = expandingExams
             expandingExams.expand()
             scrollToExams(expandingExams)
         } else {
             when {
-                lastExpandedEntry == entry.key -> {
+                lastExpandedEntry == entry.subject -> {
                     expandingExams.collapse()
                     lastExpandedEntry = ""
                 }
@@ -279,13 +268,13 @@ class MainActivity : AppCompatActivity() {
                     Log.d("Adapter", "Adapter changed")
                     if (!expandingExams.isExpanded) expandingExams.expand()
                     scrollToExams(expandingExams)
-                    lastExpandedEntry = entry.key
+                    lastExpandedEntry = entry.subject
                 }
                 else -> {
                     lastExpandedLayout.collapse()
                     expandingExams.expand()
                     lastExpandedLayout = expandingExams
-                    lastExpandedEntry = entry.key
+                    lastExpandedEntry = entry.subject
                     scrollToExams(expandingExams)
                 }
             }
@@ -308,9 +297,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun inflateExams(
         examListLinearLayout: LinearLayout,
-        entry: MutableMap.MutableEntry<String, ArrayList<String>>
+        subject: Subject
     ) {
-        for (exam in entry.value) {
+        for (exam in subject.exams) {
             val examLayout =
                 layoutInflater.inflate(R.layout.exam_list_item, examListLinearLayout, false)
             val examTitle = examLayout.findViewById<TextView>(R.id.exam_name_textview)
@@ -321,7 +310,7 @@ class MainActivity : AppCompatActivity() {
             // the chosen exam
             examLayout.setOnClickListener {
                 if (checkInternetConnection()) {
-                    getExamQuestion(exam, entry.key)
+                    getExamQuestion(exam, subject.subject)
                 } else {
                     Toast.makeText(this, getString(R.string.no_internet_toast), Toast.LENGTH_LONG)
                         .show()
