@@ -18,13 +18,13 @@ import androidx.core.content.ContextCompat
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.markojerkic.drzavnamatura.model.Subject
 import com.markojerkic.drzavnamatura.util.ApiServiceHolder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import net.cachapa.expandablelayout.ExpandableLayout
 
@@ -67,6 +67,8 @@ class MainActivity : AppCompatActivity() {
 
     // Firebase analitics
     private lateinit var firebaseAnalytics: FirebaseAnalytics
+
+    private lateinit var examsTreeSubscription: Disposable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,8 +114,13 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        examsTreeSubscription.dispose()
+    }
+
     private fun fetchPublicExams() {
-        val subc = ApiServiceHolder.getPublicExamsTree()
+        examsTreeSubscription = ApiServiceHolder.getPublicExamsTree()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe (
@@ -310,7 +317,7 @@ class MainActivity : AppCompatActivity() {
             // the chosen exam
             examLayout.setOnClickListener {
                 if (checkInternetConnection()) {
-                    getExamQuestion(exam, subject.subject)
+                    startExamActivity(subject.subject, exam)
                 } else {
                     Toast.makeText(this, getString(R.string.no_internet_toast), Toast.LENGTH_LONG)
                         .show()
@@ -328,59 +335,15 @@ class MainActivity : AppCompatActivity() {
         return networkInfo != null && networkInfo.isConnected
     }
 
-    private fun startExamActivity(examName: String) {
+    private fun startExamActivity(subject: String, exam: String) {
         // Show info
         Toast.makeText(this, getString(R.string.opening_exam_toast), Toast.LENGTH_LONG).show()
         // Start new activity, pass the questions through the intent
         val examActivityIntent = Intent(this, ExamActivity::class.java).apply {
-            putExtra("examName", examName)
+            putExtra("subject", subject)
+            putExtra("exam", exam)
         }
         startActivity(examActivityIntent)
-
-    }
-
-    private fun getExamQuestion(chosenYear: String, chosenSubject: String): ArrayList<Question> {
-        val examQuestion = ArrayList<Question>()
-        db.collection("pitanja").whereEqualTo("subject", chosenSubject)
-            .whereEqualTo("year", chosenYear).get().addOnSuccessListener { result ->
-                for (r in result) {
-                    val data = r.data
-
-                    // Add question to the list
-                    examQuestion.add(Question(data as Map<String, Any>, r.id))
-                }
-                // Download images if exist
-                val qs = arrayListOf<Question>()
-                qs.addAll(examQuestion.sortedWith(compareBy { it -> it.questionNumber }))
-                // Add questions to QuestionsObject
-                QuestionsObject.addQuestions("${chosenSubject}${chosenYear}", qs)
-
-                // Create download in progress dialog
-                progressDialog.setContentView(R.layout.progress_bar_download)
-                progressDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                progressDialog.show()
-                val questionFiles = QuestionFiles(qs)
-                questionFiles.checkQuestions(object : QuestionFilesProcessedCallback {
-                    @Override
-                    override fun done() {
-                        progressDialog.dismiss()
-                        startExamActivity("${chosenSubject}${chosenYear}")
-                    }
-
-                    @Override
-                    override fun updateDownload(percent: Double) {
-                        updateProgressDialog(percent)
-                    }
-                })
-
-                firebaseAnalytics.logEvent("exam_opened") {
-                    param("exam_name", "${chosenSubject}${chosenYear}")
-                    param("subject_opened", chosenSubject)
-                }
-
-            }.addOnFailureListener { e -> Log.e("Firestore exception", e.toString()) }
-        return examQuestion
-
     }
 
     private fun updateProgressDialog(percent: Double) {

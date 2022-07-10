@@ -1,7 +1,6 @@
 package com.markojerkic.drzavnamatura
 
 import android.app.Dialog
-import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -11,9 +10,13 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.bumptech.glide.Glide
 import com.jsibbold.zoomage.ZoomageView
+import com.markojerkic.drzavnamatura.model.Question
+import com.markojerkic.drzavnamatura.util.ApiServiceHolder
 import io.github.kexanie.library.MathView
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import net.cachapa.expandablelayout.ExpandableLayout
 
 class ExamActivity : AppCompatActivity() {
@@ -77,7 +80,7 @@ class ExamActivity : AppCompatActivity() {
     val answers = Answers()
 
     // Questions array list
-    private lateinit var questions: ArrayList<Question>
+    private lateinit var questions: List<Question>
 
     // Grade button
     private val gradeFullButton by lazy { findViewById<Button>(R.id.grade_button) }
@@ -109,18 +112,38 @@ class ExamActivity : AppCompatActivity() {
     lateinit var seekbarRunnable: Runnable
     private val handler by lazy { Handler(Looper.getMainLooper()) }
     private var currentlyPlaying = ""
+    
+    private lateinit var questionsDisposable: Disposable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exam)
 
         // Get questions for the exam
-        val examName = intent.extras!!["examName"] as String
-        // Set current question
-        questions = QuestionsObject.getQuestions(examName)
+        val subject = intent.extras!!["subject"] as String
+        val exam = intent.extras!!["exam"] as String
 
-        Log.d("questions", questions.toString())
+        questionsDisposable = ApiServiceHolder.getQuestionsBySubjectAndExam(subject, exam)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    if (it.ok && it.data != null) {
+                        questions = it.data!!
+                        renderQuestions()
+                    } else {
+                        Log.e("no-data", "No questions are loaded, $it")
+                    }
+                },
+                {
+                    Log.e("no-data", "No questions are loaded, $it")
+                },
+                { Log.i("questions", "Loading is finished") }
+            )
 
+    }
+    
+    private fun renderQuestions() {
         // Add first question
         nextQuestion()
 
@@ -159,20 +182,19 @@ class ExamActivity : AppCompatActivity() {
 
         // Full image dialog
         imageDialog.setContentView(R.layout.open_image_dialog)
-        questionImageView.setOnClickListener { openLargeImage(0) }
+//        questionImageView.setOnClickListener { openLargeImage(0) }
         backButton.setOnClickListener { imageDialog.dismiss() }
 
 
         // Set on click action for all image views
-        longAnswerImage.setOnClickListener { openLargeImage(1) }
-        typeAnswerImage.setOnClickListener { openLargeImage(1) }
-        superImageView.setOnClickListener { openLargeImage(2) }
+//        longAnswerImage.setOnClickListener { openLargeImage(1) }
+//        typeAnswerImage.setOnClickListener { openLargeImage(1) }
+//        superImageView.setOnClickListener { openLargeImage(2) }
 
         clickToExpand.setOnClickListener {
             if (superQuestionExpandableLayout.isExpanded) superQuestionExpandableLayout.collapse()
             else superQuestionExpandableLayout.expand()
         }
-
     }
 
     private fun gradeOneQuestion() {
@@ -181,19 +203,19 @@ class ExamActivity : AppCompatActivity() {
 
     }
 
-    private fun openLargeImage(imageViewNumber: Int) {
-        when (imageViewNumber) {
-            0 -> Glide.with(this).load(FilesSingleton.getByteArray(questions[counter].id))
-                .into(dialogImageView)
-            1 -> Glide.with(this).load(FilesSingleton.getAnswerByteArray(questions[counter].id))
-                .into(dialogImageView)
-            2 -> Glide.with(this)
-                .load(FilesSingleton.getSuperByteArray(questions[counter].superImageName()!!))
-                .into(dialogImageView)
-        }
-
-        imageDialog.show()
-    }
+//    private fun openLargeImage(imageViewNumber: Int) {
+//        when (imageViewNumber) {
+//            0 -> Glide.with(this).load(FilesSingleton.getByteArray(questions[counter].id))
+//                .into(dialogImageView)
+//            1 -> Glide.with(this).load(FilesSingleton.getAnswerByteArray(questions[counter].id))
+//                .into(dialogImageView)
+//            2 -> Glide.with(this)
+//                .load(FilesSingleton.getSuperByteArray(questions[counter].superImageName()!!))
+//                .into(dialogImageView)
+//        }
+//
+//        imageDialog.show()
+//    }
 
     private fun gradeExam() {
         // Show toast announcement
@@ -225,32 +247,32 @@ class ExamActivity : AppCompatActivity() {
         // When previous or next question buttons are clicked,
         // then check if current question's answer is of type 'TYPE'
         // If yes, then add it to answers
-        if (questions[counter].typeOfAnswer == AnswerType.TYPE) {
+        if (questions[counter].typeOfAnswer == AnswerType.TYPE.ordinal) {
             answers.add(questions[counter], typeAnswerEditText.text.toString())
         }
     }
 
     private fun setABCDOnClickListeners() {
         ansABox.setOnClickListener {
-            if (questions[counter].typeOfAnswer == AnswerType.ABCD) {
+            if (questions[counter].typeOfAnswer == AnswerType.ABCD.ordinal) {
                 answers.add(questions[counter], 0)
                 setABCDAnswerClickedState(0)
             }
         }
         ansBBox.setOnClickListener {
-            if (questions[counter].typeOfAnswer == AnswerType.ABCD) {
+            if (questions[counter].typeOfAnswer == AnswerType.ABCD.ordinal) {
                 answers.add(questions[counter], 1)
                 setABCDAnswerClickedState(1)
             }
         }
         ansCBox.setOnClickListener {
-            if (questions[counter].typeOfAnswer == AnswerType.ABCD) {
+            if (questions[counter].typeOfAnswer == AnswerType.ABCD.ordinal) {
                 answers.add(questions[counter], 2)
                 setABCDAnswerClickedState(2)
             }
         }
         ansDBox.setOnClickListener {
-            if (questions[counter].typeOfAnswer == AnswerType.ABCD) {
+            if (questions[counter].typeOfAnswer == AnswerType.ABCD.ordinal) {
                 answers.add(questions[counter], 3)
                 setABCDAnswerClickedState(3)
             }
@@ -320,116 +342,118 @@ class ExamActivity : AppCompatActivity() {
     }
 
     private fun setQuestion(currQuestion: Question, total: Int) {
-        if (currQuestion.audioFileName() == null ||
-            (currentlyPlaying != ""
-                    && currentlyPlaying != FilesSingleton.getAudioUri(currQuestion.id).toString())
-        ) {
-            // Release media player
-            if (this::mediaPlayer.isInitialized)
-                mediaPlayer.release()
-            mediaPlayPause.setImageResource(R.drawable.ic_play_arrow)
-            mediaSeekbar.progress = 0
-            mediaReleased = true
-            setPlayPauseOrProgress(true)
-            currentlyPlaying = ""
-            if (this::seekbarRunnable.isInitialized)
-                handler.removeCallbacks(seekbarRunnable)
-        }
+//        if (currQuestion.audioFileName() == null ||
+//            (currentlyPlaying != ""
+//                    && currentlyPlaying != FilesSingleton.getAudioUri(currQuestion.id).toString())
+//        ) {
+//            // Release media player
+//            if (this::mediaPlayer.isInitialized)
+//                mediaPlayer.release()
+//            mediaPlayPause.setImageResource(R.drawable.ic_play_arrow)
+//            mediaSeekbar.progress = 0
+//            mediaReleased = true
+//            setPlayPauseOrProgress(true)
+//            currentlyPlaying = ""
+//            if (this::seekbarRunnable.isInitialized)
+//                handler.removeCallbacks(seekbarRunnable)
+//        }
 
 
-        if (FilesSingleton.containsKey(currQuestion.id)
-            && currQuestion.imgURI != null
-        ) {
-            Glide.with(this).load(FilesSingleton.getByteArray(currQuestion.id))
-                .into(questionImageView)
-            questionImageView.visibility = View.VISIBLE
-        } else {
-            questionImageView.visibility = View.GONE
-        }
+//        if (FilesSingleton.containsKey(currQuestion.id)
+//            && currQuestion.imgURI != null
+//        ) {
+//            Glide.with(this).load(FilesSingleton.getByteArray(currQuestion.id))
+//                .into(questionImageView)
+//            questionImageView.visibility = View.VISIBLE
+//        } else {
+//            questionImageView.visibility = View.GONE
+//        }
 
         // Check if there is a super question
-        if (currQuestion.superQuestion() != null || FilesSingleton.containsAudio(currQuestion.id)) {
-            if (currQuestion.superQuestion() != null)
+        if (!currQuestion.superQuestion.isNullOrEmpty() 
+//            || FilesSingleton.containsAudio(currQuestion.id)
+        ) {
+            if (!currQuestion.superQuestion.isNullOrEmpty() )
                 setSuperQuestion(currQuestion)
 
             // Check if audio file is there
-            if (FilesSingleton.containsAudio(currQuestion.id)) {
-
-                mediaPlayerView.visibility = View.VISIBLE
-                if (currentlyPlaying == "") {
-                    mediaPlayer = MediaPlayer()
-                    mediaPlayPause.setOnClickListener {
-                        if (this::mediaPlayer.isInitialized) {
-                            if (!mediaPlayer.isPlaying || mediaReleased) {
-                                mediaPlayPause.setImageResource(R.drawable.ic_pause)
-                                if (!mediaReleased)
-                                    mediaPlayer.start()
-                                else {
-                                    mediaPlayer.apply {
-                                        setPlayPauseOrProgress(false)
-                                        setAudioAttributes(
-                                            AudioAttributes.Builder()
-                                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                                                .setUsage(AudioAttributes.USAGE_MEDIA)
-                                                .build()
-                                        )
-                                        setDataSource(
-                                            applicationContext,
-                                            FilesSingleton.getAudioUri(currQuestion.id)
-                                        )
-                                        currentlyPlaying =
-                                            FilesSingleton.getAudioUri(currQuestion.id).toString()
-                                        prepareAsync()
-                                        setOnPreparedListener {
-                                            start()
-                                            pause()
-                                            start()
-                                            setPlayPauseOrProgress(true)
-                                            mediaSeekbar.max = duration / 1000
-                                            mediaReleased = false
-                                            mediaSeekbar.setOnSeekBarChangeListener(object :
-                                                SeekBar.OnSeekBarChangeListener {
-                                                override fun onProgressChanged(
-                                                    p0: SeekBar?,
-                                                    progress: Int,
-                                                    fromUser: Boolean
-                                                ) {
-                                                    if (fromUser)
-                                                        seekTo(progress * 1000)
-                                                }
-
-                                                override fun onStartTrackingTouch(p0: SeekBar?) {}
-
-                                                override fun onStopTrackingTouch(p0: SeekBar?) {}
-
-                                            })
-                                        }
-                                    }
-                                    if (this@ExamActivity::seekbarRunnable.isInitialized)
-                                        this.runOnUiThread(seekbarRunnable)
-                                    else {
-                                        seekbarRunnable = object : Runnable {
-                                            override fun run() {
-                                                if (this@ExamActivity::mediaPlayer.isInitialized) {
-                                                    if (!mediaReleased)
-                                                        mediaSeekbar.progress =
-                                                            mediaPlayer.currentPosition / 1000
-                                                }
-                                                handler.postDelayed(this, 1000)
-                                            }
-
-                                        }
-                                    }
-                                }
-
-                            } else {
-                                mediaPlayPause.setImageResource(R.drawable.ic_play_arrow)
-                                mediaPlayer.pause()
-                            }
-                        }
-                    }
-                }
-            } else mediaPlayerView.visibility = View.GONE
+//            if (FilesSingleton.containsAudio(currQuestion.id)) {
+//
+//                mediaPlayerView.visibility = View.VISIBLE
+//                if (currentlyPlaying == "") {
+//                    mediaPlayer = MediaPlayer()
+//                    mediaPlayPause.setOnClickListener {
+//                        if (this::mediaPlayer.isInitialized) {
+//                            if (!mediaPlayer.isPlaying || mediaReleased) {
+//                                mediaPlayPause.setImageResource(R.drawable.ic_pause)
+//                                if (!mediaReleased)
+//                                    mediaPlayer.start()
+//                                else {
+//                                    mediaPlayer.apply {
+//                                        setPlayPauseOrProgress(false)
+//                                        setAudioAttributes(
+//                                            AudioAttributes.Builder()
+//                                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+//                                                .setUsage(AudioAttributes.USAGE_MEDIA)
+//                                                .build()
+//                                        )
+//                                        setDataSource(
+//                                            applicationContext,
+//                                            FilesSingleton.getAudioUri(currQuestion.id)
+//                                        )
+//                                        currentlyPlaying =
+//                                            FilesSingleton.getAudioUri(currQuestion.id).toString()
+//                                        prepareAsync()
+//                                        setOnPreparedListener {
+//                                            start()
+//                                            pause()
+//                                            start()
+//                                            setPlayPauseOrProgress(true)
+//                                            mediaSeekbar.max = duration / 1000
+//                                            mediaReleased = false
+//                                            mediaSeekbar.setOnSeekBarChangeListener(object :
+//                                                SeekBar.OnSeekBarChangeListener {
+//                                                override fun onProgressChanged(
+//                                                    p0: SeekBar?,
+//                                                    progress: Int,
+//                                                    fromUser: Boolean
+//                                                ) {
+//                                                    if (fromUser)
+//                                                        seekTo(progress * 1000)
+//                                                }
+//
+//                                                override fun onStartTrackingTouch(p0: SeekBar?) {}
+//
+//                                                override fun onStopTrackingTouch(p0: SeekBar?) {}
+//
+//                                            })
+//                                        }
+//                                    }
+//                                    if (this@ExamActivity::seekbarRunnable.isInitialized)
+//                                        this.runOnUiThread(seekbarRunnable)
+//                                    else {
+//                                        seekbarRunnable = object : Runnable {
+//                                            override fun run() {
+//                                                if (this@ExamActivity::mediaPlayer.isInitialized) {
+//                                                    if (!mediaReleased)
+//                                                        mediaSeekbar.progress =
+//                                                            mediaPlayer.currentPosition / 1000
+//                                                }
+//                                                handler.postDelayed(this, 1000)
+//                                            }
+//
+//                                        }
+//                                    }
+//                                }
+//
+//                            } else {
+//                                mediaPlayPause.setImageResource(R.drawable.ic_play_arrow)
+//                                mediaPlayer.pause()
+//                            }
+//                        }
+//                    }
+//                }
+//            } else mediaPlayerView.visibility = View.GONE
 
             expandLinearWraper.visibility = View.VISIBLE
         } else {
@@ -449,7 +473,7 @@ class ExamActivity : AppCompatActivity() {
             questionMathView.visibility = View.GONE
         }
         // If question type is ABCD
-        if (currQuestion.typeOfAnswer == AnswerType.ABCD) {
+        if (currQuestion.typeOfAnswer == AnswerType.ABCD.ordinal) {
             // If current answer type is not ABCD, then switch the view back to ABCD answers
             if (answerType != AnswerType.ABCD) {
                 abcdAnswerBar.visibility = View.VISIBLE
@@ -506,7 +530,7 @@ class ExamActivity : AppCompatActivity() {
             if (examState == ExamState.GRADING || examState == ExamState.GRADE_ONE) {
                 gradeABCD(currQuestion)
             }
-        } else if (currQuestion.typeOfAnswer == AnswerType.TYPE) {
+        } else if (currQuestion.typeOfAnswer == AnswerType.TYPE.ordinal) {
             // If ViewSwitcher is not displaying 'type' answer, switch to type entry answer
             if (answerType != AnswerType.TYPE) {
                 typeAnswerBar.visibility = View.VISIBLE
@@ -532,22 +556,22 @@ class ExamActivity : AppCompatActivity() {
                 }
                 typeAnswerEditText.hint = "Niste dali odgovor!"
 
-                if (currQuestion.ansImg != null
-                    && (examState == ExamState.GRADING || examState == ExamState.GRADE_ONE)
-                    && FilesSingleton.containsAnswerKey(currQuestion.id)
-                ) {
-                    Glide.with(this).load(FilesSingleton.getAnswerByteArray(currQuestion.id))
-                        .into(typeAnswerImage)
-                    typeAnswerImage.visibility = View.VISIBLE
-                } else {
-                    typeAnswerImage.visibility = View.GONE
-                }
+//                if (currQuestion.ansImg != null
+//                    && (examState == ExamState.GRADING || examState == ExamState.GRADE_ONE)
+//                    && FilesSingleton.containsAnswerKey(currQuestion.id)
+//                ) {
+//                    Glide.with(this).load(FilesSingleton.getAnswerByteArray(currQuestion.id))
+//                        .into(typeAnswerImage)
+//                    typeAnswerImage.visibility = View.VISIBLE
+//                } else {
+//                    typeAnswerImage.visibility = View.GONE
+//                }
             } else {
                 typeAnswerImage.visibility = View.GONE
                 typeAnswerMath.visibility = View.GONE
                 typeAnswerCorrectText.visibility = View.GONE
             }
-        } else if (currQuestion.typeOfAnswer == AnswerType.LONG) {
+        } else if (currQuestion.typeOfAnswer == AnswerType.LONG.ordinal) {
             // If ViewSwitcher is not displaying 'long' answer, display it
             if (answerType != AnswerType.LONG) {
                 longAnswerBar.visibility = View.VISIBLE
@@ -557,16 +581,16 @@ class ExamActivity : AppCompatActivity() {
             }
             // Add answer image if exists, else make the ImageView GONE
             FilesSingleton.printAns()
-            if (currQuestion.ansImg != null
-                && (examState == ExamState.GRADING || examState == ExamState.GRADE_ONE)
-                && FilesSingleton.containsAnswerKey(currQuestion.id)
-            ) {
-                Glide.with(this).load(FilesSingleton.getAnswerByteArray(currQuestion.id))
-                    .into(longAnswerImage)
-                longAnswerImage.visibility = View.VISIBLE
-            } else {
-                longAnswerImage.visibility = View.GONE
-            }
+//            if (currQuestion.ansImg != null
+//                && (examState == ExamState.GRADING || examState == ExamState.GRADE_ONE)
+//                && FilesSingleton.containsAnswerKey(currQuestion.id)
+//            ) {
+//                Glide.with(this).load(FilesSingleton.getAnswerByteArray(currQuestion.id))
+//                    .into(longAnswerImage)
+//                longAnswerImage.visibility = View.VISIBLE
+//            } else {
+//                longAnswerImage.visibility = View.GONE
+//            }
         }
 
         // Set counter text
@@ -585,26 +609,26 @@ class ExamActivity : AppCompatActivity() {
     }
 
     private fun setSuperQuestion(currQuestion: Question) {
-        if (!currQuestion.superQuestion()!!.contains("\\(")) {
+        if (currQuestion.superQuestion != null && currQuestion.superQuestion!!.contains("\\(")) {
             superQuestionMath.visibility = View.GONE
             superQuestionText.visibility = View.VISIBLE
-            superQuestionText.text = currQuestion.superQuestion()
+            superQuestionText.text = currQuestion.superQuestion
         } else {
             superQuestionMath.visibility = View.VISIBLE
             superQuestionText.visibility = View.GONE
-            superQuestionMath.text = currQuestion.superQuestion()
+            superQuestionMath.text = currQuestion.superQuestion
         }
         // Check for image
-        if (currQuestion.superImgExists()) {
-            if (FilesSingleton.containsSuperImage(currQuestion.superImageName()!!)) {
-                superImageView.visibility = View.VISIBLE
-                Glide.with(this)
-                    .load(FilesSingleton.getSuperByteArray(currQuestion.superImageName()!!))
-                    .into(superImageView)
-            }
-        } else {
-            superImageView.visibility = View.GONE
-        }
+//        if (currQuestion.superImgExists()) {
+//            if (FilesSingleton.containsSuperImage(currQuestion.superImageName()!!)) {
+//                superImageView.visibility = View.VISIBLE
+//                Glide.with(this)
+//                    .load(FilesSingleton.getSuperByteArray(currQuestion.superImageName()!!))
+//                    .into(superImageView)
+//            }
+//        } else {
+//            superImageView.visibility = View.GONE
+//        }
 
         //superQuestionExpandView.minimumHeight = height
     }
@@ -614,7 +638,7 @@ class ExamActivity : AppCompatActivity() {
             val ans = answers.getAns(currQuestion) as Int
             checkCorrectAns(ans, currQuestion)
         } else {
-            setCorrectABCDAns(currQuestion.correctAns.toInt())
+            setCorrectABCDAns(currQuestion.correctAnswer!!)
         }
     }
 
@@ -628,8 +652,8 @@ class ExamActivity : AppCompatActivity() {
     }
 
     private fun checkCorrectAns(ans: Int, currQuestion: Question) {
-        setCorrectABCDAns(currQuestion.correctAns.toInt())
-        if (ans != currQuestion.correctAns.toInt()) {
+        setCorrectABCDAns(currQuestion.correctAnswer!!)
+        if (ans != currQuestion.correctAnswer!!) {
             when (ans) {
                 0 -> setWrongABCD(ansABox)
                 1 -> setWrongABCD(ansBBox)

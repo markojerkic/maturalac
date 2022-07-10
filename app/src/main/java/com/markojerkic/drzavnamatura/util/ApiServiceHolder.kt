@@ -1,6 +1,7 @@
 package com.markojerkic.drzavnamatura.util
 
 import com.markojerkic.drzavnamatura.model.ApiResponse
+import com.markojerkic.drzavnamatura.model.Question
 import com.markojerkic.drzavnamatura.model.Subject
 import com.markojerkic.drzavnamatura.service.ApiService
 import io.reactivex.rxjava3.core.Observable
@@ -17,4 +18,7 @@ object ApiServiceHolder {
     private val service = retrofit.create(ApiService::class.java)
 
     fun getPublicExamsTree(): Observable<ApiResponse<Subject>> = service.getPublicExams()
+
+    fun getQuestionsBySubjectAndExam(subject: String, exam: String):
+            Observable<ApiResponse<Question>> = service.getQuestionsBySubjectAndYear(subject, exam)
 }
