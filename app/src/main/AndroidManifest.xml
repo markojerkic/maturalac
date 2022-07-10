@@ -8,23 +8,33 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-6739484391129044~8800191817" />
-
         <activity
-            android:name=".ExamActivity"
-            android:screenOrientation="fullSensor" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:screenOrientation="fullSensor">
+            android:name=".EntryActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-6739484391129044~8800191817" />
+
+<!--        <activity-->
+<!--            android:name=".ExamActivity"-->
+<!--            android:screenOrientation="fullSensor" />-->
+<!--        <activity-->
+<!--            android:name=".MainActivity"-->
+<!--            android:exported="true"-->
+<!--            android:screenOrientation="fullSensor">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
 
         <meta-data
             android:name="preloaded_fonts"

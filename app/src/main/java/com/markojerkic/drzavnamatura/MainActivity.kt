@@ -15,6 +15,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
@@ -29,35 +30,39 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import net.cachapa.expandablelayout.ExpandableLayout
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Fragment(R.layout.activity_main) {
+
+    companion object {
+        fun newInstance() = MainActivity()
+    }
 
     // Set if this is debug version
     private var IS_DEBUG = false
 
     // Icon which is shown while subjects are downloaded
-    private val downloadingIcon by lazy { findViewById<LinearLayout>(R.id.loading_subjects_icon) }
+    private val downloadingIcon by lazy { activity?.findViewById(R.id.loading_subjects_icon) as LinearLayout }
 
     // Name TextView
-    private val nameTextView by lazy { findViewById<TextView>(R.id.username_textview) }
+    private val nameTextView by lazy { activity?.findViewById(R.id.username_textview) as TextView }
 
     // Multi click event timing
     private var nameTextViewClickTime: Long = -1
     private var clickCounter = 0
 
     // Scroll view
-    private val scrollView by lazy { findViewById<ScrollView>(R.id.main_activity_scroll) }
+    private val scrollView by lazy { activity?.findViewById(R.id.main_activity_scroll) as ScrollView }
 
 
     // Create objects of layouts and the container of the left and right layout
-    private val subjectRowsLinearContainer by lazy { findViewById<LinearLayout>(R.id.subject_rows_linear_layout) }
+    private val subjectRowsLinearContainer by lazy { activity?.findViewById(R.id.subject_rows_linear_layout) as LinearLayout }
 
     // Database and storage reference
     private val db: FirebaseFirestore by lazy { Firebase.firestore }
 
     // Progress dialog
-    private val progressDialog by lazy { Dialog(this) }
-    private val downloadProgressBar by lazy { progressDialog.findViewById<ProgressBar>(R.id.progress_bar) }
-    private val downloadProgressText by lazy { progressDialog.findViewById<TextView>(R.id.progress_text) }
+    private val progressDialog by lazy { Dialog(requireContext()) }
+    private val downloadProgressBar by lazy { progressDialog.findViewById(R.id.progress_bar) as ProgressBar }
+    private val downloadProgressText by lazy { progressDialog.findViewById(R.id.progress_text) as TextView }
 
     // Exam list expand view trackers
     private lateinit var lastExpandedLayout: ExpandableLayout
@@ -70,13 +75,15 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var examsTreeSubscription: Disposable
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
 
         // Initialize firebase app
-        FirebaseApp.initializeApp(this)
+        FirebaseApp.initializeApp(requireContext())
         firebaseAnalytics = Firebase.analytics
 
         // Check allowed subjects and exams
@@ -85,10 +92,10 @@ class MainActivity : AppCompatActivity() {
         fetchPublicExams()
 
         // Shared preferences for storing user name
-        val sharedPreferences = this.getSharedPreferences("myprefs", 0)
+        val sharedPreferences = requireActivity().getSharedPreferences("myprefs", 0)
         var name = sharedPreferences.getString("name", null)
         if (name == null) {
-            val dialog = Dialog(this)
+            val dialog = Dialog(requireContext())
             dialog.setContentView(R.layout.name_enter_dialog)
             // Background is a rectangle with rounded edges, so we have to set the
             // "background under the background" to be transparent, or else
@@ -229,22 +236,22 @@ class MainActivity : AppCompatActivity() {
             if (lastExpandedEntry != subject) {
                 if (this::lastClickedSubject.isInitialized) {
                     lastClickedSubject.setBackgroundResource(R.drawable.round_rectangle_subject_shape)
-                    lastClickedSubject.setTextColor(ContextCompat.getColor(this, R.color.black))
+                    lastClickedSubject.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
                     lastMargin.visibility = View.INVISIBLE
                 }
                 clicked!!.setBackgroundResource(R.drawable.clicked_subject_shape)
-                clicked.setTextColor(ContextCompat.getColor(this, R.color.white))
+                clicked.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                 margin!!.visibility = View.VISIBLE
                 lastClickedSubject = clicked
                 lastMargin = margin
             } else {
                 clicked!!.setBackgroundResource(R.drawable.round_rectangle_subject_shape)
-                lastClickedSubject.setTextColor(ContextCompat.getColor(this, R.color.black))
+                lastClickedSubject.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
                 margin!!.visibility = View.INVISIBLE
             }
         } else {
             clicked!!.setBackgroundResource(R.drawable.clicked_subject_shape)
-            clicked.setTextColor(ContextCompat.getColor(this, R.color.white))
+            clicked.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
             margin!!.visibility = View.VISIBLE
             lastClickedSubject = clicked
             lastMargin = margin
@@ -319,7 +326,7 @@ class MainActivity : AppCompatActivity() {
                 if (checkInternetConnection()) {
                     startExamActivity(subject.subject, exam)
                 } else {
-                    Toast.makeText(this, getString(R.string.no_internet_toast), Toast.LENGTH_LONG)
+                    Toast.makeText(requireContext(), getString(R.string.no_internet_toast), Toast.LENGTH_LONG)
                         .show()
                 }
 
@@ -330,16 +337,16 @@ class MainActivity : AppCompatActivity() {
     // Check if there is an internet connection
     private fun checkInternetConnection(): Boolean {
         val connectivityManager =
-            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.activeNetworkInfo
         return networkInfo != null && networkInfo.isConnected
     }
 
     private fun startExamActivity(subject: String, exam: String) {
         // Show info
-        Toast.makeText(this, getString(R.string.opening_exam_toast), Toast.LENGTH_LONG).show()
+        Toast.makeText(requireContext(), getString(R.string.opening_exam_toast), Toast.LENGTH_LONG).show()
         // Start new activity, pass the questions through the intent
-        val examActivityIntent = Intent(this, ExamActivity::class.java).apply {
+        val examActivityIntent = Intent(requireContext(), ExamActivity::class.java).apply {
             putExtra("subject", subject)
             putExtra("exam", exam)
         }
@@ -351,17 +358,17 @@ class MainActivity : AppCompatActivity() {
         downloadProgressText.text = "${(100 * percent).toInt()}%"
     }
 
-    @Override
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.toolbar_menu, menu)
-        return true
-    }
+//    @Override
+//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        menuInflater.inflate(R.menu.toolbar_menu, menu)
+//        return true
+//    }
 
     @Override
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.info -> {
-                val infoDialog = Dialog(this)
+                val infoDialog = Dialog(requireContext())
                 infoDialog.setContentView(R.layout.about_dialog)
                 // Background is a rectangle with rounded edges, so we have to set the
                 // "background under the background" to be transparent, or else

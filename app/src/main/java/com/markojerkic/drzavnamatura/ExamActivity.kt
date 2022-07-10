@@ -10,11 +10,12 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.jsibbold.zoomage.ZoomageView
 import com.markojerkic.drzavnamatura.model.Question
+import com.markojerkic.drzavnamatura.ui.main.EntryFragment
 import com.markojerkic.drzavnamatura.util.ApiServiceHolder
 import io.github.kexanie.library.MathView
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -22,61 +23,65 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import net.cachapa.expandablelayout.ExpandableLayout
 
-class ExamActivity : AppCompatActivity() {
+class ExamActivity : Fragment(R.layout.activity_exam) {
+
+    companion object {
+        fun newInstance() = ExamActivity()
+    }
 
     // Scroll view of the activity
-    private val scrollView by lazy { findViewById<ScrollView>(R.id.exam_activity_scroll_view) }
+    private val scrollView by lazy { view?.findViewById(R.id.exam_activity_scroll_view) as ScrollView }
 
     // Set up counter for the questions
     private var counter = -1
 
     // Find elements
-    private val questionTextView by lazy { findViewById<TextView>(R.id.question_text_view) }
-    private val questionImageView by lazy { findViewById<ImageView>(R.id.question_image) }
+    private val questionTextView by lazy { view?.findViewById(R.id.question_text_view) as TextView }
+    private val questionImageView by lazy { view?.findViewById(R.id.question_image) as ImageView }
 
     // Expandable super question view
-    private val expandLinearWraper by lazy { findViewById<LinearLayout>(R.id.exand_liner_wraper) }
-    private val clickToExpand by lazy { findViewById<ConstraintLayout>(R.id.click_to_expand) }
-    private val superQuestionExpandableLayout by lazy { findViewById<ExpandableLayout>(R.id.expandable_super_question) }
-    private val superQuestionText by lazy { findViewById<TextView>(R.id.super_question_text_view) }
-    private val superQuestionMath by lazy { findViewById<MathView>(R.id.super_question_math_view) }
-    private val superImageView by lazy { findViewById<ImageView>(R.id.super_question_image) }
+    private val expandLinearWraper by lazy { view?.findViewById(R.id.exand_liner_wraper) as LinearLayout }
+    private val clickToExpand by lazy { view?.findViewById(R.id.click_to_expand) as ConstraintLayout }
+    private val superQuestionExpandableLayout by lazy { view?.findViewById(R.id.expandable_super_question) as ExpandableLayout }
+    private val superQuestionText by lazy { view?.findViewById(R.id.super_question_text_view) as TextView }
+    private val superQuestionMath by lazy { view?.findViewById(R.id.super_question_math_view) as MathView }
+    private val superImageView by lazy { view?.findViewById(R.id.super_question_image) as ImageView }
 
     // ABCD answer boxes
-    private val ansABox by lazy { findViewById<ConstraintLayout>(R.id.ans_a_box) }
-    private val ansBBox by lazy { findViewById<ConstraintLayout>(R.id.ans_b_box) }
-    private val ansCBox by lazy { findViewById<ConstraintLayout>(R.id.ans_c_box) }
-    private val ansDBox by lazy { findViewById<ConstraintLayout>(R.id.ans_d_box) }
+    private val ansABox by lazy { view?.findViewById<ConstraintLayout>(R.id.ans_a_box) as ConstraintLayout }
+    private val ansBBox by lazy { view?.findViewById(R.id.ans_b_box) as ConstraintLayout }
+    private val ansCBox by lazy { view?.findViewById(R.id.ans_c_box) as ConstraintLayout }
+    private val ansDBox by lazy { view?.findViewById(R.id.ans_d_box) as ConstraintLayout }
 
     //Text views
-    private val ansAText by lazy { findViewById<TextView>(R.id.answer_a_text) }
-    private val ansBText by lazy { findViewById<TextView>(R.id.answer_b_text) }
-    private val ansCText by lazy { findViewById<TextView>(R.id.answer_c_text) }
-    private val ansDText by lazy { findViewById<TextView>(R.id.answer_d_text) }
+    private val ansAText by lazy { view?.findViewById(R.id.answer_a_text) as TextView }
+    private val ansBText by lazy { view?.findViewById(R.id.answer_b_text) as TextView }
+    private val ansCText by lazy { view?.findViewById(R.id.answer_c_text) as TextView }
+    private val ansDText by lazy { view?.findViewById(R.id.answer_d_text) as TextView }
 
     // Math views
-    private val questionMathView by lazy { findViewById<MathView>(R.id.question_math_view) }
-    private val ansAMath by lazy { findViewById<MathView>(R.id.answer_a_math) }
-    private val ansBMath by lazy { findViewById<MathView>(R.id.answer_b_math) }
-    private val ansCMath by lazy { findViewById<MathView>(R.id.answer_c_math) }
-    private val ansDMath by lazy { findViewById<MathView>(R.id.answer_d_math) }
+    private val questionMathView by lazy { view?.findViewById(R.id.question_math_view) as MathView }
+    private val ansAMath by lazy { view?.findViewById(R.id.answer_a_math) as MathView }
+    private val ansBMath by lazy { view?.findViewById(R.id.answer_b_math) as MathView }
+    private val ansCMath by lazy { view?.findViewById(R.id.answer_c_math) as MathView }
+    private val ansDMath by lazy { view?.findViewById(R.id.answer_d_math) as MathView }
 
     // Find elements for switching questions
-    private val nextQuestion by lazy { findViewById<ImageView>(R.id.next_question) }
-    private val previousQuestion by lazy { findViewById<ImageView>(R.id.previous_question) }
-    private val questionCounterTextView by lazy { findViewById<TextView>(R.id.question_counter) }
+    private val nextQuestion by lazy { view?.findViewById(R.id.next_question) as ImageView }
+    private val previousQuestion by lazy { view?.findViewById(R.id.previous_question) as ImageView }
+    private val questionCounterTextView by lazy { view?.findViewById(R.id.question_counter) as TextView }
 
     // ViewSwitcher for changing between types of answer entries
-    private val answerBarConstraintLayout by lazy { findViewById<ConstraintLayout>(R.id.question_type_switcher_constraint_layout) }
-    private val abcdAnswerBar by lazy { findViewById<LinearLayout>(R.id.abcd_answer_constraint_layout) }
-    private val typeAnswerBar by lazy { findViewById<LinearLayout>(R.id.type_answer_constraint_layout) }
-    private val longAnswerBar by lazy { findViewById<LinearLayout>(R.id.long_answer_constraint_layout) }
+    private val answerBarConstraintLayout by lazy { view?.findViewById(R.id.question_type_switcher_constraint_layout) as ConstraintLayout }
+    private val abcdAnswerBar by lazy { view?.findViewById(R.id.abcd_answer_constraint_layout) as LinearLayout }
+    private val typeAnswerBar by lazy { view?.findViewById(R.id.type_answer_constraint_layout) as LinearLayout }
+    private val longAnswerBar by lazy { view?.findViewById(R.id.long_answer_constraint_layout) as LinearLayout }
 
     // Type answer EditText
-    private val typeAnswerEditText by lazy { findViewById<EditText>(R.id.type_answer_edit_text) }
-    private val typeAnswerCorrectText by lazy { findViewById<TextView>(R.id.type_ans_correct_ans) }
-    private val typeAnswerImage by lazy { findViewById<ImageView>(R.id.type_answer_image) }
-    private val typeAnswerMath by lazy { findViewById<MathView>(R.id.type_ans_mathview) }
+    private val typeAnswerEditText by lazy { view?.findViewById(R.id.type_answer_edit_text) as EditText }
+    private val typeAnswerCorrectText by lazy { view?.findViewById(R.id.type_ans_correct_ans) as TextView }
+    private val typeAnswerImage by lazy { view?.findViewById(R.id.type_answer_image) as ImageView }
+    private val typeAnswerMath by lazy { view?.findViewById(R.id.type_ans_mathview) as MathView }
     private var answerType = AnswerType.ABCD
 
     // Answers collection
@@ -86,45 +91,47 @@ class ExamActivity : AppCompatActivity() {
     private lateinit var questions: List<Question>
 
     // Grade button
-    private val gradeFullButton by lazy { findViewById<Button>(R.id.grade_button) }
-    private val gradeQuestion by lazy { findViewById<Button>(R.id.grade_one) }
+    private val gradeFullButton by lazy { view?.findViewById(R.id.grade_button) as Button }
+    private val gradeQuestion by lazy { view?.findViewById(R.id.grade_one) as Button }
 
     // State of exam: WORK (still doing the exam), GRADING (exam finished, looking over the resutls)
     private var examState: ExamState = ExamState.WORKING
 
     // Long answer image
-    private val longAnswerImage by lazy { findViewById<ImageView>(R.id.long_answer_image) }
+    private val longAnswerImage by lazy { view?.findViewById(R.id.long_answer_image) as ImageView }
 
     // Open image elements
     private val imageDialog by lazy {
         Dialog(
-            this,
+            requireContext(),
             android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen
         )
     }
-    private val dialogImageView by lazy { imageDialog.findViewById<ZoomageView>(R.id.large_image) }
-    private val backButton by lazy { imageDialog.findViewById<ImageView>(R.id.image_back_button) }
+    private val dialogImageView by lazy { imageDialog.findViewById(R.id.large_image) as ZoomageView }
+    private val backButton by lazy { imageDialog.findViewById(R.id.image_back_button) as ImageView }
 
     // Media player
-    private val mediaPlayerView by lazy { findViewById<View>(R.id.media_player) }
-    private val mediaPlayPause by lazy { findViewById<ImageView>(R.id.play_pause_icon) }
-    private val mediaSeekbar by lazy { findViewById<SeekBar>(R.id.media_seekbar) }
-    private val mediaProgressBar by lazy { findViewById<ProgressBar>(R.id.audio_progressbar) }
+    private val mediaPlayerView by lazy { view?.findViewById(R.id.media_player) as View }
+    private val mediaPlayPause by lazy { view?.findViewById(R.id.play_pause_icon) as ImageView }
+    private val mediaSeekbar by lazy { view?.findViewById(R.id.media_seekbar) as SeekBar }
+    private val mediaProgressBar by lazy { view?.findViewById(R.id.audio_progressbar) as ProgressBar }
     private lateinit var mediaPlayer: MediaPlayer
     private var mediaReleased = true
     lateinit var seekbarRunnable: Runnable
     private val handler by lazy { Handler(Looper.getMainLooper()) }
     private var currentlyPlaying = ""
-    
+
     private lateinit var questionsDisposable: Disposable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_exam)
-
         // Get questions for the exam
-        val subject = intent.extras!!["subject"] as String
-        val exam = intent.extras!!["exam"] as String
+        val subject = "jerkić"//arguments?.getString("subject")
+        val exam = "marko"//arguments?.getString("exam")
+
+        if (subject.isNullOrEmpty() || exam.isNullOrEmpty()) {
+            throw RuntimeException()
+        }
 
         questionsDisposable = ApiServiceHolder.getQuestionsBySubjectAndExam(subject, exam)
             .subscribeOn(Schedulers.io())
@@ -145,7 +152,7 @@ class ExamActivity : AppCompatActivity() {
             )
 
     }
-    
+
     private fun renderQuestions() {
         // Add first question
         nextQuestion()
@@ -195,8 +202,11 @@ class ExamActivity : AppCompatActivity() {
         superImageView.setOnClickListener { openLargeImage(2) }
 
         clickToExpand.setOnClickListener {
-            if (superQuestionExpandableLayout.isExpanded) superQuestionExpandableLayout.collapse()
-            else superQuestionExpandableLayout.expand()
+            if (superQuestionExpandableLayout.isExpanded == true) {
+                superQuestionExpandableLayout.collapse()
+            } else {
+                superQuestionExpandableLayout.expand()
+            }
         }
     }
 
@@ -221,7 +231,8 @@ class ExamActivity : AppCompatActivity() {
 
     private fun gradeExam() {
         // Show toast announcement
-        Toast.makeText(this, getString(R.string.grading_toast), Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.grading_toast), Toast.LENGTH_SHORT)
+            .show()
         examState = ExamState.GRADING
         // Reset counter to 1 (start again from the first question)
         counter = 0
@@ -241,8 +252,8 @@ class ExamActivity : AppCompatActivity() {
         //typeAnswerEditText.inputType = InputType.TYPE_NULL
         typeAnswerEditText.isEnabled = false
         // Scroll to the top
-        scrollView.fullScroll(ScrollView.FOCUS_UP)
-        scrollView.smoothScrollTo(0, 0)
+        scrollView?.fullScroll(ScrollView.FOCUS_UP)
+        scrollView?.smoothScrollTo(0, 0)
     }
 
     private fun setTypeAnswer() {
@@ -367,7 +378,7 @@ class ExamActivity : AppCompatActivity() {
         }
 
         // Check if there is a super question
-        if (!currQuestion.superQuestion.isNullOrEmpty() 
+        if (!currQuestion.superQuestion.isNullOrEmpty()
         ) {
             if (!currQuestion.superQuestion.isNullOrEmpty()) {
                 setSuperQuestion(currQuestion)
@@ -540,7 +551,7 @@ class ExamActivity : AppCompatActivity() {
                                     .build()
                             )
                             setDataSource(
-                                applicationContext,
+                                requireContext(),
                                 Uri.parse(currQuestion.audioDownloadUrl!!)
                             )
                             currentlyPlaying = currQuestion.audioDownloadUrl!!
@@ -571,7 +582,7 @@ class ExamActivity : AppCompatActivity() {
                             }
                         }
                         if (this@ExamActivity::seekbarRunnable.isInitialized)
-                            this.runOnUiThread(seekbarRunnable)
+                            requireActivity().runOnUiThread(seekbarRunnable)
                         else {
                             seekbarRunnable = object : Runnable {
                                 override fun run() {
