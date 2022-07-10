@@ -352,12 +352,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Override
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.toolbar_menu, menu)
-        return true
-    }
-
-    @Override
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.info -> {

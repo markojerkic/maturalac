@@ -52,7 +52,7 @@ const addDownloadUrls = async (question: Question) => {
 const getQuestionsBySubjectAndExam = async (subject: string, exam: string) => {
   const qs = (await firestore.collection('pitanja').where('subject', '==', subject)
     .where('year', '==', exam).orderBy('questionNumber')
-    .get()).docs.map((doc) => ({...doc.data(), id: doc.id}));
+    .get()).docs.map((doc) => ({...doc.data(), id: doc.id, correctAnswer: doc.data().correctAns}));
   const questions = await Promise.all(questionValidator.array().parse(qs).map(addDownloadUrls));
 
   return questions;

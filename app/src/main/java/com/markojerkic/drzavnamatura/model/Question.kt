@@ -1,6 +1,7 @@
 package com.markojerkic.drzavnamatura.model
 
 data class Question (
+    var id: String,
     var question: String,
     var superQuestion: String?,
     var ansA: String,
