@@ -15,5 +15,6 @@ data class Question (
     var imageURI: String?,
     var imageDownloadUrl: String?,
     var superQuestionImageDownloadUrl: String?,
+    var audioDownloadUrl: String?,
     var correctAnswer: Int?
 )

@@ -1,7 +1,9 @@
 package com.markojerkic.drzavnamatura
 
 import android.app.Dialog
+import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -10,6 +12,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.bumptech.glide.Glide
 import com.jsibbold.zoomage.ZoomageView
 import com.markojerkic.drzavnamatura.model.Question
 import com.markojerkic.drzavnamatura.util.ApiServiceHolder
@@ -182,14 +185,14 @@ class ExamActivity : AppCompatActivity() {
 
         // Full image dialog
         imageDialog.setContentView(R.layout.open_image_dialog)
-//        questionImageView.setOnClickListener { openLargeImage(0) }
+        questionImageView.setOnClickListener { openLargeImage(0) }
         backButton.setOnClickListener { imageDialog.dismiss() }
 
 
         // Set on click action for all image views
-//        longAnswerImage.setOnClickListener { openLargeImage(1) }
-//        typeAnswerImage.setOnClickListener { openLargeImage(1) }
-//        superImageView.setOnClickListener { openLargeImage(2) }
+        longAnswerImage.setOnClickListener { openLargeImage(1) }
+        typeAnswerImage.setOnClickListener { openLargeImage(1) }
+        superImageView.setOnClickListener { openLargeImage(2) }
 
         clickToExpand.setOnClickListener {
             if (superQuestionExpandableLayout.isExpanded) superQuestionExpandableLayout.collapse()
@@ -200,22 +203,21 @@ class ExamActivity : AppCompatActivity() {
     private fun gradeOneQuestion() {
         examState = ExamState.GRADE_ONE
         setQuestion(questions[counter], questions.size)
-
     }
 
-//    private fun openLargeImage(imageViewNumber: Int) {
-//        when (imageViewNumber) {
-//            0 -> Glide.with(this).load(FilesSingleton.getByteArray(questions[counter].id))
-//                .into(dialogImageView)
-//            1 -> Glide.with(this).load(FilesSingleton.getAnswerByteArray(questions[counter].id))
-//                .into(dialogImageView)
-//            2 -> Glide.with(this)
-//                .load(FilesSingleton.getSuperByteArray(questions[counter].superImageName()!!))
-//                .into(dialogImageView)
-//        }
-//
-//        imageDialog.show()
-//    }
+    private fun openLargeImage(imageViewNumber: Int) {
+        when (imageViewNumber) {
+            0 -> Glide.with(this).load(questions[counter].imageDownloadUrl)
+                .into(dialogImageView)
+            1 -> Glide.with(this).load(questions[counter].superQuestionImageDownloadUrl)
+                .into(dialogImageView)
+            2 -> Glide.with(this)
+                .load(questions[counter].superQuestionImageDownloadUrl)
+                .into(dialogImageView)
+        }
+
+        imageDialog.show()
+    }
 
     private fun gradeExam() {
         // Show toast announcement
@@ -342,32 +344,27 @@ class ExamActivity : AppCompatActivity() {
     }
 
     private fun setQuestion(currQuestion: Question, total: Int) {
-//        if (currQuestion.audioFileName() == null ||
-//            (currentlyPlaying != ""
-//                    && currentlyPlaying != FilesSingleton.getAudioUri(currQuestion.id).toString())
-//        ) {
-//            // Release media player
-//            if (this::mediaPlayer.isInitialized)
-//                mediaPlayer.release()
-//            mediaPlayPause.setImageResource(R.drawable.ic_play_arrow)
-//            mediaSeekbar.progress = 0
-//            mediaReleased = true
-//            setPlayPauseOrProgress(true)
-//            currentlyPlaying = ""
-//            if (this::seekbarRunnable.isInitialized)
-//                handler.removeCallbacks(seekbarRunnable)
-//        }
+        if (currQuestion.audioDownloadUrl == null || currentlyPlaying != "") {
+            // Release media player
+            if (this::mediaPlayer.isInitialized)
+                mediaPlayer.release()
+            mediaPlayPause.setImageResource(R.drawable.ic_play_arrow)
+            mediaSeekbar.progress = 0
+            mediaReleased = true
+            setPlayPauseOrProgress(true)
+            currentlyPlaying = ""
+            if (this::seekbarRunnable.isInitialized)
+                handler.removeCallbacks(seekbarRunnable)
+        }
 
 
-//        if (FilesSingleton.containsKey(currQuestion.id)
-//            && currQuestion.imgURI != null
-//        ) {
-//            Glide.with(this).load(FilesSingleton.getByteArray(currQuestion.id))
-//                .into(questionImageView)
-//            questionImageView.visibility = View.VISIBLE
-//        } else {
-//            questionImageView.visibility = View.GONE
-//        }
+        if (currQuestion.imageDownloadUrl != null) {
+            Glide.with(this).load(currQuestion.imageDownloadUrl)
+                .into(questionImageView)
+            questionImageView.visibility = View.VISIBLE
+        } else {
+            questionImageView.visibility = View.GONE
+        }
 
         // Check if there is a super question
         if (!currQuestion.superQuestion.isNullOrEmpty() 
@@ -377,83 +374,82 @@ class ExamActivity : AppCompatActivity() {
                 setSuperQuestion(currQuestion)
 
             // Check if audio file is there
-//            if (FilesSingleton.containsAudio(currQuestion.id)) {
-//
-//                mediaPlayerView.visibility = View.VISIBLE
-//                if (currentlyPlaying == "") {
-//                    mediaPlayer = MediaPlayer()
-//                    mediaPlayPause.setOnClickListener {
-//                        if (this::mediaPlayer.isInitialized) {
-//                            if (!mediaPlayer.isPlaying || mediaReleased) {
-//                                mediaPlayPause.setImageResource(R.drawable.ic_pause)
-//                                if (!mediaReleased)
-//                                    mediaPlayer.start()
-//                                else {
-//                                    mediaPlayer.apply {
-//                                        setPlayPauseOrProgress(false)
-//                                        setAudioAttributes(
-//                                            AudioAttributes.Builder()
-//                                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-//                                                .setUsage(AudioAttributes.USAGE_MEDIA)
-//                                                .build()
-//                                        )
-//                                        setDataSource(
-//                                            applicationContext,
-//                                            FilesSingleton.getAudioUri(currQuestion.id)
-//                                        )
-//                                        currentlyPlaying =
-//                                            FilesSingleton.getAudioUri(currQuestion.id).toString()
-//                                        prepareAsync()
-//                                        setOnPreparedListener {
-//                                            start()
-//                                            pause()
-//                                            start()
-//                                            setPlayPauseOrProgress(true)
-//                                            mediaSeekbar.max = duration / 1000
-//                                            mediaReleased = false
-//                                            mediaSeekbar.setOnSeekBarChangeListener(object :
-//                                                SeekBar.OnSeekBarChangeListener {
-//                                                override fun onProgressChanged(
-//                                                    p0: SeekBar?,
-//                                                    progress: Int,
-//                                                    fromUser: Boolean
-//                                                ) {
-//                                                    if (fromUser)
-//                                                        seekTo(progress * 1000)
-//                                                }
-//
-//                                                override fun onStartTrackingTouch(p0: SeekBar?) {}
-//
-//                                                override fun onStopTrackingTouch(p0: SeekBar?) {}
-//
-//                                            })
-//                                        }
-//                                    }
-//                                    if (this@ExamActivity::seekbarRunnable.isInitialized)
-//                                        this.runOnUiThread(seekbarRunnable)
-//                                    else {
-//                                        seekbarRunnable = object : Runnable {
-//                                            override fun run() {
-//                                                if (this@ExamActivity::mediaPlayer.isInitialized) {
-//                                                    if (!mediaReleased)
-//                                                        mediaSeekbar.progress =
-//                                                            mediaPlayer.currentPosition / 1000
-//                                                }
-//                                                handler.postDelayed(this, 1000)
-//                                            }
-//
-//                                        }
-//                                    }
-//                                }
-//
-//                            } else {
-//                                mediaPlayPause.setImageResource(R.drawable.ic_play_arrow)
-//                                mediaPlayer.pause()
-//                            }
-//                        }
-//                    }
-//                }
-//            } else mediaPlayerView.visibility = View.GONE
+            if (!currQuestion.audioDownloadUrl.isNullOrEmpty()) {
+
+                mediaPlayerView.visibility = View.VISIBLE
+                if (currentlyPlaying == "") {
+                    mediaPlayer = MediaPlayer()
+                    mediaPlayPause.setOnClickListener {
+                        if (this::mediaPlayer.isInitialized) {
+                            if (!mediaPlayer.isPlaying || mediaReleased) {
+                                mediaPlayPause.setImageResource(R.drawable.ic_pause)
+                                if (!mediaReleased)
+                                    mediaPlayer.start()
+                                else {
+                                    mediaPlayer.apply {
+                                        setPlayPauseOrProgress(false)
+                                        setAudioAttributes(
+                                            AudioAttributes.Builder()
+                                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                                .setUsage(AudioAttributes.USAGE_MEDIA)
+                                                .build()
+                                        )
+                                        setDataSource(
+                                            applicationContext,
+                                            Uri.parse(currQuestion.audioDownloadUrl!!)
+                                        )
+                                        currentlyPlaying = currQuestion.audioDownloadUrl!!
+                                        prepareAsync()
+                                        setOnPreparedListener {
+                                            start()
+                                            pause()
+                                            start()
+                                            setPlayPauseOrProgress(true)
+                                            mediaSeekbar.max = duration / 1000
+                                            mediaReleased = false
+                                            mediaSeekbar.setOnSeekBarChangeListener(object :
+                                                SeekBar.OnSeekBarChangeListener {
+                                                override fun onProgressChanged(
+                                                    p0: SeekBar?,
+                                                    progress: Int,
+                                                    fromUser: Boolean
+                                                ) {
+                                                    if (fromUser)
+                                                        seekTo(progress * 1000)
+                                                }
+
+                                                override fun onStartTrackingTouch(p0: SeekBar?) {}
+
+                                                override fun onStopTrackingTouch(p0: SeekBar?) {}
+
+                                            })
+                                        }
+                                    }
+                                    if (this@ExamActivity::seekbarRunnable.isInitialized)
+                                        this.runOnUiThread(seekbarRunnable)
+                                    else {
+                                        seekbarRunnable = object : Runnable {
+                                            override fun run() {
+                                                if (this@ExamActivity::mediaPlayer.isInitialized) {
+                                                    if (!mediaReleased)
+                                                        mediaSeekbar.progress =
+                                                            mediaPlayer.currentPosition / 1000
+                                                }
+                                                handler.postDelayed(this, 1000)
+                                            }
+
+                                        }
+                                    }
+                                }
+
+                            } else {
+                                mediaPlayPause.setImageResource(R.drawable.ic_play_arrow)
+                                mediaPlayer.pause()
+                            }
+                        }
+                    }
+                }
+            } else mediaPlayerView.visibility = View.GONE
 
             expandLinearWraper.visibility = View.VISIBLE
         } else {
@@ -619,16 +615,14 @@ class ExamActivity : AppCompatActivity() {
             superQuestionMath.text = currQuestion.superQuestion
         }
         // Check for image
-//        if (currQuestion.superImgExists()) {
-//            if (FilesSingleton.containsSuperImage(currQuestion.superImageName()!!)) {
-//                superImageView.visibility = View.VISIBLE
-//                Glide.with(this)
-//                    .load(FilesSingleton.getSuperByteArray(currQuestion.superImageName()!!))
-//                    .into(superImageView)
-//            }
-//        } else {
-//            superImageView.visibility = View.GONE
-//        }
+        if (currQuestion.superQuestionImageDownloadUrl != null) {
+            superImageView.visibility = View.VISIBLE
+            Glide.with(this)
+                .load(currQuestion.superQuestionImageDownloadUrl)
+                .into(superImageView)
+        } else {
+            superImageView.visibility = View.GONE
+        }
 
         //superQuestionExpandView.minimumHeight = height
     }
