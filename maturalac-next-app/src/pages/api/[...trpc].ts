@@ -7,4 +7,11 @@ import { createContext } from "../../server/router/context";
 export default createOpenApiNextHandler({
   router: appRouter,
   createContext: createContext,
+  responseMeta() {
+    return {
+      headers: {
+        'cache-control': `s-maxage=1, stale-while-revalidate=${5 * 60}`,
+      }
+    }
+  }
 });
