@@ -1,15 +1,27 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import Link from "next/link";
 import { trpc } from "../utils/trpc";
 
-const Subject: React.FC<{subject: string; exams: string[]}> = ({subject, exams}) => {
+const Subject: React.FC<{id: string, subject: string; exams: string[]}> = ({id, subject, exams}) => {
 
   return (
     <div className="border-solid border flex flex-col justify-center border-white rounded-md my-2 p-2">
       <div className="text-lg text-center mb-2">{subject}</div>
-      <div className="flex flex-col justify-center mx-auto">{exams.map((exam) => (
-        <span key={`${subject}-${exam}`}>|-&gt;<a href={`/api/questions?subject=${subject}&exam=${exam}`}>{exam}</a></span>
-      ))}</div>
+      <div className="flex flex-col justify-center mx-auto">
+        {exams.map((exam) => (
+          <>
+            <span key={`${subject}-${exam}`}>
+              |-&gt;
+              <a href={`/api/questions?subject=${subject}&exam=${exam}`}>
+                {exam}
+              </a>
+              <span>Id: {id}</span>
+            </span>
+            <Link href={`/exam?subject=${subject}&exam=${exam}`}>Iskušaj se u isputu</Link>
+          </>
+        ))}
+      </div>
     </div>
   );
 }
@@ -32,7 +44,7 @@ const Home: NextPage = () => {
       <main>
         <>
           <div>Javni ispiti</div>
-          {data.map((subject) => (<Subject key={subject.id} subject={subject.subject} exams={subject.exams} />))}
+          {data.map(({id, subject, exams}) => (<Subject key={id} id={id} subject={subject} exams={exams} />))}
         </>
       </main>
     </>

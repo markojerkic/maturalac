@@ -59,3 +59,4 @@ const getQuestionsBySubjectAndExam = async (subject: string, exam: string) => {
 };
 
 export { getQuestionsBySubjectAndExam, formatedQuestionValidator };
+export type {Question};
