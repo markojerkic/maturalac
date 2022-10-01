@@ -16,6 +16,7 @@ export const questionsRouter = createRouter()
       subject: z.string(),
       exam: z.string(),
     }),
+    // TODO: rest endpoint requires this
     // output: formatedQuestionValidator.array(),
     async resolve({ input }) {
       return await getQuestionsBySubjectAndExam(input.subject, input.exam);
