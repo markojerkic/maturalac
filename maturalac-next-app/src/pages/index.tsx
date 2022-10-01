@@ -13,12 +13,10 @@ const Subject: React.FC<{id: string, subject: string; exams: string[]}> = ({id, 
           <>
             <span key={`${subject}-${exam}`}>
               |-&gt;
-              <a href={`/api/questions?subject=${subject}&exam=${exam}`}>
+              <Link href={`/exam?subject=${subject}&exam=${exam}`}>
                 {exam}
-              </a>
-              <span>Id: {id}</span>
+              </Link>
             </span>
-            <Link href={`/exam?subject=${subject}&exam=${exam}`}>Iskušaj se u isputu</Link>
           </>
         ))}
       </div>
