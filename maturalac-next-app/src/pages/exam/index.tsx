@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { z } from "zod";
-import { Question } from "../../server/firebase/questions";
+import { Question, QuestionWithImageDownloadUrls } from "../../server/firebase/questions";
 import { trpc } from "../../utils/trpc";
 
 const queryParamValidator = z.object({
@@ -8,18 +8,61 @@ const queryParamValidator = z.object({
   exam: z.string()
 });
 
-const Question: React.FC<{question: Question}> = ({question: {id, question}}) => {
+const ABCDAnswers: React.FC<{ansA: string, ansB: string, ansC: string, ansD: string}> = ({ansA, ansB, ansC, ansD}) => {
   return (
-    <>
-      <p>
-        <span className="font-bold">Id: </span>
-        {id}
-      </p>
-      <p>
-        <span className="font-bold">Question: </span>
-        {question}
-      </p>
-    </>
+    <div className="grid grid-rows-1 md:grid-rows-2 grid-flow-row md:grid-flow-col">
+      {ansA && (
+        <div>
+          <span>A&#41; </span>
+          <span>{ansA}</span>
+        </div>
+      )}
+      {ansB && (
+        <div>
+          <span>B&#41; </span>
+          <span>{ansB}</span>
+        </div>
+      )}
+      {ansC && (
+        <div>
+          <span>B&#41; </span>
+          <span>{ansC}</span>
+        </div>
+      )}
+      {ansD && (
+        <div>
+          <span>B&#41; </span>
+          <span>{ansD}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const QuestionView: React.FC<{ question: QuestionWithImageDownloadUrls }> = ({question: {
+  question,
+  ansA,
+  ansB,
+  ansC,
+  ansD,
+  typeOfAnswer,
+  imageDownloadUrl,
+}}) => {
+  return (
+    <div className="mx-auto my-2">
+      <p>{question}</p>
+      {imageDownloadUrl && (
+        <img
+          src={imageDownloadUrl}
+          className="w-full max-h-[50%]"
+          alt="Glavna slika"
+        />
+      )}
+
+      {(ansA || ansB || ansC || ansD) && typeOfAnswer === 0 && (
+        <ABCDAnswers ansA={ansA} ansB={ansB} ansC={ansC} ansD={ansD} />
+      )}
+    </div>
   );
 };
 
@@ -31,12 +74,13 @@ const Exam = () => {
     return <h2>Loading...</h2>
   }
   return (
-    <div className="flex flex-col mx-2 space-y-2">
+    <div className="flex flex-col mx-auto space-y-2 w-[90%] md:w-[50%]">
+      <p className="mx-auto my-4 font-bold text-2xl">{query.subject}: {query.exam}</p>
       {data.map((question) => (
-        <>
-          <Question question={question} />
+        <div key={question.id}>
+          <QuestionView question={question} />
           <hr />
-        </>
+        </div>
       ))}
     </div>
   );

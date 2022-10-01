@@ -16,7 +16,7 @@ export const questionsRouter = createRouter()
       subject: z.string(),
       exam: z.string(),
     }),
-    output: formatedQuestionValidator.array(),
+    // output: formatedQuestionValidator.array(),
     async resolve({ input }) {
       return await getQuestionsBySubjectAndExam(input.subject, input.exam);
     },
