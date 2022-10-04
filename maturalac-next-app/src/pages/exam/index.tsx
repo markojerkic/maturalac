@@ -18,7 +18,7 @@ const ABCDAnswers: React.FC<{
   ansD: string;
 }> = ({ ansA, ansB, ansC, ansD }) => {
   return (
-    <div className="grid grid-rows-1 md:grid-rows-2 grid-flow-row md:grid-flow-col">
+    <div className="grid grid-flow-row grid-rows-1 md:grid-flow-col md:grid-rows-2">
       {ansA && (
         <div>
           <span>A&#41; </span>
@@ -64,7 +64,7 @@ const QuestionView: React.FC<{ question: QuestionWithImageDownloadUrls }> = ({
       {imageDownloadUrl && (
         <img
           src={imageDownloadUrl}
-          className="w-full max-h-[50%]"
+          className="max-h-[50%] w-full"
           alt="Glavna slika"
         />
       )}
@@ -84,8 +84,8 @@ const Exam = () => {
     return <h2>Loading...</h2>;
   }
   return (
-    <div className="flex flex-col mx-auto space-y-2 w-[90%] md:w-[50%]">
-      <p className="mx-auto my-4 font-bold text-2xl">
+    <div className="mx-auto flex w-[90%] flex-col space-y-2 md:w-[50%]">
+      <p className="mx-auto my-4 text-2xl font-bold">
         {query.subject}: {query.exam}
       </p>
       {data.map((question) => (

@@ -9,9 +9,9 @@ const Subject: React.FC<{ id: string; subject: string; exams: string[] }> = ({
   exams,
 }) => {
   return (
-    <div className="border-solid border flex flex-col justify-center border-white rounded-md my-2 p-2">
-      <div className="text-lg text-center mb-2">{subject}</div>
-      <div className="flex flex-col justify-center mx-auto">
+    <div className="my-2 flex flex-col justify-center rounded-md border border-solid border-white p-2">
+      <div className="mb-2 text-center text-lg">{subject}</div>
+      <div className="mx-auto flex flex-col justify-center">
         {exams.map((exam) => (
           <>
             <span key={`${subject}-${exam}`}>
