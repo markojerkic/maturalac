@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "eslint:fix": "eslint --fix-dry-run --ext .ts,.tsx src",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -39,14 +38,8 @@
     "@typescript-eslint/eslint-plugin": "^5.30.5",
     "@typescript-eslint/parser": "^5.30.5",
     "autoprefixer": "^10.4.7",
-    "eslint": "^7.32.0 || ^8.2.0",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-next": "12.2.2",
-    "eslint-plugin-import": "^2.25.3",
-    "eslint-plugin-jsx-a11y": "^6.5.1",
-    "eslint-plugin-react": "^7.28.0",
-    "eslint-plugin-react-hooks": "^4.3.0",
     "postcss": "^8.4.14",
+    "prettier": "2.7.1",
     "prisma": "^4.4.0",
     "tailwindcss": "^3.1.5",
     "typescript": "4.7.4"

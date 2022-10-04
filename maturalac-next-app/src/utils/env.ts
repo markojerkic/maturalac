@@ -1,4 +1,4 @@
-const z = require('zod');
+const z = require("zod");
 
 const envValidator = z.object({
   FIRESTORE_URL: z.string(),
@@ -21,8 +21,8 @@ const env = envValidator.safeParse(process.env);
 
 if (!env.success) {
   console.error(
-    '❌ Invalid environment variables:',
-    JSON.stringify(env.error.format(), null, 4),
+    "❌ Invalid environment variables:",
+    JSON.stringify(env.error.format(), null, 4)
   );
   process.exit(1);
 }

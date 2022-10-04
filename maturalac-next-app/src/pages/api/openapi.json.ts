@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import openApiDocument from '../../server/router/openApi';
+import { NextApiRequest, NextApiResponse } from "next";
+import openApiDocument from "../../server/router/openApi";
 
 // Respond with our OpenAPI schema
 const hander = (_req: NextApiRequest, res: NextApiResponse) => {

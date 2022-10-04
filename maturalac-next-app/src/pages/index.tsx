@@ -3,8 +3,11 @@ import Head from "next/head";
 import Link from "next/link";
 import { trpc } from "../utils/trpc";
 
-const Subject: React.FC<{id: string, subject: string; exams: string[]}> = ({id, subject, exams}) => {
-
+const Subject: React.FC<{ id: string; subject: string; exams: string[] }> = ({
+  id,
+  subject,
+  exams,
+}) => {
   return (
     <div className="border-solid border flex flex-col justify-center border-white rounded-md my-2 p-2">
       <div className="text-lg text-center mb-2">{subject}</div>
@@ -13,19 +16,17 @@ const Subject: React.FC<{id: string, subject: string; exams: string[]}> = ({id, 
           <>
             <span key={`${subject}-${exam}`}>
               |-&gt;
-              <Link href={`/exam?subject=${subject}&exam=${exam}`}>
-                {exam}
-              </Link>
+              <Link href={`/exam?subject=${subject}&exam=${exam}`}>{exam}</Link>
             </span>
           </>
         ))}
       </div>
     </div>
   );
-}
+};
 
 const Home: NextPage = () => {
-  const {data, isLoading} = trpc.useQuery(["exams.get-subject-exams-tree"]);
+  const { data, isLoading } = trpc.useQuery(["exams.get-subject-exams-tree"]);
 
   if (!data || isLoading) {
     return <div>Loading...</div>;
@@ -42,7 +43,9 @@ const Home: NextPage = () => {
       <main>
         <>
           <div>Javni ispiti</div>
-          {data.map(({id, subject, exams}) => (<Subject key={id} id={id} subject={subject} exams={exams} />))}
+          {data.map(({ id, subject, exams }) => (
+            <Subject key={id} id={id} subject={subject} exams={exams} />
+          ))}
         </>
       </main>
     </>
