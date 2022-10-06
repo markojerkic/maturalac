@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { getFileDownloadLink } from "./files";
 import { firestore } from ".";
+import { Question } from "@prisma/client";
 
 const questionValidator = z.object({
   id: z.string(),
@@ -28,34 +29,29 @@ const formatedQuestionValidator = questionValidator.extend({
   superQuestionImageDownloadUrl: z.string().url().optional(),
 });
 
-type Question = z.infer<typeof questionValidator>;
 
 const addDownloadUrls = async (question: Question) => {
   const [
-    imageDownloadUrl,
+    questionImageDownloadUrl,
     answerImageDownloadUrl,
-    superQuestionImageDownloadUrl,
-    audioDownloadUrl,
   ] = await Promise.all([
-    question.imageURI
-      ? getFileDownloadLink(question.imageURI)
+    question.questionImageId
+      ? getFileDownloadLink(question.questionImageId)
       : Promise.resolve(undefined),
-    question.ansImg
-      ? getFileDownloadLink(question.ansImg)
+    question.answerImageId
+      ? getFileDownloadLink(question.answerImageId)
       : Promise.resolve(undefined),
-    question.superQuestionImage
-      ? getFileDownloadLink(question.superQuestionImage)
-      : Promise.resolve(undefined),
-    question.audioName
-      ? getFileDownloadLink(question.audioName, false)
-      : Promise.resolve(undefined),
+    // question.sup
+    //   ? getFileDownloadLink(question.superQuestionImage)
+    //   : Promise.resolve(undefined),
+    // question.audioName
+    //   ? getFileDownloadLink(question.audioName, false)
+    //   : Promise.resolve(undefined),
   ]);
   return {
     ...question,
-    audioDownloadUrl,
     answerImageDownloadUrl,
-    imageDownloadUrl,
-    superQuestionImageDownloadUrl,
+    questionImageDownloadUrl
   };
 };
 
@@ -72,12 +68,47 @@ const getQuestionsBySubjectAndExam = async (subject: string, exam: string) => {
     id: doc.id,
     correctAnswer: doc.data().correctAns,
   }));
-  const questions = await Promise.all(
-    questionValidator.array().parse(qs).map(addDownloadUrls)
-  );
+  // const questions = await Promise.all(
+  //   questionValidator.array().parse(qs);//.map(addDownloadUrls)
 
-  return questions;
+  return null;
 };
+
+export const getQuestionsByExamId = async (examId: string) => {
+  const subjectExamYear = await prisma?.subjectExamYear.findUniqueOrThrow({
+    where: {
+      id: examId
+    },
+    select: {
+      subject: {
+        select: {
+          name: true
+        }
+      }, examYear: {
+        select: {
+          year: true
+        }
+      }
+    }
+  });
+  const questionsPromise = (await prisma?.question.findMany({
+    where: {
+      subjectExamYearId: examId
+    },
+    orderBy: {
+      questionNumber: 'asc'
+    }
+  }))?.map(addDownloadUrls);
+  if (!questionsPromise) {
+    throw Error('Questions not are undefined');
+  }
+  const questions = await Promise.all(questionsPromise);
+  return {
+    subject: subjectExamYear?.subject.name,
+    examYear: subjectExamYear?.examYear.year,
+    questions: questions
+  }
+}
 
 type QuestionWithImageDownloadUrls = Awaited<
   ReturnType<typeof addDownloadUrls>
