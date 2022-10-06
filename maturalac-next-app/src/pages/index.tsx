@@ -1,22 +1,22 @@
+import { Subject } from "@prisma/client";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { trpc } from "../utils/trpc";
 
-const Subject: React.FC<{ id: string; subject: string; exams: string[] }> = ({
-  id,
-  subject,
-  exams,
-}) => {
+const SubjectExamTree: React.FC<{
+  subjectName: string;
+  exams: { year: string; subjectExamYearId: string }[];
+}> = ({ subjectName, exams }) => {
   return (
     <div className="my-2 flex flex-col justify-center rounded-md border border-solid border-white p-2">
-      <div className="mb-2 text-center text-lg">{subject}</div>
+      <div className="mb-2 text-center text-lg">{subjectName}</div>
       <div className="mx-auto flex flex-col justify-center">
-        {exams.map((exam) => (
+        {exams.map(({ year, subjectExamYearId }) => (
           <>
-            <span key={`${subject}-${exam}`}>
+            <span key={`${subjectName}-${year}`}>
               |-&gt;
-              <Link href={`/exam?subject=${subject}&exam=${exam}`}>{exam}</Link>
+              <Link href={`/exam/${subjectExamYearId}`}>{year}</Link>
             </span>
           </>
         ))}
@@ -43,8 +43,15 @@ const Home: NextPage = () => {
       <main>
         <>
           <div>Javni ispiti</div>
-          {data.map(({ id, subject, exams }) => (
-            <Subject key={id} id={id} subject={subject} exams={exams} />
+          {data.map((subj) => (
+            <SubjectExamTree
+              key={subj.name}
+              subjectName={subj.name}
+              exams={subj.examYears.map((ey) => ({
+                year: ey.examYear.year,
+                subjectExamYearId: ey.id,
+              }))}
+            />
           ))}
         </>
       </main>
