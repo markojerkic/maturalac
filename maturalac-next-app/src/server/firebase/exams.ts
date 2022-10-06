@@ -23,22 +23,21 @@ const getPublicExamsTree = async () => {
           id: true,
           examYear: {
             select: {
-              year: true
-            }
-          }
-        }
-      }
+              year: true,
+            },
+          },
+        },
+      },
     },
     where: {
       examYears: {
         some: {
-          isPublic: false
-        }
-      }
-    }
-  })
+          isPublic: false,
+        },
+      },
+    },
+  });
   return tree;
 };
 
 export { getPublicExamsTree, formatedSubjectValidator };
-

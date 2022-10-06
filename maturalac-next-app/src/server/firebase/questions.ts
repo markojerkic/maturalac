@@ -29,12 +29,8 @@ const formatedQuestionValidator = questionValidator.extend({
   superQuestionImageDownloadUrl: z.string().url().optional(),
 });
 
-
 const addDownloadUrls = async (question: Question) => {
-  const [
-    questionImageDownloadUrl,
-    answerImageDownloadUrl,
-  ] = await Promise.all([
+  const [questionImageDownloadUrl, answerImageDownloadUrl] = await Promise.all([
     question.questionImageId
       ? getFileDownloadLink(question.questionImageId)
       : Promise.resolve(undefined),
@@ -51,7 +47,7 @@ const addDownloadUrls = async (question: Question) => {
   return {
     ...question,
     answerImageDownloadUrl,
-    questionImageDownloadUrl
+    questionImageDownloadUrl,
   };
 };
 
@@ -77,38 +73,41 @@ const getQuestionsBySubjectAndExam = async (subject: string, exam: string) => {
 export const getQuestionsByExamId = async (examId: string) => {
   const subjectExamYear = await prisma?.subjectExamYear.findUniqueOrThrow({
     where: {
-      id: examId
+      id: examId,
     },
     select: {
       subject: {
         select: {
-          name: true
-        }
-      }, examYear: {
+          name: true,
+        },
+      },
+      examYear: {
         select: {
-          year: true
-        }
-      }
-    }
-  });
-  const questionsPromise = (await prisma?.question.findMany({
-    where: {
-      subjectExamYearId: examId
+          year: true,
+        },
+      },
     },
-    orderBy: {
-      questionNumber: 'asc'
-    }
-  }))?.map(addDownloadUrls);
+  });
+  const questionsPromise = (
+    await prisma?.question.findMany({
+      where: {
+        subjectExamYearId: examId,
+      },
+      orderBy: {
+        questionNumber: "asc",
+      },
+    })
+  )?.map(addDownloadUrls);
   if (!questionsPromise) {
-    throw Error('Questions not are undefined');
+    throw Error("Questions not are undefined");
   }
   const questions = await Promise.all(questionsPromise);
   return {
     subject: subjectExamYear?.subject.name,
     examYear: subjectExamYear?.examYear.year,
-    questions: questions
-  }
-}
+    questions: questions,
+  };
+};
 
 type QuestionWithImageDownloadUrls = Awaited<
   ReturnType<typeof addDownloadUrls>
