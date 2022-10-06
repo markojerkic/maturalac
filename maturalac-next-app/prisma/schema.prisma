@@ -21,7 +21,7 @@ model Subject {
 
 model ExamYear {
   id       String            @id @default(cuid())
-  year     Int
+  year     String
   subjects SubjectExamYear[]
 }
 
@@ -32,7 +32,7 @@ model SubjectExamYear {
   examYearId String
   examYear   ExamYear   @relation(fields: [examYearId], references: [id])
   question   Question[]
-  isPublic   Boolean
+  isPublic   Boolean    @default(false)
 }
 
 enum AnswerType {
@@ -49,26 +49,29 @@ enum CorrectAnswer {
 }
 
 model SuperQuestion {
-  id       String  @id @default(cuid())
-  question String
-  imageId  String?
-  audioId  String?
+  id        String     @id @default(cuid())
+  question  String     @db.Text
+  imageId   String?
+  audioId   String?
+  questions Question[]
 }
 
 model Question {
   id                String          @id @default(cuid())
   subjectExamYearId String
   subjectExamYear   SubjectExamYear @relation(fields: [subjectExamYearId], references: [id])
-  question          String
+  question          String          @db.Text
   answerType        AnswerType
   correctAnswer     CorrectAnswer?
   questionNumber    Int
   questionImageId   String?
   answerImageId     String?
-  ansA              String?
+  ansA              String?         @db.Text
   ansB              String?
   ansC              String?
   ansD              String?
+  superQuestionId   String?
+  superQuestion     SuperQuestion?  @relation(fields: [superQuestionId], references: [id], onDelete: Cascade)
 }
 
 // Necessary for Next auth
