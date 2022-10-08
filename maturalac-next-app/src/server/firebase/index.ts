@@ -1,9 +1,8 @@
 import { apps } from "firebase-admin";
-import { initializeApp, cert, ServiceAccount, App } from "firebase-admin/app";
+import { cert, initializeApp, ServiceAccount } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
-import { getAnalytics } from "firebase/analytics";
-import env from "../../utils/env";
+import { env } from "../../env/server.mjs";
 
 const firebaseConfig = {
   type: env.type,
