@@ -1,7 +1,7 @@
 import { AnswerType } from "@prisma/client";
 import { useRouter } from "next/router";
 import { z } from "zod";
-import { QuestionWithImageDownloadUrls } from "../../server/firebase/questions";
+import { QuestionWithImageDownloadUrls } from "../../server/data/questions";
 import { trpc } from "../../utils/trpc";
 
 const pathParamValidator = z.object({

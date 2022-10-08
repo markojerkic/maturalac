@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { prisma } from "../db/client";
 
 const subjectValidator = z.object({
   id: z.string(),
@@ -15,7 +16,7 @@ const hasPublicExam = (subject: Subject) =>
   subject.allowed.some((allowed) => allowed);
 
 const getPublicExamsTree = async () => {
-  const tree = await prisma?.subject.findMany({
+  const tree = await prisma.subject.findMany({
     select: {
       name: true,
       examYears: {
