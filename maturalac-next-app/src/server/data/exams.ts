@@ -1,19 +1,5 @@
-import { z } from "zod";
 import { prisma } from "../db/client";
 
-const subjectValidator = z.object({
-  id: z.string(),
-  subject: z.string(),
-  allowed: z.boolean().array(),
-  exams: z.string().array(),
-});
-
-const formatedSubjectValidator = subjectValidator.omit({ allowed: true });
-
-type Subject = z.infer<typeof subjectValidator>;
-
-const hasPublicExam = (subject: Subject) =>
-  subject.allowed.some((allowed) => allowed);
 
 const getPublicExamsTree = async () => {
   const tree = await prisma.subject.findMany({
@@ -41,4 +27,5 @@ const getPublicExamsTree = async () => {
   return tree;
 };
 
-export { getPublicExamsTree, formatedSubjectValidator };
+export { getPublicExamsTree };
+
