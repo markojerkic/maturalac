@@ -1,7 +1,7 @@
 import type { GetServerSidePropsContext, InferGetStaticPropsType } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { ssgContext } from "../server/trpc/trpc";
+import { createSSGContext } from "../server/trpc/context";
 import { trpc } from "../utils/trpc";
 
 const SubjectExamTree: React.FC<{
@@ -26,7 +26,7 @@ const SubjectExamTree: React.FC<{
 };
 
 const getStaticProps = async (ctx: GetServerSidePropsContext) => {
-  const ssg = await ssgContext(ctx);
+  const ssg = await createSSGContext(ctx);
   await ssg.exam.getPublicExamsTree.fetch();
   return {
     props: {

@@ -4,9 +4,12 @@ import * as trpcNext from "@trpc/server/adapters/next";
 
 import { prisma } from "../db/client";
 // src/server/router/context.ts
+import { createProxySSGHelpers } from "@trpc/react/ssg";
 import { GetServerSidePropsContext } from "next";
 import { Session } from "next-auth";
+import superjson from "superjson";
 import { getServerAuthSession } from "../common/get-server-auth-session";
+import { appRouter } from "./router";
 
 type CreateContextOptions = {
   session: Session | null;
@@ -17,8 +20,14 @@ export const createSSGContext = async ({
   res,
 }: GetServerSidePropsContext) => {
   const session = await getServerAuthSession({ req, res });
-  return await createContextInner({
+  const ctx = await createContextInner({
     session,
+  });
+
+  return await createProxySSGHelpers({
+    router: appRouter,
+    ctx,
+    transformer: superjson,
   });
 };
 
