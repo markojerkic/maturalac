@@ -1,6 +1,7 @@
-import type { NextPage } from "next";
+import type { GetServerSidePropsContext, InferGetStaticPropsType } from "next";
 import Head from "next/head";
 import Link from "next/link";
+import { ssgContext } from "../server/trpc/trpc";
 import { trpc } from "../utils/trpc";
 
 const SubjectExamTree: React.FC<{
@@ -24,7 +25,18 @@ const SubjectExamTree: React.FC<{
   );
 };
 
-const Home: NextPage = () => {
+const getStaticProps = async (ctx: GetServerSidePropsContext) => {
+  const ssg = await ssgContext(ctx);
+  await ssg.exam.getPublicExamsTree.fetch();
+  return {
+    props: {
+      trpcState: ssg.dehydrate(),
+    },
+    revalidate: 1,
+  };
+};
+
+const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { data, isLoading } = trpc.exam.getPublicExamsTree.useQuery();
 
   if (!data || isLoading) {

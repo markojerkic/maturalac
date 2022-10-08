@@ -4,11 +4,22 @@ import * as trpcNext from "@trpc/server/adapters/next";
 
 import { prisma } from "../db/client";
 // src/server/router/context.ts
+import { GetServerSidePropsContext } from "next";
 import { Session } from "next-auth";
 import { getServerAuthSession } from "../common/get-server-auth-session";
 
 type CreateContextOptions = {
   session: Session | null;
+};
+
+export const createSSGContext = async ({
+  req,
+  res,
+}: GetServerSidePropsContext) => {
+  const session = await getServerAuthSession({ req, res });
+  return await createContextInner({
+    session,
+  });
 };
 
 /** Use this helper for:
