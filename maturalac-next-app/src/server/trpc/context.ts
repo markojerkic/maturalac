@@ -19,10 +19,11 @@ export const createSSGContext = async ({
   req,
   res,
 }: GetServerSidePropsContext) => {
-  const session = await getServerAuthSession({ req, res });
-  const ctx = await createContextInner({
-    session,
-  });
+  const ctx = { prisma, session: null };
+  // const session = await getServerAuthSession({ req, res });
+  // await createContextInner({
+  //   session,
+  // });
 
   return await createProxySSGHelpers({
     router: appRouter,

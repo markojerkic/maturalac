@@ -1,7 +1,10 @@
 import { AnswerType } from "@prisma/client";
+import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { z } from "zod";
 import { QuestionWithImageDownloadUrls } from "../../server/data/questions";
+import { prisma } from "../../server/db/client";
+import { createSSGContext } from "../../server/trpc/context";
 import { trpc } from "../../utils/trpc";
 
 const pathParamValidator = z.object({
@@ -71,6 +74,37 @@ const QuestionView: React.FC<{ question: QuestionWithImageDownloadUrls }> = ({
       )}
     </div>
   );
+};
+
+export const getStaticPaths = async () => {
+  const ids = (
+    await prisma.subjectExamYear.findMany({
+      select: {
+        id: true,
+      },
+    })
+  ).map((id) => ({ params: { examYearSubjectId: id.id } }));
+  return {
+    paths: ids,
+    fallback: "blocking",
+  };
+};
+
+export const getStaticProps = async (
+  ctx: GetServerSidePropsContext<{ examYearSubjectId: string }>
+) => {
+  const id = ctx.params?.examYearSubjectId;
+  if (!id) {
+    throw Error("Id bust be defined");
+  }
+  const ssg = await createSSGContext(ctx);
+  await ssg.question.getQuestionsByExamId.fetch(id);
+  return {
+    props: {
+      trpcState: ssg.dehydrate(),
+    },
+    revalidate: 60 * 60 * 5,
+  };
 };
 
 const Exam = () => {

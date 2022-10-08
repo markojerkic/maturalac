@@ -25,14 +25,14 @@ const SubjectExamTree: React.FC<{
   );
 };
 
-const getStaticProps = async (ctx: GetServerSidePropsContext) => {
+export const getStaticProps = async (ctx: GetServerSidePropsContext) => {
   const ssg = await createSSGContext(ctx);
   await ssg.exam.getPublicExamsTree.fetch();
   return {
     props: {
       trpcState: ssg.dehydrate(),
     },
-    revalidate: 1,
+    revalidate: 60 * 60 * 12,
   };
 };
 
