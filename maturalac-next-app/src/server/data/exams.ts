@@ -1,6 +1,5 @@
 import { prisma } from "../db/client";
 
-
 const getPublicExamsTree = async () => {
   const tree = await prisma.subject.findMany({
     select: {
@@ -28,4 +27,3 @@ const getPublicExamsTree = async () => {
 };
 
 export { getPublicExamsTree };
-

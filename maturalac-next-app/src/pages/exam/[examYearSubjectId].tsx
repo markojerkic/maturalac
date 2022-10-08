@@ -76,10 +76,8 @@ const QuestionView: React.FC<{ question: QuestionWithImageDownloadUrls }> = ({
 const Exam = () => {
   const router = useRouter();
   const examId = pathParamValidator.parse(router.query).examYearSubjectId;
-  const { data, isLoading } = trpc.useQuery([
-    "questions.get-questions-by-exam",
-    examId,
-  ]);
+  const { data, isLoading } =
+    trpc.question.getQuestionsByExamId.useQuery(examId);
   if (
     isLoading ||
     !data ||

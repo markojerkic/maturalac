@@ -1,21 +1,30 @@
-import { createReactQueryHooks } from "@trpc/react";
-import type { AppRouter } from "../server/router";
+// src/utils/trpc.ts
+import { httpBatchLink, loggerLink } from "@trpc/client";
+import { createTRPCNext } from "@trpc/next";
+import superjson from "superjson";
+import type { AppRouter } from "../server/trpc/router";
 
 const getBaseUrl = () => {
-  if (typeof window !== "undefined") {
-    return "";
-  }
-  if (process.browser) return ""; // Browser should use current path
+  if (typeof window !== "undefined") return ""; // browser should use relative url
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
-
   return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
 };
 
-const trpc = createReactQueryHooks<AppRouter>();
-
-export { trpc, getBaseUrl };
-
-/**
- * Check out tRPC docs for Inference Helpers
- * https://trpc.io/docs/infer-types#inference-helpers
- */
+export const trpc = createTRPCNext<AppRouter>({
+  config() {
+    return {
+      transformer: superjson,
+      links: [
+        loggerLink({
+          enabled: (opts) =>
+            process.env.NODE_ENV === "development" ||
+            (opts.direction === "down" && opts.result instanceof Error),
+        }),
+        httpBatchLink({
+          url: `${getBaseUrl()}/api/trpc`,
+        }),
+      ],
+    };
+  },
+  ssr: false,
+});

@@ -25,7 +25,7 @@ const SubjectExamTree: React.FC<{
 };
 
 const Home: NextPage = () => {
-  const { data, isLoading } = trpc.useQuery(["exams.get-subject-exams-tree"]);
+  const { data, isLoading } = trpc.exam.getPublicExamsTree.useQuery();
 
   if (!data || isLoading) {
     return <div>Loading...</div>;
