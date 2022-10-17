@@ -3,10 +3,16 @@ import { useRouter } from "next/router";
 import { z } from "zod";
 import { QuestionWithImageDownloadUrls } from "../../server/data/questions";
 import { trpc } from "../../utils/trpc";
+import {useState} from "react";
 
 const pathParamValidator = z.object({
   examYearSubjectId: z.string(),
 });
+
+enum SelectedAnswer {
+    A, B, C, D
+};
+
 
 const ABCDAnswers: React.FC<{
   ansA: string | null;
@@ -14,30 +20,37 @@ const ABCDAnswers: React.FC<{
   ansC: string | null;
   ansD: string | null;
 }> = ({ ansA, ansB, ansC, ansD }) => {
+  const [selectedAnswer, setSelectedAnswer] = useState<SelectedAnswer | undefined>();
+
+  const selectOrDeselectAnswer = (ans: SelectedAnswer) => {
+    if (ans === selectedAnswer) {
+      setSelectedAnswer(undefined);
+    } else {
+      setSelectedAnswer(ans);
+    }
+  }
+
+
   return (
-    <div className="grid grid-flow-row grid-rows-1 md:grid-flow-col md:grid-rows-2">
+    <div className="grid grid-flow-row grid-rows-1 space-x-1 md:grid-flow-col md:grid-rows-2">
       {ansA && (
         <div>
-          <span>A&#41; </span>
-          <span>{ansA}</span>
+          <button className={`btn ${selectedAnswer !== SelectedAnswer.A && 'btn-outline'} w-full m-1`} onClick={() => selectOrDeselectAnswer(SelectedAnswer.A)} >{ansA}</button>
         </div>
       )}
       {ansB && (
         <div>
-          <span>B&#41; </span>
-          <span>{ansB}</span>
+          <button className={`btn ${selectedAnswer !== SelectedAnswer.B && 'btn-outline'} w-full m-1`} onClick={() => selectOrDeselectAnswer(SelectedAnswer.B)} >{ansB}</button>
         </div>
       )}
       {ansC && (
         <div>
-          <span>B&#41; </span>
-          <span>{ansC}</span>
+          <button className={`btn ${selectedAnswer !== SelectedAnswer.C   && 'btn-outline'} w-full m-1`} onClick={() => selectOrDeselectAnswer(SelectedAnswer.C)} >{ansC}</button>
         </div>
       )}
       {ansD && (
         <div>
-          <span>B&#41; </span>
-          <span>{ansD}</span>
+          <button className={`btn ${selectedAnswer !== SelectedAnswer.D && 'btn-outline'} w-full m-1`} onClick={() => selectOrDeselectAnswer(SelectedAnswer.D)} >{ansD}</button>
         </div>
       )}
     </div>
