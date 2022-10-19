@@ -35,11 +35,11 @@ export const trpc = createTRPCNext<AppRouter>({
               return {
                 ...headers,
                 // Optional: inform server that it's an SSR request
-                'x-ssr': '1',
+                "x-ssr": "1",
               };
             }
-            return {}
-          }
+            return {};
+          },
         }),
       ],
     };
@@ -56,7 +56,7 @@ export const trpc = createTRPCNext<AppRouter>({
     const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
     return {
       headers: {
-        'cache-control': `s-maxage=1, stale-while-revalidate=${ONE_DAY_IN_SECONDS}`,
+        "cache-control": `s-maxage=1, stale-while-revalidate=${ONE_DAY_IN_SECONDS}`,
       },
     };
   },
