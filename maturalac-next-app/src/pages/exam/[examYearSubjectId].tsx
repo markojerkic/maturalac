@@ -4,6 +4,7 @@ import { z } from "zod";
 import { QuestionWithImageDownloadUrls } from "../../server/data/questions";
 import { trpc } from "../../utils/trpc";
 import { useState } from "react";
+import Head from "next/head";
 
 const pathParamValidator = z.object({
   examYearSubjectId: z.string(),
@@ -93,17 +94,29 @@ const Exam = () => {
     return <h2>Loading...</h2>;
   }
   return (
-    <div className="mx-auto flex w-[90%] flex-col space-y-2 md:w-[50%]">
-      <p className="mx-auto my-4 text-2xl font-bold">
-        {data.subject}: {data.examYear}
-      </p>
-      {data.questions.map((question) => (
-        <div key={question.id}>
-          <QuestionView question={question} />
-          <hr />
-        </div>
-      ))}
-    </div>
+    <>
+      <Head>
+        <title>
+          {data.subject}: {data.examYear}
+        </title>
+        <meta name="description" content={`Primjer ispita Državne mature: ${data.subject}: ${data.examYear}`} />
+        <link rel="icon" href="/favicon.png" />
+      </Head>
+
+      <header className="mx-auto text-center my-4 text-2xl font-bold">
+        <p>
+          {data.subject}: {data.examYear}
+        </p>
+      </header>
+      <div className="mx-auto flex w-[90%] flex-col space-y-2 md:w-[50%]">
+        {data.questions.map((question) => (
+          <div key={question.id}>
+            <QuestionView question={question} />
+            <hr />
+          </div>
+        ))}
+      </div>
+    </>
   );
 };
 
